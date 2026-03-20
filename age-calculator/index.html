@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Age Calculator – Find Your Exact Age</title>
+<meta name="description" content="Calculate your exact age in years, months, days, hours, and minutes. Find out the day you were born and upcoming birthday countdown.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1814;
+  --bg: #faf8f3;
+  --warm: #f0ebe0;
+  --card: #ffffff;
+  --gold: #c8972a;
+  --gold-light: #e8b84b;
+  --rust: #c04a28;
+  --border: rgba(200,151,42,0.22);
+  --muted: #7a6f62;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+.wrapper { max-width: 760px; margin: 0 auto; padding: 44px 20px 80px; }
+
+/* Header */
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.eyebrow::before, .eyebrow::after { content: ''; width: 36px; height: 1px; background: var(--gold); opacity: 0.5; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(36px, 7vw, 62px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+/* Card */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 40px;
+  box-shadow: 0 2px 30px rgba(0,0,0,0.06);
+}
+@media(max-width:520px){ .card { padding: 24px 18px; } }
+
+.field-label {
+  display: block; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+
+/* DOB row */
+.dob-section { margin-bottom: 24px; }
+.selects-row { display: grid; grid-template-columns: 1fr 1.4fr 1.2fr; gap: 10px; }
+
+/* Target row */
+.target-section { margin-bottom: 24px; }
+.target-inner { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: end; }
+@media(max-width:560px){ .target-inner { grid-template-columns: 1fr; } }
+.target-selects { display: grid; grid-template-columns: 1fr 1.4fr 1.2fr; gap: 10px; }
+
+/* Select styling */
+select {
+  width: 100%; padding: 13px 32px 13px 14px;
+  background: var(--warm);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+  color: var(--ink); outline: none; cursor: pointer;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8972a' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,151,42,0.1); }
+
+/* Button */
+.calc-btn {
+  white-space: nowrap; padding: 14px 28px;
+  background: var(--ink); color: #fff; border: none;
+  border-radius: 12px; font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+.calc-btn:hover { background: #2e2a24; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.16); }
+.calc-btn:active { transform: none; }
+
+/* Error */
+.error-msg {
+  display: none; color: var(--rust); font-size: 13px; text-align: center;
+  margin-top: 10px; padding: 10px; background: rgba(192,74,40,0.07); border-radius: 8px;
+}
+.error-msg.show { display: block; }
+
+/* Results */
+.results { display: none; }
+.results.show { display: block; }
+
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(200,151,42,0.25), transparent); margin: 32px 0; }
+
+.primary-age { text-align: center; margin-bottom: 32px; }
+.age-number {
+  display: block; font-family: 'DM Sans', sans-serif;
+  font-size: clamp(80px, 18vw, 130px); font-weight: 700;
+  line-height: 1; color: var(--ink); letter-spacing: -0.04em;
+}
+.age-label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold); margin-top: 4px;
+}
+
+.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
+@media(max-width:480px){ .stats-grid { grid-template-columns: 1fr 1fr; } }
+.stat-box {
+  background: var(--warm); border-radius: 14px; padding: 18px 12px;
+  text-align: center; border: 1px solid rgba(200,151,42,0.1);
+}
+.stat-value {
+  display: block; font-family: 'DM Sans', sans-serif;
+  font-size: clamp(18px, 4vw, 26px); font-weight: 700;
+  color: var(--ink); line-height: 1; margin-bottom: 5px; letter-spacing: -0.02em;
+}
+.stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+.info-rows { border: 1px solid rgba(200,151,42,0.15); border-radius: 14px; overflow: hidden; }
+.info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px; border-bottom: 1px solid rgba(200,151,42,0.08);
+}
+.info-row:last-child { border-bottom: none; }
+.info-row:hover { background: rgba(200,151,42,0.03); }
+.info-key { font-size: 13px; color: var(--muted); }
+.info-val { font-size: 14px; font-weight: 600; color: var(--ink); }
+.info-val.accent { color: var(--rust); }
+
+.birthday-countdown {
+  margin-top: 16px; background: var(--ink); border-radius: 14px;
+  padding: 22px 24px; text-align: center; position: relative; overflow: hidden;
+}
+.birthday-countdown::after {
+  content: '🎂'; position: absolute; font-size: 70px; right: 8px;
+  top: 50%; transform: translateY(-50%); opacity: 0.07; pointer-events: none;
+}
+.cd-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 6px; }
+.cd-days { font-family: 'DM Sans', sans-serif; font-size: 48px; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -0.03em; }
+.cd-text { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 5px; }
+.cd-bday { font-size: 22px; color: var(--gold-light); font-family: 'Playfair Display', serif; font-style: italic; }
+
+/* Copy button */
+.copy-btn {
+  width: 100%; margin-top: 14px; padding: 14px 24px;
+  background: transparent; border: 1.5px solid var(--border);
+  border-radius: 12px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500; color: var(--muted);
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 8px; transition: all 0.2s;
+}
+.copy-btn:hover { border-color: var(--gold); color: var(--ink); background: rgba(200,151,42,0.05); }
+.copy-btn.copied { border-color: #4a9a6a; color: #4a9a6a; background: rgba(74,154,106,0.07); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #aaa; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Free Online Tool</div>
+    <h1>How Old Are <em>You?</em></h1>
+    <p class="subtitle">Your exact age in years, months, days — and every second in between.</p>
+  </header>
+
+  <div class="card">
+
+    <div class="dob-section">
+      <span class="field-label">Your Date of Birth</span>
+      <div class="selects-row">
+        <select id="dobDay"></select>
+        <select id="dobMonth"></select>
+        <select id="dobYear"></select>
+      </div>
+    </div>
+
+    <div class="target-section">
+      <div class="target-inner">
+        <div>
+          <span class="field-label">Calculate Age On</span>
+          <div class="target-selects">
+            <select id="tDay"></select>
+            <select id="tMonth"></select>
+            <select id="tYear"></select>
+          </div>
+        </div>
+        <button class="calc-btn" onclick="calculate()">Calculate My Age →</button>
+      </div>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="results" id="results">
+      <div class="divider"></div>
+      <div class="primary-age">
+        <span class="age-number" id="yearsDisplay">—</span>
+        <span class="age-label">Years Old</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><span class="stat-value" id="monthsDisplay">—</span><span class="stat-label">Months</span></div>
+        <div class="stat-box"><span class="stat-value" id="weeksDisplay">—</span><span class="stat-label">Weeks</span></div>
+        <div class="stat-box"><span class="stat-value" id="daysDisplay">—</span><span class="stat-label">Days</span></div>
+        <div class="stat-box"><span class="stat-value" id="hoursDisplay">—</span><span class="stat-label">Hours</span></div>
+        <div class="stat-box"><span class="stat-value" id="minutesDisplay">—</span><span class="stat-label">Minutes</span></div>
+        <div class="stat-box"><span class="stat-value" id="secondsDisplay">—</span><span class="stat-label">Seconds</span></div>
+      </div>
+      <div class="info-rows">
+        <div class="info-row"><span class="info-key">Day you were born</span><span class="info-val accent" id="birthDay">—</span></div>
+        <div class="info-row"><span class="info-key">Total months lived</span><span class="info-val" id="totalMonths">—</span></div>
+        <div class="info-row"><span class="info-key">Total days lived</span><span class="info-val" id="totalDays">—</span></div>
+        <div class="info-row"><span class="info-key">Next birthday</span><span class="info-val" id="nextBirthday">—</span></div>
+        <div class="info-row"><span class="info-key">Zodiac sign</span><span class="info-val" id="zodiacSign">—</span></div>
+        <div class="info-row"><span class="info-key">Chinese zodiac</span><span class="info-val" id="chineseZodiac">—</span></div>
+        <div class="info-row"><span class="info-key">Generation</span><span class="info-val" id="generation">—</span></div>
+      </div>
+      <div class="birthday-countdown">
+        <div class="cd-label">Days Until Your Next Birthday</div>
+        <div class="cd-days" id="countdownDays">—</div>
+        <div class="cd-text" id="countdownText"></div>
+      </div>
+      <button class="copy-btn" id="copyBtn" onclick="copyResults()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span id="copyLabel">Copy Results</span>
+      </button>
+    </div>
+
+  </div>
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<!-- ALL JS at bottom, after DOM is fully loaded -->
+<script>
+var MONTHS_LIST = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DAYS_LIST = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function populateDay(id, selected) {
+  var el = document.getElementById(id);
+  el.innerHTML = '';
+  for (var d = 1; d <= 31; d++) {
+    var o = document.createElement('option');
+    o.value = d;
+    o.text = d < 10 ? '0' + d : '' + d;
+    if (d === selected) o.selected = true;
+    el.appendChild(o);
+  }
+}
+
+function populateMonth(id, selected) {
+  var el = document.getElementById(id);
+  el.innerHTML = '';
+  for (var m = 0; m < 12; m++) {
+    var o = document.createElement('option');
+    o.value = m + 1;
+    o.text = MONTHS_LIST[m];
+    if (m + 1 === selected) o.selected = true;
+    el.appendChild(o);
+  }
+}
+
+function populateYear(id, start, end, selected) {
+  var el = document.getElementById(id);
+  el.innerHTML = '';
+  for (var y = end; y >= start; y--) {
+    var o = document.createElement('option');
+    o.value = y;
+    o.text = '' + y;
+    if (y === selected) o.selected = true;
+    el.appendChild(o);
+  }
+}
+
+// Init all dropdowns
+var now = new Date();
+var cy = now.getFullYear();
+var cm = now.getMonth() + 1;
+var cd = now.getDate();
+
+populateDay('dobDay', 1);
+populateMonth('dobMonth', cm);
+populateYear('dobYear', 1920, cy, cy - 30);
+
+populateDay('tDay', cd);
+populateMonth('tMonth', cm);
+populateYear('tYear', cy - 5, cy, cy);
+
+function getVal(id) { return parseInt(document.getElementById(id).value, 10); }
+function fmt(n) { return n.toLocaleString(); }
+function set(id, v) { document.getElementById(id).textContent = v; }
+
+function getZodiac(m, d) {
+  if ((m==1&&d>=20)||(m==2&&d<19)) return 'Aquarius \u2652';
+  if ((m==2&&d>=19)||(m==3&&d<20)) return 'Pisces \u2653';
+  if ((m==3&&d>=20)||(m==4&&d<20)) return 'Aries \u2648';
+  if ((m==4&&d>=20)||(m==5&&d<21)) return 'Taurus \u2649';
+  if ((m==5&&d>=21)||(m==6&&d<21)) return 'Gemini \u264a';
+  if ((m==6&&d>=21)||(m==7&&d<23)) return 'Cancer \u264b';
+  if ((m==7&&d>=23)||(m==8&&d<23)) return 'Leo \u264c';
+  if ((m==8&&d>=23)||(m==9&&d<23)) return 'Virgo \u264d';
+  if ((m==9&&d>=23)||(m==10&&d<23)) return 'Libra \u264e';
+  if ((m==10&&d>=23)||(m==11&&d<22)) return 'Scorpio \u264f';
+  if ((m==11&&d>=22)||(m==12&&d<22)) return 'Sagittarius \u2650';
+  return 'Capricorn \u2651';
+}
+
+function getChineseZodiac(y) {
+  var a = ['Rat','Ox','Tiger','Rabbit','Dragon','Snake','Horse','Goat','Monkey','Rooster','Dog','Pig'];
+  return a[(y - 1900) % 12];
+}
+
+function getGeneration(y) {
+  if (y <= 1945) return 'Silent Generation';
+  if (y <= 1964) return 'Baby Boomer';
+  if (y <= 1980) return 'Generation X';
+  if (y <= 1996) return 'Millennial';
+  if (y <= 2012) return 'Generation Z';
+  return 'Generation Alpha';
+}
+
+function calculate() {
+  var errEl = document.getElementById('errorMsg');
+  var resEl = document.getElementById('results');
+  errEl.className = 'error-msg';
+  resEl.className = 'results';
+
+  var dobD = getVal('dobDay'), dobM = getVal('dobMonth'), dobY = getVal('dobYear');
+  var tD = getVal('tDay'), tM = getVal('tMonth'), tY = getVal('tYear');
+
+  var dob = new Date(dobY, dobM - 1, dobD);
+  var target = new Date(tY, tM - 1, tD);
+
+  if (dob >= target) {
+    errEl.textContent = 'Date of birth must be before the target date.';
+    errEl.className = 'error-msg show';
+    return;
+  }
+
+  var years = tY - dobY;
+  var months = tM - dobM;
+  var days = tD - dobD;
+
+  if (days < 0) {
+    months--;
+    var prevMonth = new Date(tY, tM - 1, 0);
+    days += prevMonth.getDate();
+  }
+  if (months < 0) { years--; months += 12; }
+
+  var MS = 86400000;
+  var totalDaysN = Math.floor((target - dob) / MS);
+  var totalMonthsN = years * 12 + months;
+  var totalWeeksN = Math.floor(totalDaysN / 7);
+  var totalHoursN = totalDaysN * 24;
+  var totalMinsN = totalHoursN * 60;
+  var totalSecsN = totalMinsN * 60;
+
+  var bm = dob.getMonth(), bd2 = dob.getDate();
+  var nextBday = new Date(tY, bm, bd2);
+  if (nextBday <= target) nextBday = new Date(tY + 1, bm, bd2);
+  var daysUntil = Math.ceil((nextBday - target) / MS);
+  var nextStr = MONTHS_LIST[nextBday.getMonth()] + ' ' + nextBday.getDate() + ', ' + nextBday.getFullYear();
+
+  set('yearsDisplay', years);
+  set('monthsDisplay', months);
+  set('weeksDisplay', fmt(totalWeeksN));
+  set('daysDisplay', days);
+  set('hoursDisplay', fmt(totalHoursN));
+  set('minutesDisplay', fmt(totalMinsN));
+  set('secondsDisplay', fmt(totalSecsN));
+  set('birthDay', DAYS_LIST[dob.getDay()]);
+  set('totalMonths', fmt(totalMonthsN) + ' months');
+  set('totalDays', fmt(totalDaysN) + ' days');
+  set('nextBirthday', nextStr);
+  set('zodiacSign', getZodiac(dobM, dobD));
+  set('chineseZodiac', getChineseZodiac(dobY));
+  set('generation', getGeneration(dobY));
+
+  var cdDays = document.getElementById('countdownDays');
+  var cdText = document.getElementById('countdownText');
+  if (daysUntil === 0) {
+    cdDays.innerHTML = '<span class="cd-bday">Happy Birthday! \uD83C\uDF89</span>';
+    cdText.textContent = 'Today is your special day!';
+  } else {
+    cdDays.textContent = daysUntil;
+    cdText.textContent = 'days until your next birthday \u2014 ' + MONTHS_LIST[nextBday.getMonth()] + ' ' + nextBday.getDate();
+  }
+
+  resEl.className = 'results show';
+  setTimeout(function() { resEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 50);
+}
+
+function copyResults() {
+  var lines = [
+    'AGE CALCULATOR RESULTS',
+    '------------------------',
+    'Age: ' + document.getElementById('yearsDisplay').textContent + ' years, ' +
+              document.getElementById('monthsDisplay').textContent + ' months, ' +
+              document.getElementById('daysDisplay').textContent + ' days',
+    '',
+    'Weeks:   ' + document.getElementById('weeksDisplay').textContent,
+    'Hours:   ' + document.getElementById('hoursDisplay').textContent,
+    'Minutes: ' + document.getElementById('minutesDisplay').textContent,
+    'Seconds: ' + document.getElementById('secondsDisplay').textContent,
+    '',
+    'Born on:        ' + document.getElementById('birthDay').textContent,
+    'Total months:   ' + document.getElementById('totalMonths').textContent,
+    'Total days:     ' + document.getElementById('totalDays').textContent,
+    'Next birthday:  ' + document.getElementById('nextBirthday').textContent,
+    'Zodiac:         ' + document.getElementById('zodiacSign').textContent,
+    'Chinese zodiac: ' + document.getElementById('chineseZodiac').textContent,
+    'Generation:     ' + document.getElementById('generation').textContent,
+    '',
+    'Next birthday in: ' + document.getElementById('countdownDays').textContent + ' days',
+    '',
+    'Calculated at allthetools.com'
+  ];
+  var text = lines.join('\n');
+  var btn = document.getElementById('copyBtn');
+  var lbl = document.getElementById('copyLabel');
+
+  function onSuccess() {
+    btn.className = 'copy-btn copied';
+    lbl.textContent = '\u2713 Copied to Clipboard!';
+    setTimeout(function() { btn.className = 'copy-btn'; lbl.textContent = 'Copy Results'; }, 2500);
+  }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(onSuccess).catch(function() { fallbackCopy(text, onSuccess); });
+  } else {
+    fallbackCopy(text, onSuccess);
+  }
+}
+
+function fallbackCopy(text, cb) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+document.addEventListener('keydown', function(e) { if (e.key === 'Enter') calculate(); });
+</script>
+</body>
+</html>
