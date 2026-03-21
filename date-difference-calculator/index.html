@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date Difference Calculator – Days Between Two Dates</title>
+<meta name="description" content="Free date difference calculator. Find the exact number of days, weeks, months and years between any two dates. Also counts working days and weekends.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #141820;
+  --bg: #f2f5fa;
+  --warm: #e8edf7;
+  --card: #ffffff;
+  --blue: #1a56c4;
+  --blue-light: #e8edf7;
+  --blue-mid: #3b72e0;
+  --border: rgba(26,86,196,0.16);
+  --muted: #606878;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+
+.wrapper { max-width: 760px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--blue); margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--blue); opacity:0.4; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(32px, 7vw, 58px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--blue); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 40px;
+  box-shadow: 0 2px 30px rgba(0,0,0,0.05);
+}
+@media(max-width:520px){ .card { padding: 24px 18px; } }
+
+.field-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+/* Two date sections side by side on desktop */
+.dates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+@media(max-width:540px){ .dates-grid { grid-template-columns: 1fr; } }
+
+.date-section { background: var(--warm); border-radius: 14px; padding: 18px; border: 1px solid var(--border); }
+.date-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+.selects-col { display: flex; flex-direction: column; gap: 8px; }
+
+select {
+  width: 100%; padding: 11px 28px 11px 12px;
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 10px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500; color: var(--ink);
+  outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%231a56c4' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,196,0.1); }
+
+/* Swap button */
+.swap-row { display: flex; justify-content: center; margin-bottom: 24px; }
+.swap-btn {
+  padding: 10px 24px; background: var(--warm); border: 1.5px solid var(--border);
+  border-radius: 999px; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; color: var(--blue);
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+}
+.swap-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* Include end date toggle */
+.options-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.options-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; }
+.options-row label { font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; }
+
+.calc-btn {
+  width: 100%; padding: 16px; background: var(--ink); color: #fff;
+  border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+.calc-btn:hover { background: #1e2430; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.16); }
+.calc-btn:active { transform: none; }
+
+.error-msg { display: none; margin-top: 10px; padding: 10px 14px; background: rgba(26,86,196,0.07); border-radius: 8px; color: var(--blue); font-size: 13px; text-align: center; }
+.error-msg.show { display: block; }
+
+.results { display: none; }
+.results.show { display: block; animation: fadeUp 0.5s ease both; }
+
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(26,86,196,0.2), transparent); margin: 32px 0; }
+
+/* Primary display */
+.primary-display {
+  text-align: center; padding: 32px 20px 24px;
+  background: var(--blue-light); border-radius: 16px;
+  margin-bottom: 20px; border: 1px solid rgba(26,86,196,0.1);
+}
+.primary-number {
+  display: block; font-family: 'DM Sans', sans-serif;
+  font-size: clamp(68px, 16vw, 110px); font-weight: 700;
+  line-height: 1; color: var(--ink); letter-spacing: -0.04em;
+}
+.primary-label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--blue); margin-top: 6px;
+}
+.primary-sub { display: block; font-size: 14px; color: var(--muted); margin-top: 8px; }
+
+/* Stats grid */
+.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+@media(max-width:480px){ .stats-grid { grid-template-columns: 1fr 1fr; } }
+.stat-box { background: var(--warm); border-radius: 14px; padding: 16px 12px; text-align: center; border: 1px solid var(--border); }
+.stat-value { display: block; font-size: clamp(18px, 4vw, 24px); font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 4px; letter-spacing: -0.02em; }
+.stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+/* Info rows */
+.info-rows { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 20px; border-bottom: 1px solid rgba(26,86,196,0.07); }
+.info-row:last-child { border-bottom: none; }
+.info-row:hover { background: var(--blue-light); }
+.info-key { font-size: 13px; color: var(--muted); }
+.info-val { font-size: 14px; font-weight: 600; color: var(--ink); }
+.info-val.accent { color: var(--blue); }
+
+/* Timeline bar */
+.timeline-section { margin-bottom: 20px; }
+.tl-label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+.tl-bar-bg { height: 8px; background: var(--warm); border-radius: 999px; border: 1px solid var(--border); overflow: hidden; }
+.tl-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue-mid), var(--blue)); border-radius: 999px; transition: width 0.8s cubic-bezier(0.34,1.2,0.64,1); width: 0%; }
+
+/* Dark summary box */
+.summary-box { background: var(--ink); border-radius: 14px; padding: 22px 24px; margin-bottom: 16px; position: relative; overflow: hidden; }
+.summary-box::after { content: '📅'; position: absolute; font-size: 70px; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.07; pointer-events: none; }
+.sb-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #7a9ee0; margin-bottom: 12px; }
+.sb-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media(max-width:400px){ .sb-grid { grid-template-columns: 1fr 1fr; } }
+.sb-item { text-align: center; }
+.sb-val { display: block; font-size: clamp(16px,3.5vw,22px); font-weight: 700; color: #fff; line-height: 1; margin-bottom: 4px; }
+.sb-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+
+.copy-btn { width: 100%; padding: 13px 20px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+.copy-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+.copy-btn.copied { border-color: #4a9a6a; color: #4a9a6a; background: rgba(74,154,106,0.07); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #a0a8c0; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Free Online Tool</div>
+    <h1>Date <em>Difference</em> Calculator</h1>
+    <p class="subtitle">Find the exact number of days, weeks, months and years between any two dates.</p>
+  </header>
+
+  <div class="card">
+
+    <!-- Two date pickers -->
+    <div class="dates-grid">
+
+      <div class="date-section">
+        <div class="date-section-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Start Date
+        </div>
+        <div class="selects-col">
+          <select id="s-day"></select>
+          <select id="s-month"></select>
+          <select id="s-year"></select>
+        </div>
+      </div>
+
+      <div class="date-section">
+        <div class="date-section-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          End Date
+        </div>
+        <div class="selects-col">
+          <select id="e-day"></select>
+          <select id="e-month"></select>
+          <select id="e-year"></select>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Swap button -->
+    <div class="swap-row">
+      <button class="swap-btn" onclick="swapDates()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        Swap Dates
+      </button>
+    </div>
+
+    <!-- Include end date -->
+    <div class="options-row">
+      <input type="checkbox" id="includeEnd">
+      <label for="includeEnd">Include end date in count (adds 1 day)</label>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">Calculate Difference →</button>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Results -->
+    <div class="results" id="results">
+      <div class="divider"></div>
+
+      <div class="primary-display">
+        <span class="primary-number" id="primaryNum">—</span>
+        <span class="primary-label">Days Between Dates</span>
+        <span class="primary-sub" id="primarySub"></span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box"><span class="stat-value" id="statWeeks">—</span><span class="stat-label">Weeks</span></div>
+        <div class="stat-box"><span class="stat-value" id="statMonths">—</span><span class="stat-label">Months</span></div>
+        <div class="stat-box"><span class="stat-value" id="statYears">—</span><span class="stat-label">Years</span></div>
+        <div class="stat-box"><span class="stat-value" id="statHours">—</span><span class="stat-label">Hours</span></div>
+        <div class="stat-box"><span class="stat-value" id="statWorkdays">—</span><span class="stat-label">Workdays</span></div>
+        <div class="stat-box"><span class="stat-value" id="statWeekends">—</span><span class="stat-label">Weekends</span></div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="timeline-section">
+        <div class="tl-label-row">
+          <span id="tlStart">Start</span>
+          <span id="tlPct">—</span>
+          <span id="tlEnd">End</span>
+        </div>
+        <div class="tl-bar-bg">
+          <div class="tl-bar-fill" id="tlFill"></div>
+        </div>
+      </div>
+
+      <div class="info-rows">
+        <div class="info-row"><span class="info-key">Start date falls on</span><span class="info-val accent" id="infoStartDay">—</span></div>
+        <div class="info-row"><span class="info-key">End date falls on</span><span class="info-val accent" id="infoEndDay">—</span></div>
+        <div class="info-row"><span class="info-key">Total days</span><span class="info-val" id="infoTotalDays">—</span></div>
+        <div class="info-row"><span class="info-key">Total weeks</span><span class="info-val" id="infoTotalWeeks">—</span></div>
+        <div class="info-row"><span class="info-key">Total months (approx)</span><span class="info-val" id="infoTotalMonths">—</span></div>
+        <div class="info-row"><span class="info-key">Working days</span><span class="info-val" id="infoWorkdays">—</span></div>
+        <div class="info-row"><span class="info-key">Weekend days</span><span class="info-val" id="infoWeekends">—</span></div>
+        <div class="info-row"><span class="info-key">Years and months and days</span><span class="info-val" id="infoExact">—</span></div>
+      </div>
+
+      <!-- Summary box -->
+      <div class="summary-box">
+        <div class="sb-label">Full Breakdown</div>
+        <div class="sb-grid">
+          <div class="sb-item"><span class="sb-val" id="sbDays">—</span><span class="sb-lbl">Days</span></div>
+          <div class="sb-item"><span class="sb-val" id="sbHours">—</span><span class="sb-lbl">Hours</span></div>
+          <div class="sb-item"><span class="sb-val" id="sbMins">—</span><span class="sb-lbl">Minutes</span></div>
+        </div>
+      </div>
+
+      <button class="copy-btn" id="copyBtn" onclick="copyResults()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span id="copyLabel">Copy Results</span>
+      </button>
+    </div>
+
+  </div>
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function buildDay(id, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  for (var d = 1; d <= 31; d++) {
+    var o = document.createElement('option');
+    o.value = d; o.text = d < 10 ? '0'+d : ''+d;
+    if (d === sel) o.selected = true;
+    el.appendChild(o);
+  }
+}
+function buildMonth(id, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  for (var m = 0; m < 12; m++) {
+    var o = document.createElement('option');
+    o.value = m+1; o.text = MONTHS[m];
+    if (m+1 === sel) o.selected = true;
+    el.appendChild(o);
+  }
+}
+function buildYear(id, start, end, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  for (var y = end; y >= start; y--) {
+    var o = document.createElement('option');
+    o.value = y; o.text = ''+y;
+    if (y === sel) o.selected = true;
+    el.appendChild(o);
+  }
+}
+
+var now = new Date();
+var cy = now.getFullYear(), cm = now.getMonth()+1, cd = now.getDate();
+
+// Start date: 1 year ago
+var syDefault = cy - 1;
+buildDay('s-day', 1); buildMonth('s-month', 1); buildYear('s-year', 1900, 2100, syDefault);
+// End date: today
+buildDay('e-day', cd); buildMonth('e-month', cm); buildYear('e-year', 1900, 2100, cy);
+
+function getVal(id) { return parseInt(document.getElementById(id).value, 10); }
+function fmt(n) { return n.toLocaleString(); }
+function set(id, v) { document.getElementById(id).textContent = v; }
+
+function swapDates() {
+  var sD=getVal('s-day'), sM=getVal('s-month'), sY=getVal('s-year');
+  var eD=getVal('e-day'), eM=getVal('e-month'), eY=getVal('e-year');
+  setSelect('s-day', eD); setSelect('s-month', eM); setSelect('s-year', eY);
+  setSelect('e-day', sD); setSelect('e-month', sM); setSelect('e-year', sY);
+}
+
+function setSelect(id, val) {
+  var el = document.getElementById(id);
+  for (var i = 0; i < el.options.length; i++) {
+    if (parseInt(el.options[i].value) === val) { el.selectedIndex = i; break; }
+  }
+}
+
+function countWorkdays(d1, d2) {
+  var count = 0;
+  var cur = new Date(d1.getTime());
+  cur.setDate(cur.getDate()+1);
+  var end = new Date(d2.getTime());
+  while (cur <= end) {
+    var dw = cur.getDay();
+    if (dw !== 0 && dw !== 6) count++;
+    cur.setDate(cur.getDate()+1);
+  }
+  return count;
+}
+
+function calculate() {
+  var errEl = document.getElementById('errorMsg');
+  var resEl = document.getElementById('results');
+  errEl.className = 'error-msg';
+  resEl.className = 'results';
+
+  var sD=getVal('s-day'), sM=getVal('s-month'), sY=getVal('s-year');
+  var eD=getVal('e-day'), eM=getVal('e-month'), eY=getVal('e-year');
+  var includeEnd = document.getElementById('includeEnd').checked;
+
+  var startDate = new Date(sY, sM-1, sD);
+  var endDate = new Date(eY, eM-1, eD);
+
+  if (startDate.getTime() === endDate.getTime()) {
+    errEl.textContent = 'The two dates are the same. Please select different dates.';
+    errEl.className = 'error-msg show'; return;
+  }
+
+  // Always work with start < end for display, note if reversed
+  var d1 = startDate <= endDate ? startDate : endDate;
+  var d2 = startDate <= endDate ? endDate : startDate;
+  var reversed = startDate > endDate;
+
+  var MS = 86400000;
+  var totalDays = Math.round((d2 - d1) / MS);
+  if (includeEnd) totalDays += 1;
+
+  var totalWeeks = (totalDays / 7).toFixed(1);
+  var totalWeeksInt = Math.floor(totalDays / 7);
+  var totalMonths = (totalDays / 30.44).toFixed(1);
+  var totalHours = totalDays * 24;
+  var totalMins = totalHours * 60;
+
+  // Exact years, months, days
+  var years = d2.getFullYear() - d1.getFullYear();
+  var months = d2.getMonth() - d1.getMonth();
+  var days = d2.getDate() - d1.getDate();
+  if (days < 0) { months--; days += new Date(d2.getFullYear(), d2.getMonth(), 0).getDate(); }
+  if (months < 0) { years--; months += 12; }
+
+  var workdays = countWorkdays(d1, includeEnd ? new Date(d2.getTime()) : new Date(d2.getTime() - MS));
+  var weekends = totalDays - workdays;
+
+  // Timeline — % of a year
+  var yearMs = 365.25 * MS;
+  var pct = Math.min(100, Math.round(((d2-d1) / yearMs) * 100));
+
+  var startStr = MONTHS[d1.getMonth()] + ' ' + d1.getDate() + ', ' + d1.getFullYear();
+  var endStr = MONTHS[d2.getMonth()] + ' ' + d2.getDate() + ', ' + d2.getFullYear();
+
+  var exactStr = '';
+  if (years > 0) exactStr += years + (years===1?' year ':' years ');
+  if (months > 0) exactStr += months + (months===1?' month ':' months ');
+  if (days > 0) exactStr += days + (days===1?' day':' days');
+  if (!exactStr) exactStr = totalDays + ' days';
+
+  // Update UI
+  set('primaryNum', fmt(totalDays));
+  set('primarySub', startStr + ' → ' + endStr + (reversed ? ' (dates reversed)' : ''));
+
+  set('statWeeks', totalWeeksInt.toLocaleString());
+  set('statMonths', Math.floor(parseFloat(totalMonths)).toLocaleString());
+  set('statYears', (totalDays/365.25).toFixed(2));
+  set('statHours', fmt(totalHours));
+  set('statWorkdays', fmt(workdays));
+  set('statWeekends', fmt(weekends));
+
+  // Timeline
+  document.getElementById('tlFill').style.width = Math.min(pct, 100) + '%';
+  set('tlStart', MONTHS[d1.getMonth()].substring(0,3) + ' ' + d1.getFullYear());
+  set('tlPct', pct + '% of a year');
+  set('tlEnd', MONTHS[d2.getMonth()].substring(0,3) + ' ' + d2.getFullYear());
+
+  set('infoStartDay', DAYS[d1.getDay()] + ', ' + startStr);
+  set('infoEndDay', DAYS[d2.getDay()] + ', ' + endStr);
+  set('infoTotalDays', fmt(totalDays) + ' days' + (includeEnd ? ' (end date included)' : ''));
+  set('infoTotalWeeks', totalWeeks + ' weeks (' + totalWeeksInt + ' full weeks)');
+  set('infoTotalMonths', totalMonths + ' months (approx)');
+  set('infoWorkdays', fmt(workdays) + ' working days');
+  set('infoWeekends', fmt(weekends) + ' weekend days');
+  set('infoExact', exactStr);
+
+  set('sbDays', fmt(totalDays));
+  set('sbHours', fmt(totalHours));
+  set('sbMins', fmt(totalMins));
+
+  resEl.className = 'results show';
+  setTimeout(function(){ resEl.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 50);
+}
+
+function copyResults() {
+  var lines = [
+    'DATE DIFFERENCE CALCULATOR',
+    '--------------------------',
+    document.getElementById('primarySub').textContent,
+    '',
+    'Total Days: ' + document.getElementById('primaryNum').textContent,
+    'Exact: ' + document.getElementById('infoExact').textContent,
+    'Weeks: ' + document.getElementById('infoTotalWeeks').textContent,
+    'Months: ' + document.getElementById('infoTotalMonths').textContent,
+    'Hours: ' + document.getElementById('statHours').textContent,
+    'Working Days: ' + document.getElementById('infoWorkdays').textContent,
+    'Weekend Days: ' + document.getElementById('infoWeekends').textContent,
+    '',
+    'Start: ' + document.getElementById('infoStartDay').textContent,
+    'End: ' + document.getElementById('infoEndDay').textContent,
+    '',
+    'Calculated at allthetools.com'
+  ];
+  var text = lines.join('\n');
+  var btn = document.getElementById('copyBtn');
+  var lbl = document.getElementById('copyLabel');
+  function onSuccess() {
+    btn.className = 'copy-btn copied'; lbl.textContent = '\u2713 Copied!';
+    setTimeout(function(){ btn.className='copy-btn'; lbl.textContent='Copy Results'; }, 2500);
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(onSuccess).catch(function(){ fallback(text,onSuccess); });
+  } else { fallback(text,onSuccess); }
+}
+
+function fallback(text, cb) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+document.addEventListener('keydown', function(e){ if(e.key==='Enter') calculate(); });
+</script>
+</body>
+</html>
