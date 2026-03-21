@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zodiac Calculator – Find Your Western & Chinese Zodiac Sign</title>
+<meta name="description" content="Free zodiac calculator. Find your Western and Chinese zodiac sign, element, ruling planet, lucky numbers, and personality traits by date of birth.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0a14;
+  --card: #151020;
+  --card2: #1a1428;
+  --border: rgba(180,140,255,0.15);
+  --purple: #9b6dff;
+  --purple-light: #c4a0ff;
+  --gold: #e8b84b;
+  --gold-light: #f5d280;
+  --muted: #8a7aaa;
+  --text: #e8e0ff;
+  --ink: #f0ecff;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Starfield background */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(100,50,200,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(180,100,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(232,184,75,0.04) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+.wrapper { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 44px 20px 80px; }
+
+/* Header */
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.eyebrow::before, .eyebrow::after { content:''; width:40px; height:1px; background: linear-gradient(90deg, transparent, var(--gold)); opacity: 0.5; }
+.eyebrow::after { background: linear-gradient(90deg, var(--gold), transparent); }
+
+h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(28px, 6vw, 50px); font-weight: 700;
+  line-height: 1.1; letter-spacing: 0.04em;
+  color: var(--ink); margin-bottom: 14px;
+}
+h1 span { color: var(--gold); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+/* Card */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px;
+  box-shadow: 0 4px 40px rgba(0,0,0,0.4), 0 0 80px rgba(100,50,200,0.06);
+  margin-bottom: 20px;
+}
+@media(max-width:520px){ .card { padding: 22px 16px; } }
+
+.field-label {
+  display: block; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+
+/* Selects */
+.selects-row { display: grid; grid-template-columns: 1fr 1.6fr 1.3fr; gap: 10px; margin-bottom: 28px; }
+@media(max-width:480px){
+  .selects-row { grid-template-columns: 1fr 1fr; }
+  .selects-row select:last-child { grid-column: 1 / -1; }
+}
+
+select {
+  width: 100%; padding: 12px 28px 12px 14px;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 10px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500; color: var(--text);
+  outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b6dff' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+select option { background: #1a1428; }
+select:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(155,109,255,0.15); }
+
+/* Calc button */
+.calc-btn {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #7040e0, #9b6dff);
+  color: #fff; border: none; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; letter-spacing: 0.04em;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(100,50,200,0.35);
+}
+.calc-btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(100,50,200,0.45); }
+.calc-btn:active { transform: none; }
+
+/* Results */
+.results { display: none; }
+.results.show { display: block; animation: fadeUp 0.5s ease both; }
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+  opacity: 0.3; margin: 32px 0;
+}
+
+/* Western zodiac card */
+.zodiac-hero {
+  text-align: center; padding: 36px 20px 28px;
+  background: linear-gradient(135deg, #1a1030, #120e28);
+  border: 1px solid var(--border); border-radius: 16px;
+  margin-bottom: 16px; position: relative; overflow: hidden;
+}
+.zodiac-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(155,109,255,0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.zodiac-symbol {
+  font-size: 72px; line-height: 1; margin-bottom: 12px; display: block;
+  filter: drop-shadow(0 0 20px rgba(155,109,255,0.4));
+}
+.zodiac-name {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(32px, 8vw, 52px); font-weight: 700;
+  color: var(--gold); letter-spacing: 0.06em; line-height: 1;
+  margin-bottom: 6px;
+}
+.zodiac-dates {
+  font-size: 13px; color: var(--muted); letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 16px;
+}
+.zodiac-tagline {
+  font-size: 15px; font-weight: 300; color: var(--text);
+  max-width: 400px; margin: 0 auto; line-height: 1.6;
+  font-style: italic;
+}
+
+/* Two column info */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+@media(max-width:460px){ .info-grid { grid-template-columns: 1fr; } }
+
+.info-box {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px;
+}
+.info-box-title { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple-light); margin-bottom: 8px; }
+.info-box-val { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+
+/* Traits */
+.traits-box {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; margin-bottom: 16px;
+}
+.traits-title { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple-light); margin-bottom: 12px; }
+.traits-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.trait-chip {
+  padding: 5px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; color: var(--text);
+  background: rgba(155,109,255,0.12); border: 1px solid rgba(155,109,255,0.2);
+}
+
+/* Lucky numbers */
+.lucky-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.lucky-num {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--gold);
+  background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.25);
+}
+
+/* Chinese zodiac */
+.chinese-card {
+  background: linear-gradient(135deg, #1a1020, #120a18);
+  border: 1px solid rgba(232,184,75,0.2);
+  border-radius: 16px; padding: 28px 24px; margin-bottom: 16px;
+  display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start;
+}
+@media(max-width:400px){ .chinese-card { grid-template-columns: 1fr; } }
+
+.chinese-animal {
+  font-size: 64px; line-height: 1; text-align: center;
+  filter: drop-shadow(0 0 16px rgba(232,184,75,0.3));
+}
+.chinese-info {}
+.chinese-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.chinese-name { font-family: 'Cinzel', serif; font-size: 26px; font-weight: 700; color: var(--gold-light); margin-bottom: 8px; }
+.chinese-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* Compatibility */
+.compat-box {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; margin-bottom: 16px;
+}
+.compat-title { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple-light); margin-bottom: 12px; }
+.compat-signs { display: flex; flex-wrap: wrap; gap: 8px; }
+.compat-chip {
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; gap: 4px;
+}
+.compat-chip.best { background: rgba(100,200,100,0.12); border: 1px solid rgba(100,200,100,0.25); color: #80e080; }
+.compat-chip.avoid { background: rgba(200,80,80,0.1); border: 1px solid rgba(200,80,80,0.2); color: #e08080; }
+
+/* Copy button */
+.copy-btn {
+  width: 100%; padding: 13px; background: transparent;
+  border: 1px solid var(--border); border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  color: var(--muted); cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+}
+.copy-btn:hover { border-color: var(--purple); color: var(--purple-light); background: rgba(155,109,255,0.08); }
+.copy-btn.copied { border-color: #4a9a6a; color: #6adc8a; background: rgba(74,154,106,0.08); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #4a4060; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes popIn { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">✦ Free Online Tool ✦</div>
+    <h1>Zodiac <span>Calculator</span></h1>
+    <p class="subtitle">Discover your Western and Chinese zodiac sign, element, ruling planet, personality traits and lucky numbers.</p>
+  </header>
+
+  <div class="card">
+    <span class="field-label">Enter Your Date of Birth</span>
+    <div class="selects-row">
+      <select id="dobDay"></select>
+      <select id="dobMonth"></select>
+      <select id="dobYear"></select>
+    </div>
+    <button class="calc-btn" onclick="calculate()">✦ Reveal My Zodiac Sign</button>
+  </div>
+
+  <div class="results" id="results">
+
+    <!-- Western Zodiac Hero -->
+    <div class="zodiac-hero">
+      <span class="zodiac-symbol" id="wSymbol">♈</span>
+      <div class="zodiac-name" id="wName">Aries</div>
+      <div class="zodiac-dates" id="wDates">Mar 21 – Apr 19</div>
+      <div class="zodiac-tagline" id="wTagline">—</div>
+    </div>
+
+    <!-- Info grid -->
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="info-box-title">Element</div>
+        <div class="info-box-val" id="wElement">—</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Ruling Planet</div>
+        <div class="info-box-val" id="wPlanet">—</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Quality / Modality</div>
+        <div class="info-box-val" id="wQuality">—</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Lucky Colour</div>
+        <div class="info-box-val" id="wColour">—</div>
+      </div>
+    </div>
+
+    <!-- Traits -->
+    <div class="traits-box">
+      <div class="traits-title">Personality Traits</div>
+      <div class="traits-list" id="wTraits"></div>
+    </div>
+
+    <!-- Lucky numbers -->
+    <div class="traits-box">
+      <div class="traits-title">Lucky Numbers</div>
+      <div class="lucky-row" id="wLucky"></div>
+    </div>
+
+    <!-- Compatibility -->
+    <div class="compat-box">
+      <div class="compat-title">Compatibility</div>
+      <div class="compat-signs" id="wCompat"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Chinese Zodiac -->
+    <div class="chinese-card">
+      <div class="chinese-animal" id="cAnimal">🐀</div>
+      <div class="chinese-info">
+        <div class="chinese-label">Chinese Zodiac</div>
+        <div class="chinese-name" id="cName">Rat</div>
+        <div class="chinese-desc" id="cDesc">—</div>
+      </div>
+    </div>
+
+    <!-- Chinese info grid -->
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="info-box-title">Chinese Element</div>
+        <div class="info-box-val" id="cElement">—</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Yin / Yang</div>
+        <div class="info-box-val" id="cYinYang">—</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Lucky Years</div>
+        <div class="info-box-val" id="cYears">—</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Best Match</div>
+        <div class="info-box-val" id="cMatch">—</div>
+      </div>
+    </div>
+
+    <button class="copy-btn" id="copyBtn" onclick="copyResults()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      <span id="copyLabel">Copy My Zodiac Results</span>
+    </button>
+
+  </div>
+
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function buildDay(id, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  for (var d=1;d<=31;d++){var o=document.createElement('option');o.value=d;o.text=d<10?'0'+d:''+d;if(d===sel)o.selected=true;el.appendChild(o);}
+}
+function buildMonth(id, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  for (var m=0;m<12;m++){var o=document.createElement('option');o.value=m+1;o.text=MONTHS[m];if(m+1===sel)o.selected=true;el.appendChild(o);}
+}
+function buildYear(id, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  var cy = new Date().getFullYear();
+  for (var y=cy;y>=1920;y--){var o=document.createElement('option');o.value=y;o.text=''+y;if(y===sel)o.selected=true;el.appendChild(o);}
+}
+
+var now = new Date();
+buildDay('dobDay', now.getDate());
+buildMonth('dobMonth', now.getMonth()+1);
+buildYear('dobYear', now.getFullYear()-25);
+
+function getVal(id){ return parseInt(document.getElementById(id).value,10); }
+function set(id,v){ document.getElementById(id).textContent=v; }
+
+// ── WESTERN ZODIAC DATA ──
+var WESTERN = [
+  { name:'Aries',      symbol:'♈', dates:'Mar 21 – Apr 19', element:'🔥 Fire',    planet:'Mars',    quality:'Cardinal', colour:'Red & Orange',  tagline:'The courageous pioneer who charges ahead without fear.',           traits:['Courageous','Energetic','Confident','Impulsive','Passionate','Leader'],       lucky:[1,8,17], bestWith:['Leo','Sagittarius','Gemini'], avoidWith:['Cancer','Capricorn'] },
+  { name:'Taurus',     symbol:'♉', dates:'Apr 20 – May 20', element:'🌍 Earth',   planet:'Venus',   quality:'Fixed',    colour:'Green & Pink',  tagline:'The steadfast lover of beauty, comfort and loyalty.',             traits:['Reliable','Patient','Practical','Stubborn','Sensual','Determined'],         lucky:[2,6,9],  bestWith:['Virgo','Capricorn','Cancer'],  avoidWith:['Leo','Aquarius'] },
+  { name:'Gemini',     symbol:'♊', dates:'May 21 – Jun 20', element:'💨 Air',     planet:'Mercury', quality:'Mutable',  colour:'Yellow & White', tagline:'The curious communicator with a mind that never stops.',          traits:['Witty','Adaptable','Curious','Indecisive','Playful','Intellectual'],        lucky:[3,7,12], bestWith:['Libra','Aquarius','Aries'],   avoidWith:['Virgo','Pisces'] },
+  { name:'Cancer',     symbol:'♋', dates:'Jun 21 – Jul 22', element:'💧 Water',   planet:'Moon',    quality:'Cardinal', colour:'White & Silver', tagline:'The nurturing soul who protects everyone they love.',             traits:['Caring','Intuitive','Loyal','Moody','Empathetic','Protective'],            lucky:[2,7,11], bestWith:['Scorpio','Pisces','Taurus'],  avoidWith:['Aries','Libra'] },
+  { name:'Leo',        symbol:'♌', dates:'Jul 23 – Aug 22', element:'🔥 Fire',    planet:'Sun',     quality:'Fixed',    colour:'Gold & Orange',  tagline:'The radiant ruler born to shine and inspire.',                   traits:['Charismatic','Generous','Confident','Dramatic','Loyal','Creative'],        lucky:[1,3,10], bestWith:['Aries','Sagittarius','Libra'], avoidWith:['Taurus','Scorpio'] },
+  { name:'Virgo',      symbol:'♍', dates:'Aug 23 – Sep 22', element:'🌍 Earth',   planet:'Mercury', quality:'Mutable',  colour:'Navy & White',   tagline:'The detail-oriented perfectionist who serves with quiet strength.',traits:['Analytical','Kind','Hardworking','Critical','Practical','Modest'],         lucky:[5,14,23],bestWith:['Taurus','Capricorn','Cancer'], avoidWith:['Gemini','Sagittarius'] },
+  { name:'Libra',      symbol:'♎', dates:'Sep 23 – Oct 22', element:'💨 Air',     planet:'Venus',   quality:'Cardinal', colour:'Pink & Blue',    tagline:'The elegant diplomat who seeks harmony and beauty in all things.', traits:['Charming','Fair','Social','Indecisive','Romantic','Diplomatic'],           lucky:[4,6,13], bestWith:['Gemini','Aquarius','Leo'],    avoidWith:['Cancer','Capricorn'] },
+  { name:'Scorpio',    symbol:'♏', dates:'Oct 23 – Nov 21', element:'💧 Water',   planet:'Pluto',   quality:'Fixed',    colour:'Deep Red & Black',tagline:'The intense and magnetic soul who sees beneath the surface.',      traits:['Passionate','Resourceful','Brave','Secretive','Magnetic','Determined'],    lucky:[8,11,18],bestWith:['Cancer','Pisces','Capricorn'], avoidWith:['Leo','Aquarius'] },
+  { name:'Sagittarius',symbol:'♐', dates:'Nov 22 – Dec 21', element:'🔥 Fire',    planet:'Jupiter', quality:'Mutable',  colour:'Purple & Blue',  tagline:'The free-spirited archer who seeks truth, adventure and wisdom.',  traits:['Optimistic','Adventurous','Honest','Restless','Philosophical','Generous'],  lucky:[3,7,9],  bestWith:['Aries','Leo','Aquarius'],     avoidWith:['Virgo','Pisces'] },
+  { name:'Capricorn',  symbol:'♑', dates:'Dec 22 – Jan 19', element:'🌍 Earth',   planet:'Saturn',  quality:'Cardinal', colour:'Brown & Dark Green',tagline:'The ambitious mountain goat who climbs steadily toward the top.', traits:['Disciplined','Responsible','Patient','Pessimistic','Ambitious','Practical'],lucky:[4,8,13], bestWith:['Taurus','Virgo','Scorpio'],   avoidWith:['Aries','Libra'] },
+  { name:'Aquarius',   symbol:'♒', dates:'Jan 20 – Feb 18', element:'💨 Air',     planet:'Uranus',  quality:'Fixed',    colour:'Blue & Silver',  tagline:'The visionary rebel who dreams of a better world for everyone.',   traits:['Independent','Original','Humanitarian','Aloof','Inventive','Idealistic'],  lucky:[4,7,11], bestWith:['Gemini','Libra','Sagittarius'], avoidWith:['Taurus','Scorpio'] },
+  { name:'Pisces',     symbol:'♓', dates:'Feb 19 – Mar 20', element:'💧 Water',   planet:'Neptune', quality:'Mutable',  colour:'Sea Green & Lavender',tagline:'The compassionate dreamer who swims between fantasy and reality.', traits:['Compassionate','Artistic','Intuitive','Escapist','Gentle','Wise'],         lucky:[3,9,12], bestWith:['Cancer','Scorpio','Capricorn'], avoidWith:['Gemini','Sagittarius'] }
+];
+
+// ── CHINESE ZODIAC DATA ──
+var CHINESE = [
+  { name:'Rat',     emoji:'🐀', element:'Water', yinYang:'Yang', desc:'Clever, quick-witted and resourceful. Rats are charming and sociable with a natural ability to adapt to any situation.',                years:'1924,1936,1948,1960,1972,1984,1996,2008,2020', match:'Dragon, Monkey, Ox' },
+  { name:'Ox',      emoji:'🐂', element:'Water', yinYang:'Yin',  desc:'Diligent, dependable and strong. Oxen are known for their patience, honesty and tireless work ethic.',                                  years:'1925,1937,1949,1961,1973,1985,1997,2009,2021', match:'Rat, Snake, Rooster' },
+  { name:'Tiger',   emoji:'🐅', element:'Wood',  yinYang:'Yang', desc:'Brave, confident and unpredictable. Tigers are natural leaders with fierce determination and magnetic charisma.',                       years:'1926,1938,1950,1962,1974,1986,1998,2010,2022', match:'Horse, Dog, Pig' },
+  { name:'Rabbit',  emoji:'🐇', element:'Wood',  yinYang:'Yin',  desc:'Gentle, elegant and compassionate. Rabbits are tactful, kind and bring good luck wherever they go.',                                    years:'1927,1939,1951,1963,1975,1987,1999,2011,2023', match:'Goat, Pig, Dog' },
+  { name:'Dragon',  emoji:'🐉', element:'Earth', yinYang:'Yang', desc:'Energetic, fearless and charismatic. Dragons are the most powerful sign — ambitious visionaries who inspire everyone around them.',      years:'1928,1940,1952,1964,1976,1988,2000,2012,2024', match:'Rat, Monkey, Rooster' },
+  { name:'Snake',   emoji:'🐍', element:'Fire',  yinYang:'Yin',  desc:'Wise, intuitive and sophisticated. Snakes are deep thinkers with great insight, elegance and a mysterious allure.',                     years:'1929,1941,1953,1965,1977,1989,2001,2013,2025', match:'Ox, Rooster, Monkey' },
+  { name:'Horse',   emoji:'🐎', element:'Fire',  yinYang:'Yang', desc:'Energetic, independent and free-spirited. Horses are adventurous souls who crave freedom and thrive under pressure.',                   years:'1930,1942,1954,1966,1978,1990,2002,2014,2026', match:'Tiger, Goat, Dog' },
+  { name:'Goat',    emoji:'🐐', element:'Earth', yinYang:'Yin',  desc:'Creative, gentle and empathetic. Goats are artistic and peace-loving with a deep appreciation for beauty and harmony.',                  years:'1931,1943,1955,1967,1979,1991,2003,2015,2027', match:'Rabbit, Horse, Pig' },
+  { name:'Monkey',  emoji:'🐒', element:'Metal', yinYang:'Yang', desc:'Clever, mischievous and versatile. Monkeys are witty problem-solvers full of curiosity and a playful sense of humour.',                 years:'1932,1944,1956,1968,1980,1992,2004,2016,2028', match:'Rat, Dragon, Snake' },
+  { name:'Rooster', emoji:'🐓', element:'Metal', yinYang:'Yin',  desc:'Observant, hardworking and courageous. Roosters are punctual perfectionists who are honest and deeply loyal to those they love.',        years:'1933,1945,1957,1969,1981,1993,2005,2017,2029', match:'Ox, Dragon, Snake' },
+  { name:'Dog',     emoji:'🐕', element:'Earth', yinYang:'Yang', desc:'Loyal, honest and kind. Dogs are the most faithful of all signs — protective, responsible and always ready to fight for justice.',       years:'1934,1946,1958,1970,1982,1994,2006,2018,2030', match:'Tiger, Rabbit, Horse' },
+  { name:'Pig',     emoji:'🐷', element:'Water', yinYang:'Yin',  desc:'Generous, diligent and compassionate. Pigs are warm-hearted, sincere and have an incredible capacity for love and forgiveness.',        years:'1935,1947,1959,1971,1983,1995,2007,2019,2031', match:'Tiger, Rabbit, Goat' }
+];
+
+function getWestern(month, day) {
+  // Each entry: [startMonth, startDay, endMonth, endDay, index]
+  var ranges = [
+    [3,21,  4,19,  0],  // Aries
+    [4,20,  5,20,  1],  // Taurus
+    [5,21,  6,20,  2],  // Gemini
+    [6,21,  7,22,  3],  // Cancer
+    [7,23,  8,22,  4],  // Leo
+    [8,23,  9,22,  5],  // Virgo
+    [9,23, 10,22,  6],  // Libra
+    [10,23,11,21,  7],  // Scorpio
+    [11,22,12,21,  8],  // Sagittarius
+    [12,22,12,31,  9],  // Capricorn (Dec part)
+    [1,1,  1,19,  9],   // Capricorn (Jan part)
+    [1,20, 2,18,  10],  // Aquarius
+    [2,19, 3,20,  11]   // Pisces
+  ];
+  for (var i = 0; i < ranges.length; i++) {
+    var r = ranges[i];
+    var sm=r[0],sd=r[1],em=r[2],ed=r[3],idx=r[4];
+    if (sm === em) {
+      if (month === sm && day >= sd && day <= ed) return WESTERN[idx];
+    } else {
+      if ((month === sm && day >= sd) || (month === em && day <= ed)) return WESTERN[idx];
+    }
+  }
+  return WESTERN[9]; // fallback Capricorn
+}
+
+function getChinese(year) {
+  return CHINESE[(year - 1900) % 12];
+}
+
+function calculate() {
+  var d = getVal('dobDay'), m = getVal('dobMonth'), y = getVal('dobYear');
+  var w = getWestern(m, d);
+  var c = getChinese(y);
+
+  // Western
+  set('wSymbol', w.symbol);
+  set('wName', w.name);
+  set('wDates', w.dates);
+  set('wTagline', w.tagline);
+  set('wElement', w.element);
+  set('wPlanet', w.planet);
+  set('wQuality', w.quality);
+  set('wColour', w.colour);
+
+  // Traits
+  var traitsEl = document.getElementById('wTraits');
+  traitsEl.innerHTML = '';
+  w.traits.forEach(function(t) {
+    var span = document.createElement('span');
+    span.className = 'trait-chip';
+    span.textContent = t;
+    traitsEl.appendChild(span);
+  });
+
+  // Lucky numbers
+  var luckyEl = document.getElementById('wLucky');
+  luckyEl.innerHTML = '';
+  w.lucky.forEach(function(n) {
+    var div = document.createElement('div');
+    div.className = 'lucky-num';
+    div.textContent = n;
+    luckyEl.appendChild(div);
+  });
+
+  // Compatibility
+  var compatEl = document.getElementById('wCompat');
+  compatEl.innerHTML = '';
+  w.bestWith.forEach(function(s) {
+    var span = document.createElement('span');
+    span.className = 'compat-chip best';
+    span.textContent = '✓ ' + s;
+    compatEl.appendChild(span);
+  });
+  w.avoidWith.forEach(function(s) {
+    var span = document.createElement('span');
+    span.className = 'compat-chip avoid';
+    span.textContent = '✗ ' + s;
+    compatEl.appendChild(span);
+  });
+
+  // Chinese
+  set('cAnimal', c.emoji);
+  set('cName', c.name);
+  set('cDesc', c.desc);
+  set('cElement', c.element);
+  set('cYinYang', c.yinYang);
+  set('cYears', c.years);
+  set('cMatch', c.match);
+
+  document.getElementById('results').className = 'results show';
+  setTimeout(function(){ document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'}); }, 50);
+}
+
+function copyResults() {
+  var w = getWestern(getVal('dobMonth'), getVal('dobDay'));
+  var c = getChinese(getVal('dobYear'));
+  var text = [
+    'MY ZODIAC RESULTS',
+    '-----------------',
+    'Western Zodiac: ' + w.symbol + ' ' + w.name,
+    'Dates: ' + w.dates,
+    'Element: ' + w.element,
+    'Ruling Planet: ' + w.planet,
+    'Traits: ' + w.traits.join(', '),
+    'Lucky Numbers: ' + w.lucky.join(', '),
+    'Best Matches: ' + w.bestWith.join(', '),
+    '',
+    'Chinese Zodiac: ' + c.emoji + ' ' + c.name,
+    'Element: ' + c.element,
+    'Yin/Yang: ' + c.yinYang,
+    'Best Match: ' + c.match,
+    '',
+    'Calculated at allthetools.com'
+  ].join('\n');
+
+  var btn = document.getElementById('copyBtn');
+  var lbl = document.getElementById('copyLabel');
+  function onSuccess() {
+    btn.className='copy-btn copied'; lbl.textContent='\u2713 Copied!';
+    setTimeout(function(){btn.className='copy-btn';lbl.textContent='Copy My Zodiac Results';},2500);
+  }
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(text).then(onSuccess).catch(function(){fallback(text,onSuccess);});
+  } else { fallback(text,onSuccess); }
+}
+
+function fallback(text,cb){
+  var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');cb();}catch(e){}
+  document.body.removeChild(ta);
+}
+
+document.addEventListener('keydown',function(e){if(e.key==='Enter')calculate();});
+</script>
+</body>
+</html>
