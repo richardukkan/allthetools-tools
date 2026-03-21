@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Formatter – Format, Validate & Beautify JSON</title>
+<meta name="description" content="Free online JSON formatter. Paste your JSON to instantly format, validate, beautify or minify it. Highlights errors and shows a clean tree view.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1117;
+  --bg: #f0f2f8;
+  --card: #ffffff;
+  --warm: #e8ebf4;
+  --blue: #1a56c4;
+  --blue-light: #e8edf7;
+  --border: rgba(26,86,196,0.16);
+  --muted: #5a6278;
+  --green: #1a7a3a;
+  --red: #c0392b;
+  --orange: #c87020;
+  --purple: #7030a0;
+  --teal: #0a7870;
+  --success-bg: #eafaf0;
+  --error-bg: #fdecea;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+.wrapper { max-width: 900px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--blue); opacity:0.4; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(30px, 6vw, 52px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--blue); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 32px; box-shadow: 0 2px 30px rgba(0,0,0,0.05); }
+@media(max-width:520px){ .card { padding: 20px 14px; } }
+
+/* Action buttons row */
+.actions-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.act-btn {
+  padding: 9px 18px; border: 1.5px solid var(--border);
+  border-radius: 10px; background: var(--warm);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--muted); cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.act-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+.act-btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+.act-btn.primary:hover { background: #1e2430; }
+.act-btn.danger { background: transparent; border-color: rgba(192,57,43,0.3); color: var(--red); }
+.act-btn.danger:hover { background: var(--error-bg); border-color: var(--red); }
+
+/* Indent selector */
+.indent-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.indent-label { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.indent-btns { display: flex; gap: 6px; }
+.ind-btn { padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--warm); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.ind-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* Input area */
+.input-section { margin-bottom: 16px; }
+.field-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+textarea {
+  width: 100%; min-height: 200px; padding: 16px;
+  background: #1e2230; border: 1.5px solid rgba(255,255,255,0.06);
+  border-radius: 12px; font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; line-height: 1.7; color: #e0e8ff;
+  outline: none; resize: vertical; transition: border-color 0.2s;
+  caret-color: #7eb8f7;
+}
+textarea::placeholder { color: rgba(255,255,255,0.2); }
+textarea:focus { border-color: rgba(26,86,196,0.5); }
+
+/* Status bar */
+.status-bar {
+  display: none; padding: 10px 16px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.status-bar.valid { background: var(--success-bg); color: var(--green); border: 1px solid rgba(26,122,58,0.2); }
+.status-bar.invalid { background: var(--error-bg); color: var(--red); border: 1px solid rgba(192,57,43,0.2); }
+.status-bar.hidden { display: none !important; }
+
+/* Output area */
+.output-section { display: none; }
+.output-section.show { display: block; animation: fadeUp 0.3s ease both; }
+
+.output-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+.output-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.output-actions { display: flex; gap: 6px; }
+.out-btn { padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--warm); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.out-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+.out-btn.copied { border-color: var(--green); color: var(--green); background: var(--success-bg); }
+
+/* JSON output display */
+.json-output {
+  background: #1e2230; border-radius: 12px; padding: 20px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  line-height: 1.8; overflow-x: auto; border: 1.5px solid rgba(255,255,255,0.06);
+  max-height: 500px; overflow-y: auto;
+}
+
+/* JSON syntax colors */
+.j-key    { color: #7eb8f7; }       /* blue — keys */
+.j-str    { color: #98e06a; }       /* green — string values */
+.j-num    { color: #f0c060; }       /* yellow — numbers */
+.j-bool   { color: #ff8c60; }       /* orange — booleans */
+.j-null   { color: #c080d0; }       /* purple — null */
+.j-brace  { color: #e0e8ff; }       /* white — braces */
+.j-colon  { color: rgba(255,255,255,0.4); } /* muted — colons/commas */
+
+/* Stats row */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 16px; }
+@media(max-width:500px){ .stats-row { grid-template-columns: 1fr 1fr; } }
+.stat-box { background: var(--warm); border-radius: 12px; padding: 14px 12px; text-align: center; border: 1px solid var(--border); }
+.stat-val { display: block; font-size: clamp(18px,3.5vw,24px); font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+.divider { height: 1px; background: linear-gradient(90deg,transparent,rgba(26,86,196,0.15),transparent); margin: 24px 0; }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #a0a8c0; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Free Developer Tool</div>
+    <h1>JSON <em>Formatter</em></h1>
+    <p class="subtitle">Paste your JSON to instantly format, validate, beautify or minify it.</p>
+  </header>
+
+  <div class="card">
+
+    <!-- Actions -->
+    <div class="actions-row">
+      <button class="act-btn primary" onclick="formatJSON()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Format / Beautify
+      </button>
+      <button class="act-btn" onclick="minifyJSON()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 6 2 12 8 18"/><polyline points="16 6 22 12 16 18"/></svg>
+        Minify
+      </button>
+      <button class="act-btn" onclick="validateOnly()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Validate
+      </button>
+      <button class="act-btn" onclick="loadSample()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Load Sample
+      </button>
+      <button class="act-btn danger" onclick="clearAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        Clear
+      </button>
+    </div>
+
+    <!-- Indent -->
+    <div class="indent-row">
+      <span class="indent-label">Indent</span>
+      <div class="indent-btns">
+        <button class="ind-btn" id="ind2" onclick="setIndent(2)">2 spaces</button>
+        <button class="ind-btn active" id="ind4" onclick="setIndent(4)">4 spaces</button>
+        <button class="ind-btn" id="indt" onclick="setIndent('tab')">Tab</button>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-section">
+      <span class="field-label">Paste Your JSON</span>
+      <textarea id="jsonInput" placeholder='Paste your JSON here...&#10;&#10;{"name": "John", "age": 30, "city": "New York"}' spellcheck="false" oninput="onInputChange()"></textarea>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar hidden" id="statusBar"></div>
+
+    <!-- Output -->
+    <div class="output-section" id="outputSection">
+      <div class="divider"></div>
+      <div class="output-header">
+        <span class="output-label" id="outputLabel">Formatted JSON</span>
+        <div class="output-actions">
+          <button class="out-btn" id="copyBtn" onclick="copyOutput()">Copy</button>
+          <button class="out-btn" onclick="downloadJSON()">Download</button>
+        </div>
+      </div>
+      <div class="json-output" id="jsonOutput"></div>
+
+      <div class="stats-row">
+        <div class="stat-box"><span class="stat-val" id="statSize">—</span><span class="stat-lbl">Size</span></div>
+        <div class="stat-box"><span class="stat-val" id="statLines">—</span><span class="stat-lbl">Lines</span></div>
+        <div class="stat-box"><span class="stat-val" id="statKeys">—</span><span class="stat-lbl">Keys</span></div>
+        <div class="stat-box"><span class="stat-val" id="statDepth">—</span><span class="stat-lbl">Depth</span></div>
+      </div>
+    </div>
+
+  </div>
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var indentVal = 4;
+var lastFormatted = '';
+var isMinified = false;
+
+function setIndent(v) {
+  indentVal = v;
+  document.getElementById('ind2').className = 'ind-btn' + (v===2?' active':'');
+  document.getElementById('ind4').className = 'ind-btn' + (v===4?' active':'');
+  document.getElementById('indt').className = 'ind-btn' + (v==='tab'?' active':'');
+  // Re-format if already formatted
+  if (lastFormatted && !isMinified) formatJSON();
+}
+
+function onInputChange() {
+  // Hide output and status on new input
+  var statusBar = document.getElementById('statusBar');
+  statusBar.className = 'status-bar hidden';
+  document.getElementById('outputSection').className = 'output-section';
+  lastFormatted = '';
+}
+
+function parseInput() {
+  var raw = document.getElementById('jsonInput').value.trim();
+  if (!raw) return { ok: false, error: 'Please paste some JSON first.' };
+  try {
+    var parsed = JSON.parse(raw);
+    return { ok: true, parsed: parsed, raw: raw };
+  } catch(e) {
+    return { ok: false, error: e.message };
+  }
+}
+
+function showStatus(msg, isValid) {
+  var bar = document.getElementById('statusBar');
+  bar.className = 'status-bar ' + (isValid ? 'valid' : 'invalid');
+  bar.innerHTML = (isValid
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>')
+    + ' ' + msg;
+}
+
+function syntaxHighlight(json) {
+  json = json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+    var cls = 'j-num';
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = 'j-key';
+        match = match.replace(/:$/, '');
+        return '<span class="' + cls + '">' + match + '</span><span class="j-colon">:</span>';
+      } else { cls = 'j-str'; }
+    } else if (/true|false/.test(match)) { cls = 'j-bool';
+    } else if (/null/.test(match)) { cls = 'j-null'; }
+    return '<span class="' + cls + '">' + match + '</span>';
+  }).replace(/([{}\[\]])/g, '<span class="j-brace">$1</span>')
+    .replace(/,$/mg, '<span class="j-colon">,</span>');
+}
+
+function countKeys(obj) {
+  var count = 0;
+  function walk(o) {
+    if (o && typeof o === 'object') {
+      if (Array.isArray(o)) { o.forEach(walk); }
+      else { Object.keys(o).forEach(function(k){ count++; walk(o[k]); }); }
+    }
+  }
+  walk(obj);
+  return count;
+}
+
+function getDepth(obj) {
+  if (typeof obj !== 'object' || obj === null) return 0;
+  var depths = Object.values(obj).map(getDepth);
+  return 1 + (depths.length ? Math.max.apply(null, depths) : 0);
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  return (bytes/1024).toFixed(1) + ' KB';
+}
+
+function renderOutput(formatted, label) {
+  isMinified = label === 'Minified JSON';
+  lastFormatted = formatted;
+  document.getElementById('outputLabel').textContent = label;
+  document.getElementById('jsonOutput').innerHTML = syntaxHighlight(formatted);
+  document.getElementById('outputSection').className = 'output-section show';
+
+  // Stats
+  var lines = formatted.split('\n').length;
+  var size = new Blob([formatted]).size;
+  try {
+    var parsed = JSON.parse(formatted);
+    document.getElementById('statKeys').textContent = countKeys(parsed);
+    document.getElementById('statDepth').textContent = getDepth(parsed);
+  } catch(e) {
+    document.getElementById('statKeys').textContent = '—';
+    document.getElementById('statDepth').textContent = '—';
+  }
+  document.getElementById('statSize').textContent = formatSize(size);
+  document.getElementById('statLines').textContent = lines.toLocaleString();
+
+  setTimeout(function(){ document.getElementById('outputSection').scrollIntoView({behavior:'smooth',block:'nearest'}); }, 50);
+}
+
+function formatJSON() {
+  var res = parseInput();
+  if (!res.ok) { showStatus(res.error, false); document.getElementById('outputSection').className='output-section'; return; }
+  var indent = indentVal === 'tab' ? '\t' : indentVal;
+  var formatted = JSON.stringify(res.parsed, null, indent);
+  showStatus('Valid JSON — formatted successfully!', true);
+  renderOutput(formatted, 'Formatted JSON');
+}
+
+function minifyJSON() {
+  var res = parseInput();
+  if (!res.ok) { showStatus(res.error, false); document.getElementById('outputSection').className='output-section'; return; }
+  var minified = JSON.stringify(res.parsed);
+  showStatus('Valid JSON — minified successfully!', true);
+  renderOutput(minified, 'Minified JSON');
+}
+
+function validateOnly() {
+  var res = parseInput();
+  showStatus(res.ok ? '✓ Valid JSON — no errors found!' : res.error, res.ok);
+  if (!res.ok) document.getElementById('outputSection').className = 'output-section';
+}
+
+function clearAll() {
+  document.getElementById('jsonInput').value = '';
+  document.getElementById('statusBar').className = 'status-bar hidden';
+  document.getElementById('outputSection').className = 'output-section';
+  lastFormatted = '';
+}
+
+function loadSample() {
+  var sample = {
+    "user": {
+      "id": 1,
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "age": 28,
+      "isActive": true,
+      "address": {
+        "street": "123 Main Street",
+        "city": "New York",
+        "country": "USA",
+        "zip": "10001"
+      },
+      "tags": ["developer", "designer", "creator"],
+      "scores": [98, 87, 95, 100],
+      "metadata": null
+    }
+  };
+  document.getElementById('jsonInput').value = JSON.stringify(sample);
+  formatJSON();
+}
+
+function copyOutput() {
+  var btn = document.getElementById('copyBtn');
+  navigator.clipboard.writeText(lastFormatted).then(function() {
+    btn.textContent = '✓ Copied!';
+    btn.className = 'out-btn copied';
+    setTimeout(function(){ btn.textContent='Copy'; btn.className='out-btn'; }, 2000);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = lastFormatted; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    btn.textContent = '✓ Copied!';
+    setTimeout(function(){ btn.textContent='Copy'; }, 2000);
+  });
+}
+
+function downloadJSON() {
+  var blob = new Blob([lastFormatted], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = isMinified ? 'minified.json' : 'formatted.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// Keyboard shortcut: Ctrl+Enter to format
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault(); formatJSON();
+  }
+});
+</script>
+</body>
+</html>
