@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coin Flip – Flip a Virtual Coin Online</title>
+<meta name="description" content="Free online coin flip tool. Flip a virtual coin and get heads or tails instantly. Tracks your flip history and statistics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1610;
+  --bg: #faf7f0;
+  --warm: #f2ead8;
+  --card: #ffffff;
+  --gold: #c8920a;
+  --gold-light: #fff8e8;
+  --silver: #607888;
+  --silver-light: #f0f4f8;
+  --border: rgba(200,146,10,0.18);
+  --muted: #7a7060;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+.wrapper { max-width: 600px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--gold); opacity:0.4; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(36px, 8vw, 62px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; box-shadow: 0 2px 30px rgba(0,0,0,0.05); }
+@media(max-width:520px){ .card { padding: 24px 18px; } }
+
+/* ── COIN ── */
+.coin-scene {
+  display: flex; align-items: center; justify-content: center;
+  height: 200px; perspective: 1000px; margin-bottom: 36px;
+}
+
+.coin {
+  width: 160px; height: 160px;
+  position: relative; transform-style: preserve-3d;
+}
+
+.coin-side {
+  position: absolute; inset: 0; border-radius: 50%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+}
+
+/* Heads — gold */
+.heads-side {
+  background: radial-gradient(circle at 38% 32%, #fce87a, #d4a00e 55%, #a07008 100%);
+  border: 5px solid #b07800;
+  box-shadow: 0 8px 32px rgba(180,130,0,0.35), inset 0 2px 6px rgba(255,240,100,0.4);
+}
+
+/* Tails — silver */
+.tails-side {
+  background: radial-gradient(circle at 38% 32%, #dce8f0, #7a9aae 55%, #506070 100%);
+  border: 5px solid #607888;
+  box-shadow: 0 8px 32px rgba(80,100,120,0.3), inset 0 2px 6px rgba(255,255,255,0.3);
+  transform: rotateY(180deg);
+}
+
+.coin-svg { width: 52px; height: 52px; }
+.coin-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 0.22em; text-transform: uppercase;
+}
+.heads-side .coin-text { color: rgba(90,58,0,0.75); }
+.tails-side .coin-text { color: rgba(255,255,255,0.75); }
+
+/* Result display */
+.result-wrap {
+  text-align: center; min-height: 72px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  margin-bottom: 32px;
+}
+.result-label {
+  font-size: clamp(30px, 8vw, 48px); font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1;
+  opacity: 0; transition: none;
+}
+.result-label.heads { color: var(--gold); }
+.result-label.tails { color: var(--silver); }
+.result-label.visible { opacity: 1; }
+
+.result-hint {
+  font-size: 13px; color: var(--muted); margin-top: 6px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.result-hint.visible { opacity: 1; }
+
+/* Flip button */
+.flip-btn {
+  width: 100%; padding: 18px; background: var(--ink); color: #fff;
+  border: none; border-radius: 14px; font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: 0.02em;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  margin-bottom: 28px;
+}
+.flip-btn:hover { background: #2a2418; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+.flip-btn:active { transform: none; }
+
+/* Stats */
+.stats-section { display: none; }
+.stats-section.show { display: block; animation: fadeUp 0.4s ease both; }
+
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(200,146,10,0.2), transparent); margin-bottom: 24px; }
+.stats-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+@media(max-width:400px){ .stats-grid { grid-template-columns: 1fr 1fr; } }
+.stat-box { background: var(--warm); border-radius: 14px; padding: 16px 12px; text-align: center; border: 1px solid var(--border); }
+.stat-value { display: block; font-size: clamp(20px,5vw,28px); font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 4px; letter-spacing: -0.02em; }
+.stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+/* Progress bar */
+.progress-section { margin-bottom: 20px; }
+.progress-label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.progress-bg { height: 8px; background: var(--silver-light); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #e0a820); border-radius: 999px; transition: width 0.5s ease; width: 50%; }
+
+/* History */
+.history-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.history-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.chip { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.chip.heads { background: var(--gold-light); color: var(--gold); border: 1px solid rgba(200,146,10,0.2); }
+.chip.tails { background: var(--silver-light); color: var(--silver); border: 1px solid rgba(96,120,136,0.2); }
+
+.reset-btn { width: 100%; padding: 12px; background: transparent; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.reset-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #c0b090; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes popIn { from{opacity:0;transform:scale(0.6)} to{opacity:1;transform:scale(1)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Free Online Tool</div>
+    <h1>Flip a <em>Coin</em></h1>
+    <p class="subtitle">Heads or tails? Press the button and let fate decide.</p>
+  </header>
+
+  <div class="card">
+
+    <!-- Coin -->
+    <div class="coin-scene">
+      <div class="coin" id="coin">
+
+        <!-- HEADS side -->
+        <div class="coin-side heads-side">
+          <svg class="coin-svg" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Crown SVG -->
+            <path d="M8 38 L8 42 L44 42 L44 38 Z" fill="rgba(90,58,0,0.5)" rx="2"/>
+            <path d="M8 38 L12 20 L20 30 L26 14 L32 30 L40 20 L44 38 Z" fill="rgba(90,58,0,0.6)"/>
+            <circle cx="12" cy="20" r="3" fill="rgba(90,58,0,0.6)"/>
+            <circle cx="26" cy="14" r="3" fill="rgba(90,58,0,0.6)"/>
+            <circle cx="40" cy="20" r="3" fill="rgba(90,58,0,0.6)"/>
+          </svg>
+          <span class="coin-text">Heads</span>
+        </div>
+
+        <!-- TAILS side -->
+        <div class="coin-side tails-side">
+          <svg class="coin-svg" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Star SVG -->
+            <path d="M26 8 L29.5 19 L41 19 L31.5 25.5 L35 36.5 L26 30 L17 36.5 L20.5 25.5 L11 19 L22.5 19 Z" fill="rgba(255,255,255,0.65)"/>
+          </svg>
+          <span class="coin-text">Tails</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-wrap">
+      <div class="result-label" id="resultLabel">—</div>
+      <div class="result-hint" id="resultHint">Press Flip Coin to start</div>
+    </div>
+
+    <!-- Flip button -->
+    <button class="flip-btn" id="flipBtn" onclick="doFlip()">🪙 Flip Coin</button>
+
+    <!-- Stats -->
+    <div class="stats-section" id="statsSection">
+      <div class="divider"></div>
+      <div class="stats-title">Your Flip Statistics</div>
+
+      <div class="stats-grid">
+        <div class="stat-box"><span class="stat-value" id="sTotal">0</span><span class="stat-label">Total Flips</span></div>
+        <div class="stat-box"><span class="stat-value" id="sHeads" style="color:var(--gold)">0</span><span class="stat-label">Heads</span></div>
+        <div class="stat-box"><span class="stat-value" id="sTails" style="color:var(--silver)">0</span><span class="stat-label">Tails</span></div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-label-row">
+          <span id="pctHeads">Heads 50%</span>
+          <span id="pctTails">Tails 50%</span>
+        </div>
+        <div class="progress-bg">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="history-title">Recent Flips</div>
+      <div class="history-row" id="historyRow"></div>
+
+      <button class="reset-btn" onclick="doReset()">↺ Reset Statistics</button>
+    </div>
+
+  </div>
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var flipping = false;
+var totalFlips = 0;
+var totalHeads = 0;
+var totalTails = 0;
+var flipHistory = [];
+
+// SVG keyframes injected dynamically per flip so animation always restarts
+function doFlip() {
+  if (flipping) return;
+  flipping = true;
+  document.getElementById('flipBtn').disabled = true;
+
+  var result = Math.random() < 0.5 ? 'heads' : 'tails';
+
+  // Hide result while flipping
+  var lbl = document.getElementById('resultLabel');
+  var hint = document.getElementById('resultHint');
+  lbl.className = 'result-label';
+  lbl.textContent = '—';
+  hint.className = 'result-hint';
+
+  // Apply animation via style tag — always fresh keyframes
+  var styleId = 'flipStyle';
+  var old = document.getElementById(styleId);
+  if (old) old.remove();
+
+  // heads = final rotateY 0 (or 720), tails = final rotateY 180 (or 900)
+  var finalDeg = result === 'heads' ? 720 : 900;
+
+  var style = document.createElement('style');
+  style.id = styleId;
+  style.textContent = '@keyframes flipAnim { 0%{transform:rotateY(0deg) translateY(0)} 30%{transform:rotateY('+Math.round(finalDeg*0.4)+'deg) translateY(-40px)} 60%{transform:rotateY('+Math.round(finalDeg*0.75)+'deg) translateY(-20px)} 85%{transform:rotateY('+Math.round(finalDeg*0.95)+'deg) translateY(-5px)} 100%{transform:rotateY('+finalDeg+'deg) translateY(0)} } #coin { animation: flipAnim 1.0s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }';
+  document.head.appendChild(style);
+
+  setTimeout(function() {
+    // Remove animation, set final position manually
+    var s = document.getElementById(styleId);
+    if (s) s.remove();
+
+    var coin = document.getElementById('coin');
+    coin.style.transform = 'rotateY(' + finalDeg + 'deg)';
+
+    // Show result
+    lbl.className = 'result-label ' + result + ' visible';
+    lbl.textContent = result === 'heads' ? 'Heads!' : 'Tails!';
+    hint.textContent = 'Press Flip Coin to flip again';
+    hint.className = 'result-hint visible';
+
+    // Update stats
+    totalFlips++;
+    if (result === 'heads') totalHeads++; else totalTails++;
+    flipHistory.unshift(result);
+    if (flipHistory.length > 40) flipHistory.pop();
+    renderStats();
+
+    // Reset coin transform for next flip
+    setTimeout(function() {
+      coin.style.transform = '';
+      flipping = false;
+      document.getElementById('flipBtn').disabled = false;
+    }, 100);
+
+  }, 1050);
+}
+
+function renderStats() {
+  document.getElementById('sTotal').textContent = totalFlips;
+  document.getElementById('sHeads').textContent = totalHeads;
+  document.getElementById('sTails').textContent = totalTails;
+
+  var hp = totalFlips > 0 ? Math.round((totalHeads/totalFlips)*100) : 50;
+  var tp = 100 - hp;
+  document.getElementById('pctHeads').textContent = 'Heads ' + hp + '%';
+  document.getElementById('pctTails').textContent = 'Tails ' + tp + '%';
+  document.getElementById('progressFill').style.width = hp + '%';
+
+  var html = '';
+  flipHistory.slice(0, 30).forEach(function(r, i) {
+    html += '<span class="chip ' + r + '" style="animation:popIn 0.2s ' + (i*0.03) + 's both">' + (r === 'heads' ? 'H' : 'T') + '</span>';
+  });
+  document.getElementById('historyRow').innerHTML = html;
+  document.getElementById('statsSection').className = 'stats-section show';
+}
+
+function doReset() {
+  totalFlips = 0; totalHeads = 0; totalTails = 0; flipHistory = [];
+  document.getElementById('statsSection').className = 'stats-section';
+  document.getElementById('resultLabel').className = 'result-label';
+  document.getElementById('resultLabel').textContent = '—';
+  document.getElementById('resultHint').className = 'result-hint';
+  document.getElementById('coin').style.transform = '';
+  var s = document.getElementById('flipStyle');
+  if (s) s.remove();
+  flipping = false;
+  document.getElementById('flipBtn').disabled = false;
+}
+
+document.addEventListener('keydown', function(e) {
+  if ((e.key === ' ' || e.key === 'Enter') && !flipping) {
+    e.preventDefault(); doFlip();
+  }
+});
+</script>
+</body>
+</html>
