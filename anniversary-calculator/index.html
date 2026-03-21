@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anniversary Calculator – Days Since & Next Anniversary</title>
+<meta name="description" content="Free anniversary calculator. Find out how long you've been together, days until your next anniversary, and every milestone in between.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1418;
+  --bg: #fdf8fa;
+  --warm: #f7f0f3;
+  --card: #ffffff;
+  --rose: #c0395a;
+  --rose-light: #fdeef3;
+  --rose-mid: #e8607a;
+  --border: rgba(192,57,90,0.18);
+  --muted: #7a6870;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+
+.wrapper { max-width: 760px; margin: 0 auto; padding: 44px 20px 80px; }
+
+/* Header */
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--rose); margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--rose); opacity:0.4; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(34px, 7vw, 60px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--rose); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+/* Card */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 40px;
+  box-shadow: 0 2px 30px rgba(0,0,0,0.05);
+}
+@media(max-width:520px){ .card { padding: 24px 18px; } }
+
+.field-label {
+  display: block; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+
+/* Selects */
+.selects-row { display: grid; grid-template-columns: 1fr 1.6fr 1.4fr; gap: 8px; }
+
+@media(max-width:480px){
+  .selects-row { grid-template-columns: 1fr 1fr; }
+  .selects-row select:last-child { grid-column: 1 / -1; }
+  select { font-size: 15px; padding: 13px 28px 13px 12px; }
+}
+
+select {
+  width: 100%; padding: 12px 28px 12px 12px;
+  background: var(--warm); border: 1.5px solid var(--border);
+  border-radius: 10px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500; color: var(--ink);
+  outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c0395a' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+select:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(192,57,90,0.1); }
+
+.section { margin-bottom: 24px; }
+
+/* Occasion type */
+.occasion-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  margin-bottom: 24px;
+}
+@media(max-width:460px){ .occasion-grid { grid-template-columns: 1fr 1fr; } }
+
+.occ-btn {
+  padding: 10px 8px; border: 1.5px solid var(--border);
+  border-radius: 10px; background: var(--warm);
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+  color: var(--muted); cursor: pointer; transition: all 0.2s;
+  text-align: center; line-height: 1.4;
+}
+.occ-btn.active {
+  border-color: var(--rose); background: var(--rose-light);
+  color: var(--rose); font-weight: 600;
+}
+.occ-btn .occ-icon { display: block; font-size: 18px; margin-bottom: 3px; }
+
+/* Calc button */
+.calc-btn {
+  width: 100%; padding: 16px; background: var(--ink); color: #fff;
+  border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+.calc-btn:hover { background: #2e2228; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.16); }
+.calc-btn:active { transform: none; }
+
+/* Error */
+.error-msg {
+  display: none; margin-top: 10px; padding: 10px 14px;
+  background: rgba(192,57,90,0.07); border-radius: 8px;
+  color: var(--rose); font-size: 13px; text-align: center;
+}
+.error-msg.show { display: block; }
+
+/* Results */
+.results { display: none; }
+.results.show { display: block; animation: fadeUp 0.5s ease both; }
+
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(192,57,90,0.2), transparent); margin: 32px 0; }
+
+/* Primary display */
+.primary-display { text-align: center; margin-bottom: 32px; }
+.primary-number {
+  display: block; font-family: 'DM Sans', sans-serif;
+  font-size: clamp(72px, 18vw, 120px); font-weight: 700;
+  line-height: 1; color: var(--ink); letter-spacing: -0.04em;
+}
+.primary-label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--rose); margin-top: 6px;
+}
+.primary-sub {
+  display: block; font-size: 14px; color: var(--muted);
+  margin-top: 8px; font-weight: 400;
+}
+
+/* Stats grid */
+.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
+@media(max-width:480px){ .stats-grid { grid-template-columns: 1fr 1fr; } }
+
+.stat-box {
+  background: var(--warm); border-radius: 14px; padding: 18px 12px;
+  text-align: center; border: 1px solid var(--border);
+}
+.stat-value {
+  display: block; font-size: clamp(18px, 4vw, 24px); font-weight: 700;
+  color: var(--ink); line-height: 1; margin-bottom: 5px; letter-spacing: -0.02em;
+}
+.stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+/* Info rows */
+.info-rows { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+.info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 20px; border-bottom: 1px solid rgba(192,57,90,0.07);
+}
+.info-row:last-child { border-bottom: none; }
+.info-row:hover { background: var(--rose-light); }
+.info-key { font-size: 13px; color: var(--muted); }
+.info-val { font-size: 14px; font-weight: 600; color: var(--ink); }
+.info-val.accent { color: var(--rose); }
+
+/* Milestones */
+.milestones-title {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+}
+.milestones-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+@media(max-width:400px){ .milestones-grid { grid-template-columns: 1fr; } }
+
+.milestone-box {
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: background 0.15s;
+}
+.milestone-box:hover { background: var(--rose-light); }
+.milestone-box.past { opacity: 0.55; }
+.milestone-box.next { border-color: var(--rose); background: var(--rose-light); }
+.milestone-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.milestone-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.milestone-date { font-size: 12px; font-weight: 600; color: var(--muted); text-align: right; }
+.milestone-date.upcoming { color: var(--rose); }
+
+/* Countdown box */
+.countdown-box {
+  background: var(--ink); border-radius: 14px; padding: 22px 24px;
+  text-align: center; margin-bottom: 16px; position: relative; overflow: hidden;
+}
+.countdown-box::after {
+  content: '💑'; position: absolute; font-size: 70px; right: 8px;
+  top: 50%; transform: translateY(-50%); opacity: 0.07; pointer-events: none;
+}
+.cd-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #f4a0b5; margin-bottom: 6px; }
+.cd-days { font-family: 'DM Sans', sans-serif; font-size: 48px; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -0.03em; }
+.cd-text { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 5px; }
+.cd-today { font-size: 20px; color: #f4a0b5; font-family: 'Playfair Display', serif; font-style: italic; }
+
+/* Copy button */
+.copy-btn {
+  width: 100%; padding: 13px 20px; background: transparent;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  color: var(--muted); cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+}
+.copy-btn:hover { border-color: var(--rose); color: var(--rose); background: var(--rose-light); }
+.copy-btn.copied { border-color: #4a9a6a; color: #4a9a6a; background: rgba(74,154,106,0.07); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #c0a8b0; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Free Online Tool</div>
+    <h1>Anniversary <em>Calculator</em></h1>
+    <p class="subtitle">Find out exactly how long you've been together — and when your next milestone is.</p>
+  </header>
+
+  <div class="card">
+
+    <!-- Occasion type -->
+    <div class="section">
+      <span class="field-label">What Are You Celebrating?</span>
+      <div class="occasion-grid">
+        <button class="occ-btn active" id="occ-wedding" onclick="setOccasion('wedding')"><span class="occ-icon">💍</span>Wedding</button>
+        <button class="occ-btn" id="occ-relationship" onclick="setOccasion('relationship')"><span class="occ-icon">❤️</span>Relationship</button>
+        <button class="occ-btn" id="occ-friendship" onclick="setOccasion('friendship')"><span class="occ-icon">🤝</span>Friendship</button>
+        <button class="occ-btn" id="occ-business" onclick="setOccasion('business')"><span class="occ-icon">💼</span>Business</button>
+        <button class="occ-btn" id="occ-sobriety" onclick="setOccasion('sobriety')"><span class="occ-icon">🌟</span>Sobriety</button>
+        <button class="occ-btn" id="occ-other" onclick="setOccasion('other')"><span class="occ-icon">🎉</span>Other</button>
+      </div>
+    </div>
+
+    <!-- Start date -->
+    <div class="section">
+      <span class="field-label" id="startLabel">Wedding / Start Date</span>
+      <div class="selects-row">
+        <select id="sDay"></select>
+        <select id="sMonth"></select>
+        <select id="sYear"></select>
+      </div>
+    </div>
+
+    <!-- As of date -->
+    <div class="section">
+      <span class="field-label">Calculate As Of</span>
+      <div class="selects-row">
+        <select id="tDay"></select>
+        <select id="tMonth"></select>
+        <select id="tYear"></select>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">Calculate Anniversary →</button>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Results -->
+    <div class="results" id="results">
+      <div class="divider"></div>
+
+      <div class="primary-display">
+        <span class="primary-number" id="primaryNum">—</span>
+        <span class="primary-label" id="primaryLabel">Years Together</span>
+        <span class="primary-sub" id="primarySub"></span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box"><span class="stat-value" id="statMonths">—</span><span class="stat-label">Months</span></div>
+        <div class="stat-box"><span class="stat-value" id="statWeeks">—</span><span class="stat-label">Weeks</span></div>
+        <div class="stat-box"><span class="stat-value" id="statDays">—</span><span class="stat-label">Days</span></div>
+        <div class="stat-box"><span class="stat-value" id="statHours">—</span><span class="stat-label">Hours</span></div>
+        <div class="stat-box"><span class="stat-value" id="statMins">—</span><span class="stat-label">Minutes</span></div>
+        <div class="stat-box"><span class="stat-value" id="statSecs">—</span><span class="stat-label">Seconds</span></div>
+      </div>
+
+      <div class="info-rows">
+        <div class="info-row"><span class="info-key">Start date (day of week)</span><span class="info-val accent" id="infoDayOfWeek">—</span></div>
+        <div class="info-row"><span class="info-key">Total days together</span><span class="info-val" id="infoTotalDays">—</span></div>
+        <div class="info-row"><span class="info-key">Current anniversary year</span><span class="info-val" id="infoAnnivYear">—</span></div>
+        <div class="info-row"><span class="info-key">Next anniversary date</span><span class="info-val" id="infoNextDate">—</span></div>
+        <div class="info-row"><span class="info-key">Next anniversary name</span><span class="info-val accent" id="infoNextName">—</span></div>
+      </div>
+
+      <!-- Countdown to next anniversary -->
+      <div class="countdown-box">
+        <div class="cd-label">Days Until Next Anniversary</div>
+        <div class="cd-days" id="cdDays">—</div>
+        <div class="cd-text" id="cdText"></div>
+      </div>
+
+      <!-- Milestones -->
+      <div class="milestones-title">🏅 Anniversary Milestones</div>
+      <div class="milestones-grid" id="milestonesGrid"></div>
+
+      <button class="copy-btn" id="copyBtn" onclick="copyResults()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span id="copyLabel">Copy Results</span>
+      </button>
+    </div>
+
+  </div>
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DAYS_OF_WEEK = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var occasion = 'wedding';
+
+var MILESTONES = [
+  { y:1, name:'Paper' }, { y:2, name:'Cotton' }, { y:3, name:'Leather' },
+  { y:4, name:'Fruit / Flowers' }, { y:5, name:'Wood' }, { y:6, name:'Candy / Iron' },
+  { y:7, name:'Wool / Copper' }, { y:8, name:'Pottery / Bronze' }, { y:9, name:'Pottery / Willow' },
+  { y:10, name:'Tin / Aluminium' }, { y:11, name:'Steel' }, { y:12, name:'Silk / Linen' },
+  { y:13, name:'Lace' }, { y:14, name:'Ivory' }, { y:15, name:'Crystal' },
+  { y:20, name:'China' }, { y:25, name:'Silver' }, { y:30, name:'Pearl' },
+  { y:35, name:'Coral' }, { y:40, name:'Ruby' }, { y:45, name:'Sapphire' },
+  { y:50, name:'Golden' }, { y:55, name:'Emerald' }, { y:60, name:'Diamond' },
+  { y:65, name:'Blue Sapphire' }, { y:70, name:'Platinum' }
+];
+
+var OCCASION_LABELS = {
+  wedding: 'Wedding / Start Date',
+  relationship: 'Relationship Start Date',
+  friendship: 'Friendship Start Date',
+  business: 'Business Start Date',
+  sobriety: 'Sobriety Start Date',
+  other: 'Start Date'
+};
+
+function setOccasion(o) {
+  occasion = o;
+  document.querySelectorAll('.occ-btn').forEach(function(b) { b.className = 'occ-btn'; });
+  document.getElementById('occ-' + o).className = 'occ-btn active';
+  document.getElementById('startLabel').textContent = OCCASION_LABELS[o];
+}
+
+function buildDay(id, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  for (var d = 1; d <= 31; d++) {
+    var o = document.createElement('option');
+    o.value = d; o.text = d < 10 ? '0' + d : '' + d;
+    if (d === sel) o.selected = true;
+    el.appendChild(o);
+  }
+}
+function buildMonth(id, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  for (var m = 0; m < 12; m++) {
+    var o = document.createElement('option');
+    o.value = m + 1; o.text = MONTHS[m];
+    if (m + 1 === sel) o.selected = true;
+    el.appendChild(o);
+  }
+}
+function buildYear(id, start, end, sel) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  for (var y = end; y >= start; y--) {
+    var o = document.createElement('option');
+    o.value = y; o.text = '' + y;
+    if (y === sel) o.selected = true;
+    el.appendChild(o);
+  }
+}
+
+var now = new Date();
+var cy = now.getFullYear(), cm = now.getMonth() + 1, cd = now.getDate();
+
+buildDay('sDay', 14); buildMonth('sMonth', 2); buildYear('sYear', 1920, cy, cy - 3);
+buildDay('tDay', cd); buildMonth('tMonth', cm); buildYear('tYear', cy - 5, cy + 5, cy);
+
+function getVal(id) { return parseInt(document.getElementById(id).value, 10); }
+function fmt(n) { return n.toLocaleString(); }
+function set(id, v) { document.getElementById(id).textContent = v; }
+
+function getMilestoneName(y) {
+  for (var i = 0; i < MILESTONES.length; i++) {
+    if (MILESTONES[i].y === y) return MILESTONES[i].name + ' Anniversary';
+  }
+  return y + (y === 1 ? 'st' : y === 2 ? 'nd' : y === 3 ? 'rd' : 'th') + ' Anniversary';
+}
+
+function getOrdinal(n) {
+  var s = ['th','st','nd','rd'];
+  var v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+
+function calculate() {
+  var errEl = document.getElementById('errorMsg');
+  var resEl = document.getElementById('results');
+  errEl.className = 'error-msg';
+  resEl.className = 'results';
+
+  var sD = getVal('sDay'), sM = getVal('sMonth'), sY = getVal('sYear');
+  var tD = getVal('tDay'), tM = getVal('tMonth'), tY = getVal('tYear');
+
+  var start = new Date(sY, sM - 1, sD);
+  var target = new Date(tY, tM - 1, tD);
+
+  if (start >= target) {
+    errEl.textContent = 'Start date must be before the target date.';
+    errEl.className = 'error-msg show'; return;
+  }
+
+  // Years, months, days
+  var years = tY - sY;
+  var months = tM - sM;
+  var days = tD - sD;
+  if (days < 0) { months--; days += new Date(tY, tM - 1, 0).getDate(); }
+  if (months < 0) { years--; months += 12; }
+
+  var MS = 86400000;
+  var totalDaysN = Math.floor((target - start) / MS);
+  var totalMonthsN = years * 12 + months;
+  var totalWeeksN = Math.floor(totalDaysN / 7);
+  var totalHoursN = totalDaysN * 24;
+  var totalMinsN = totalHoursN * 60;
+  var totalSecsN = totalMinsN * 60;
+
+  // Next anniversary
+  var nextAnniv = new Date(tY, sM - 1, sD);
+  if (nextAnniv <= target) nextAnniv = new Date(tY + 1, sM - 1, sD);
+  var daysUntil = Math.ceil((nextAnniv - target) / MS);
+  var nextAnnivYear = nextAnniv.getFullYear() - sY;
+  var nextAnnivName = getMilestoneName(nextAnnivYear);
+  var nextAnnivStr = MONTHS[nextAnniv.getMonth()] + ' ' + nextAnniv.getDate() + ', ' + nextAnniv.getFullYear();
+
+  // Update primary display
+  set('primaryNum', years);
+  var occLabel = occasion === 'sobriety' ? 'Years Sober' :
+                 occasion === 'friendship' ? 'Years of Friendship' :
+                 occasion === 'business' ? 'Years in Business' :
+                 occasion === 'other' ? 'Years' : 'Years Together';
+  set('primaryLabel', occLabel);
+  set('primarySub', months + ' months and ' + days + ' days');
+
+  set('statMonths', months);
+  set('statWeeks', fmt(totalWeeksN));
+  set('statDays', days);
+  set('statHours', fmt(totalHoursN));
+  set('statMins', fmt(totalMinsN));
+  set('statSecs', fmt(totalSecsN));
+
+  set('infoDayOfWeek', DAYS_OF_WEEK[start.getDay()]);
+  set('infoTotalDays', fmt(totalDaysN) + ' days');
+  set('infoAnnivYear', getOrdinal(years) + ' anniversary');
+  set('infoNextDate', nextAnnivStr);
+  set('infoNextName', nextAnnivName);
+
+  // Countdown
+  var cdDaysEl = document.getElementById('cdDays');
+  var cdTextEl = document.getElementById('cdText');
+  if (daysUntil === 0) {
+    cdDaysEl.innerHTML = '<span style="font-size:20px;font-family:Playfair Display,serif;font-style:italic;color:#f4a0b5">\uD83C\uDF89 Happy Anniversary!</span>';
+    cdTextEl.textContent = 'Today is your special day!';
+  } else {
+    cdDaysEl.textContent = daysUntil;
+    cdTextEl.textContent = 'days until your ' + nextAnnivName + ' \u2014 ' + nextAnnivStr;
+  }
+
+  // Milestones
+  var grid = document.getElementById('milestonesGrid');
+  grid.innerHTML = '';
+  var shown = 0;
+  var nextMilestoneYear = null;
+
+  // Find next milestone
+  for (var i = 0; i < MILESTONES.length; i++) {
+    if (MILESTONES[i].y > years) { nextMilestoneYear = MILESTONES[i].y; break; }
+  }
+
+  // Show past 3 + next 5
+  var toShow = [];
+  for (var i = 0; i < MILESTONES.length; i++) {
+    var m = MILESTONES[i];
+    if (m.y <= years) {
+      toShow.push({ m: m, past: true });
+    } else if (toShow.filter(function(x){ return !x.past; }).length < 5) {
+      toShow.push({ m: m, past: false });
+    }
+  }
+  // Keep only last 3 past + 5 future
+  var past = toShow.filter(function(x){ return x.past; }).slice(-3);
+  var future = toShow.filter(function(x){ return !x.past; }).slice(0, 5);
+  var display = past.concat(future);
+
+  display.forEach(function(item) {
+    var m = item.m;
+    var annivDate = new Date(sY + m.y, sM - 1, sD);
+    var dateStr = MONTHS[annivDate.getMonth()].substring(0,3) + ' ' + annivDate.getDate() + ', ' + annivDate.getFullYear();
+    var isNext = (m.y === nextMilestoneYear);
+    var box = document.createElement('div');
+    box.className = 'milestone-box' + (item.past ? ' past' : '') + (isNext ? ' next' : '');
+    box.innerHTML = '<div><div class="milestone-name">' + getOrdinal(m.y) + ' \u2014 ' + m.name + '</div><div class="milestone-sub">' + dateStr + '</div></div>' +
+      '<div class="milestone-date' + (isNext ? ' upcoming' : '') + '">' + (item.past ? '\u2713 Done' : (isNext ? '\u23F3 Next' : 'Upcoming')) + '</div>';
+    grid.appendChild(box);
+  });
+
+  resEl.className = 'results show';
+  setTimeout(function() { resEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 50);
+}
+
+function copyResults() {
+  var lines = [
+    'ANNIVERSARY CALCULATOR RESULTS',
+    '-------------------------------',
+    'Together since: ' + document.getElementById('infoDayOfWeek').textContent,
+    'Years: ' + document.getElementById('primaryNum').textContent,
+    'Plus: ' + document.getElementById('primarySub').textContent,
+    'Total days: ' + document.getElementById('infoTotalDays').textContent,
+    'Current milestone: ' + document.getElementById('infoAnnivYear').textContent,
+    'Next anniversary: ' + document.getElementById('infoNextDate').textContent,
+    'Next milestone name: ' + document.getElementById('infoNextName').textContent,
+    'Days until next anniversary: ' + document.getElementById('cdDays').textContent,
+    '',
+    'Calculated at allthetools.com'
+  ];
+  var text = lines.join('\n');
+  var btn = document.getElementById('copyBtn');
+  var lbl = document.getElementById('copyLabel');
+
+  function onSuccess() {
+    btn.className = 'copy-btn copied';
+    lbl.textContent = '\u2713 Copied!';
+    setTimeout(function() { btn.className = 'copy-btn'; lbl.textContent = 'Copy Results'; }, 2500);
+  }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(onSuccess).catch(function() { fallback(text, onSuccess); });
+  } else { fallback(text, onSuccess); }
+}
+
+function fallback(text, cb) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+document.addEventListener('keydown', function(e) { if (e.key === 'Enter') calculate(); });
+</script>
+</body>
+</html>
