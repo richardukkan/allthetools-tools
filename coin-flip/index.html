@@ -141,6 +141,16 @@ h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(-
 
 .footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #c0b090; }
 
+.sound-row { display: flex; justify-content: center; margin-bottom: 16px; }
+.sound-btn {
+  padding: 7px 16px; border: 1.5px solid var(--border); border-radius: 999px;
+  background: var(--warm); font-family: "DM Sans", sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+}
+.sound-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+.sound-btn.muted { color: #aaa; border-color: #ddd; }
+
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 @keyframes popIn { from{opacity:0;transform:scale(0.6)} to{opacity:1;transform:scale(1)} }
 </style>
@@ -194,6 +204,11 @@ h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(-
     <!-- Flip button -->
     <button class="flip-btn" id="flipBtn" onclick="doFlip()">🪙 Flip Coin</button>
 
+    <!-- Sound toggle -->
+    <div class="sound-row">
+      <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 Sound On</button>
+    </div>
+
     <!-- Stats -->
     <div class="stats-section" id="statsSection">
       <div class="divider"></div>
@@ -227,16 +242,70 @@ h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(-
 
 <script>
 var flipping = false;
+var soundOn = true;
 var totalFlips = 0;
 var totalHeads = 0;
 var totalTails = 0;
 var flipHistory = [];
 
 // SVG keyframes injected dynamically per flip so animation always restarts
+function toggleSound() {
+  soundOn = !soundOn;
+  var btn = document.getElementById('soundBtn');
+  btn.textContent = soundOn ? '🔊 Sound On' : '🔇 Sound Off';
+  btn.className = 'sound-btn' + (soundOn ? '' : ' muted');
+}
+
+function playCoinSound() {
+  if (!soundOn) return;
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTick(time, freq, dur) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, time);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, time + dur);
+      gain.gain.setValueAtTime(0.35, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+      osc.start(time);
+      osc.stop(time + dur);
+    }
+
+    // Rapid metallic ticks that slow down — like a spinning coin
+    var now = ctx.currentTime;
+    var intervals = [0, 0.07, 0.13, 0.18, 0.23, 0.29, 0.36, 0.44, 0.53, 0.63, 0.75, 0.88, 1.0];
+    var freqs    = [900, 820, 880, 760, 840, 800, 860, 780, 820, 760, 800, 740, 680];
+    for (var i = 0; i < intervals.length; i++) {
+      playTick(now + intervals[i], freqs[i], 0.055);
+    }
+
+    // Final landing thud
+    var thud = ctx.createOscillator();
+    var thudGain = ctx.createGain();
+    thud.connect(thudGain);
+    thudGain.connect(ctx.destination);
+    thud.type = 'triangle';
+    thud.frequency.setValueAtTime(220, now + 1.05);
+    thud.frequency.exponentialRampToValueAtTime(80, now + 1.25);
+    thudGain.gain.setValueAtTime(0.5, now + 1.05);
+    thudGain.gain.exponentialRampToValueAtTime(0.001, now + 1.25);
+    thud.start(now + 1.05);
+    thud.stop(now + 1.25);
+
+  } catch(e) {
+    // Audio not supported — fail silently
+  }
+}
+
 function doFlip() {
   if (flipping) return;
   flipping = true;
   document.getElementById('flipBtn').disabled = true;
+  playCoinSound();
 
   var result = Math.random() < 0.5 ? 'heads' : 'tails';
 
