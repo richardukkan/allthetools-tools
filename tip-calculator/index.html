@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tip Calculator – Calculate Tips & Split the Bill</title>
+<meta name="description" content="Free tip calculator. Calculate the perfect tip and split the bill between any number of people. Works for restaurants, delivery, hotels and more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #141018;
+  --bg: #f5f2ff;
+  --warm: #ece8ff;
+  --card: #ffffff;
+  --purple: #5c35c8;
+  --purple-light: #ece8ff;
+  --purple-mid: #7a5ad4;
+  --border: rgba(92,53,200,0.15);
+  --muted: #60587a;
+  --green: #1a7a48;
+  --green-light: #eaf5f0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+.wrapper { max-width: 680px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--purple); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--purple); opacity:0.4; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(32px, 7vw, 56px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--purple); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: 0 2px 30px rgba(92,53,200,0.06); }
+@media(max-width:520px){ .card { padding: 22px 16px; } }
+
+.field-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+/* Currency */
+.currency-row { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.curr-btn { padding: 7px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--warm); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.curr-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+.curr-btn:hover:not(.active) { border-color: var(--purple); color: var(--purple); }
+
+/* Bill input */
+.bill-wrap { display: flex; align-items: center; background: var(--warm); border: 2px solid var(--purple); border-radius: 12px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(92,53,200,0.1); }
+.bill-symbol { padding: 0 16px; font-size: 24px; font-weight: 700; color: var(--purple); border-right: 1px solid var(--border); display: flex; align-items: center; min-height: 60px; }
+.bill-wrap input { flex: 1; padding: 16px 18px; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 28px; font-weight: 700; color: var(--ink); outline: none; min-width: 0; letter-spacing: -0.02em; }
+.bill-wrap input::placeholder { color: #c0b8e0; font-weight: 400; font-size: 22px; }
+
+/* Tip buttons */
+.tip-section { margin-bottom: 24px; }
+.tip-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-bottom: 10px; }
+@media(max-width:480px){ .tip-grid { grid-template-columns: repeat(3,1fr); } }
+.tip-btn { padding: 12px 4px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--warm); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; text-align: center; }
+.tip-btn:hover { border-color: var(--purple); color: var(--purple); }
+.tip-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); box-shadow: 0 4px 12px rgba(92,53,200,0.25); }
+.tip-btn.custom-btn { font-size: 12px; }
+
+.custom-tip-wrap { display: none; align-items: center; background: var(--warm); border: 1.5px solid var(--purple); border-radius: 10px; overflow: hidden; }
+.custom-tip-wrap.show { display: flex; }
+.custom-tip-wrap input { flex: 1; padding: 11px 14px; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; color: var(--ink); outline: none; }
+.custom-tip-wrap .pct { padding: 0 14px; font-size: 14px; font-weight: 700; color: var(--purple); }
+
+/* People */
+.people-section { margin-bottom: 20px; }
+.people-ctrl { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--warm); width: fit-content; }
+.ppl-btn { width: 48px; height: 48px; border: none; background: none; font-size: 22px; font-weight: 700; color: var(--purple); cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: center; }
+.ppl-btn:hover { background: var(--purple-light); }
+.ppl-count { font-size: 20px; font-weight: 700; color: var(--ink); min-width: 52px; text-align: center; border-left: 1px solid var(--border); border-right: 1px solid var(--border); height: 48px; display: flex; align-items: center; justify-content: center; }
+
+/* Round up */
+.round-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; margin-top: 16px; }
+.round-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--purple); cursor: pointer; }
+.round-row label { font-size: 14px; color: var(--muted); cursor: pointer; font-weight: 500; }
+
+/* Results */
+.results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+@media(max-width:400px){ .results-grid { grid-template-columns: 1fr; } }
+.result-card { border-radius: 14px; padding: 20px 16px; text-align: center; border: 1px solid var(--border); }
+.result-card.tip-card { background: var(--purple-light); border-color: rgba(92,53,200,0.2); }
+.result-card.total-card { background: var(--ink); }
+.result-card.person-card { background: var(--green-light); border-color: rgba(26,122,72,0.2); }
+.result-card.tip-per-card { background: var(--warm); }
+.rc-label { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 8px; }
+.tip-card .rc-label { color: var(--purple); }
+.total-card .rc-label { color: rgba(255,255,255,0.5); }
+.person-card .rc-label { color: var(--green); }
+.tip-per-card .rc-label { color: var(--muted); }
+.rc-value { font-family: 'DM Sans', sans-serif; font-size: clamp(22px,6vw,34px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+.total-card .rc-value { color: #fff; }
+.rc-sub { font-size: 11px; margin-top: 5px; }
+.tip-card .rc-sub { color: var(--purple-mid); }
+.total-card .rc-sub { color: rgba(255,255,255,0.4); }
+.person-card .rc-sub { color: var(--green); }
+.tip-per-card .rc-sub { color: var(--muted); }
+
+/* Tip guide */
+.tip-guide { background: var(--warm); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.tg-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.tg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media(max-width:400px){ .tg-grid { grid-template-columns: 1fr; } }
+.tg-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--card); border-radius: 8px; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; }
+.tg-item:hover { border-color: var(--purple); background: var(--purple-light); }
+.tg-service { font-size: 12px; font-weight: 500; color: var(--ink); }
+.tg-pct { font-size: 12px; font-weight: 700; color: var(--purple); }
+
+.copy-btn { width: 100%; padding: 13px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+.copy-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+.copy-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-light); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #a098c0; }
+
+@keyframes pop { from{transform:scale(0.94);opacity:0.7} to{transform:scale(1);opacity:1} }
+.pop { animation: pop 0.15s ease both; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Free Online Tool</div>
+    <h1>Tip <em>Calculator</em></h1>
+    <p class="subtitle">Calculate the perfect tip and split the bill between any number of people — instantly.</p>
+  </header>
+
+  <div class="card">
+
+    <!-- Currency -->
+    <div class="currency-row">
+      <button class="curr-btn active" id="curr-usd" onclick="setCurrency('$','usd')">🇺🇸 $ USD</button>
+      <button class="curr-btn" id="curr-gbp" onclick="setCurrency('£','gbp')">🇬🇧 £ GBP</button>
+      <button class="curr-btn" id="curr-eur" onclick="setCurrency('€','eur')">🇪🇺 € EUR</button>
+      <button class="curr-btn" id="curr-cad" onclick="setCurrency('C$','cad')">🇨🇦 C$ CAD</button>
+      <button class="curr-btn" id="curr-aud" onclick="setCurrency('A$','aud')">🇦🇺 A$ AUD</button>
+      <button class="curr-btn" id="curr-inr" onclick="setCurrency('₹','inr')">🇮🇳 ₹ INR</button>
+    </div>
+
+    <!-- Bill -->
+    <span class="field-label">Bill Amount</span>
+    <div class="bill-wrap">
+      <span class="bill-symbol" id="currSymbol">$</span>
+      <input type="number" id="billInput" placeholder="0.00" min="0" step="0.01" oninput="calculate()">
+    </div>
+
+    <!-- Tip % -->
+    <div class="tip-section">
+      <span class="field-label">Select Tip Percentage</span>
+      <div class="tip-grid">
+        <button class="tip-btn" id="tip5"  onclick="setTip(5)">5%</button>
+        <button class="tip-btn" id="tip10" onclick="setTip(10)">10%</button>
+        <button class="tip-btn active" id="tip15" onclick="setTip(15)">15%</button>
+        <button class="tip-btn" id="tip18" onclick="setTip(18)">18%</button>
+        <button class="tip-btn" id="tip20" onclick="setTip(20)">20%</button>
+        <button class="tip-btn custom-btn" id="tipCustom" onclick="setCustomTip()">Custom %</button>
+      </div>
+      <div class="custom-tip-wrap" id="customWrap">
+        <input type="number" id="customPct" placeholder="Enter %" min="0" max="100" oninput="calculate()">
+        <span class="pct">%</span>
+      </div>
+    </div>
+
+    <!-- People -->
+    <div class="people-section">
+      <span class="field-label">Split Between</span>
+      <div class="people-ctrl">
+        <button class="ppl-btn" onclick="changePeople(-1)">−</button>
+        <div class="ppl-count" id="peopleCount">1</div>
+        <button class="ppl-btn" onclick="changePeople(1)">+</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px;" id="peopleLabel">Just you</div>
+    </div>
+
+    <!-- Round up -->
+    <div class="round-row">
+      <input type="checkbox" id="roundUp" onchange="calculate()">
+      <label for="roundUp">Round up total to nearest whole amount</label>
+    </div>
+
+    <!-- Results -->
+    <div class="results-grid">
+      <div class="result-card tip-card">
+        <div class="rc-label">Tip Amount</div>
+        <div class="rc-value pop" id="tipAmount">$0.00</div>
+        <div class="rc-sub" id="tipPctLabel">15% tip</div>
+      </div>
+      <div class="result-card total-card">
+        <div class="rc-label">Total Bill</div>
+        <div class="rc-value pop" id="totalBill">$0.00</div>
+        <div class="rc-sub">bill + tip</div>
+      </div>
+      <div class="result-card person-card">
+        <div class="rc-label">Per Person</div>
+        <div class="rc-value pop" id="perPerson">$0.00</div>
+        <div class="rc-sub" id="perPersonSub">total ÷ 1</div>
+      </div>
+      <div class="result-card tip-per-card">
+        <div class="rc-label">Tip Per Person</div>
+        <div class="rc-value pop" id="tipPerPerson">$0.00</div>
+        <div class="rc-sub" id="tipPerSub">tip ÷ 1</div>
+      </div>
+    </div>
+
+    <!-- Tip guide -->
+    <div class="tip-guide">
+      <div class="tg-title">💡 Tip Guide — Click to Apply</div>
+      <div class="tg-grid">
+        <div class="tg-item" onclick="setTip(10)"><span class="tg-service">Buffet / Counter Service</span><span class="tg-pct">10%</span></div>
+        <div class="tg-item" onclick="setTip(15)"><span class="tg-service">Sit-Down Restaurant</span><span class="tg-pct">15%</span></div>
+        <div class="tg-item" onclick="setTip(18)"><span class="tg-service">Good Service</span><span class="tg-pct">18%</span></div>
+        <div class="tg-item" onclick="setTip(20)"><span class="tg-service">Excellent Service</span><span class="tg-pct">20%</span></div>
+        <div class="tg-item" onclick="setTip(25)"><span class="tg-service">Outstanding Service</span><span class="tg-pct">25%</span></div>
+        <div class="tg-item" onclick="setTip(15)"><span class="tg-service">Food Delivery</span><span class="tg-pct">15–20%</span></div>
+        <div class="tg-item" onclick="setTip(20)"><span class="tg-service">Hair Salon / Spa</span><span class="tg-pct">20%</span></div>
+        <div class="tg-item" onclick="setTip(20)"><span class="tg-service">Taxi / Rideshare</span><span class="tg-pct">15–20%</span></div>
+      </div>
+    </div>
+
+    <button class="copy-btn" id="copyBtn" onclick="copyResults()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      <span id="copyLabel">Copy Results</span>
+    </button>
+
+  </div>
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var currency = '$';
+var tipPct = 15;
+var people = 1;
+var isCustom = false;
+
+function setCurrency(sym, id) {
+  currency = sym;
+  document.getElementById('currSymbol').textContent = sym;
+  document.querySelectorAll('.curr-btn').forEach(function(b){ b.className='curr-btn'; });
+  document.getElementById('curr-'+id).className = 'curr-btn active';
+  calculate();
+}
+
+function setTip(pct) {
+  tipPct = pct;
+  isCustom = false;
+  document.querySelectorAll('.tip-btn').forEach(function(b){ b.className=b.className.replace(' active',''); });
+  var ids={5:'tip5',10:'tip10',15:'tip15',18:'tip18',20:'tip20'};
+  if(ids[pct]) document.getElementById(ids[pct]).className='tip-btn active';
+  document.getElementById('customWrap').className='custom-tip-wrap';
+  calculate();
+}
+
+function setCustomTip() {
+  isCustom=true;
+  document.querySelectorAll('.tip-btn').forEach(function(b){ b.className=b.className.replace(' active',''); });
+  document.getElementById('tipCustom').className='tip-btn custom-btn active';
+  document.getElementById('customWrap').className='custom-tip-wrap show';
+  document.getElementById('customPct').focus();
+  calculate();
+}
+
+function changePeople(d) {
+  people=Math.max(1,Math.min(50,people+d));
+  document.getElementById('peopleCount').textContent=people;
+  document.getElementById('peopleLabel').textContent=people===1?'Just you':people+' people splitting the bill';
+  calculate();
+}
+
+function fmt(n){ return currency+n.toFixed(2); }
+
+function animatePop(id){ var el=document.getElementById(id);el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop'); }
+
+function calculate() {
+  var bill=parseFloat(document.getElementById('billInput').value)||0;
+  var pct=isCustom?(parseFloat(document.getElementById('customPct').value)||0):tipPct;
+  var roundUp=document.getElementById('roundUp').checked;
+  var tipAmt=bill*(pct/100);
+  var total=bill+tipAmt;
+  if(roundUp&&total>0){ total=Math.ceil(total); tipAmt=total-bill; }
+  var perPerson=total/people;
+  var tipPerPerson=tipAmt/people;
+  document.getElementById('tipAmount').textContent=fmt(tipAmt);
+  document.getElementById('totalBill').textContent=fmt(total);
+  document.getElementById('perPerson').textContent=fmt(perPerson);
+  document.getElementById('tipPerPerson').textContent=fmt(tipPerPerson);
+  document.getElementById('tipPctLabel').textContent=pct+'% tip';
+  document.getElementById('perPersonSub').textContent='total ÷ '+people;
+  document.getElementById('tipPerSub').textContent='tip ÷ '+people;
+  ['tipAmount','totalBill','perPerson','tipPerPerson'].forEach(animatePop);
+}
+
+function copyResults() {
+  var bill=parseFloat(document.getElementById('billInput').value)||0;
+  var pct=isCustom?(parseFloat(document.getElementById('customPct').value)||0):tipPct;
+  var lines=['TIP CALCULATOR RESULTS','----------------------','Bill Amount: '+fmt(bill),'Tip Percentage: '+pct+'%','Tip Amount: '+document.getElementById('tipAmount').textContent,'Total Bill: '+document.getElementById('totalBill').textContent,'Number of People: '+people,'Per Person: '+document.getElementById('perPerson').textContent,'Tip Per Person: '+document.getElementById('tipPerPerson').textContent,'','Calculated at allthetools.com'].join('\n');
+  var btn=document.getElementById('copyBtn'),lbl=document.getElementById('copyLabel');
+  function ok(){ btn.className='copy-btn copied';lbl.textContent='\u2713 Copied!';setTimeout(function(){btn.className='copy-btn';lbl.textContent='Copy Results';},2500); }
+  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(lines).then(ok).catch(function(){fallback(lines,ok);}); } else { fallback(lines,ok); }
+}
+function fallback(t,cb){ var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');cb();}catch(e){}document.body.removeChild(ta); }
+
+calculate();
+</script>
+</body>
+</html>
