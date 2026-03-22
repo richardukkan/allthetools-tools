@@ -31,7 +31,7 @@ body::before {
     radial-gradient(ellipse 40% 40% at 20% 80%, rgba(245,158,11,0.06), transparent 60%);
 }
 
-.wrapper { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:36px 20px 80px; }
+.wrapper { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:36px 16px 80px; overflow-x:hidden; }
 
 header { text-align:center; margin-bottom:32px; }
 .eyebrow { font-size:10px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:10px; }
@@ -40,12 +40,13 @@ h1 { font-family:'DM Sans',sans-serif; font-size:clamp(32px,7vw,56px); font-weig
 h1 em { font-family:'Playfair Display',serif; font-style:italic; color:var(--gold); font-weight:700; }
 .subtitle { font-size:14px; font-weight:300; color:var(--muted); }
 
-.main-layout { display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start; }
-@media(max-width:680px){ .main-layout { grid-template-columns:1fr; } }
+.main-layout { display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; }
+@media(max-width:720px){ .main-layout { grid-template-columns:1fr; } }
 
 .wheel-section { display:flex; flex-direction:column; align-items:center; }
 
 .wheel-container { position:relative; width:100%; max-width:360px; aspect-ratio:1; margin-bottom:20px; }
+@media(max-width:720px){ .wheel-container { max-width:min(360px, calc(100vw - 32px)); } }
 
 .pointer {
   position:absolute; top:-12px; left:50%; transform:translateX(-50%);
@@ -81,6 +82,7 @@ canvas#wheelCanvas:hover { box-shadow:0 0 0 6px rgba(255,255,255,0.1), 0 0 80px 
   box-shadow:0 6px 24px rgba(124,58,237,0.4);
   transition:opacity 0.2s,transform 0.15s,box-shadow 0.2s; margin-bottom:14px;
 }
+@media(max-width:720px){ .spin-btn, .result-box, .history-strip { max-width:100%; } }
 .spin-btn:hover:not(:disabled) { opacity:0.92; transform:translateY(-2px); box-shadow:0 10px 32px rgba(124,58,237,0.55); }
 .spin-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
@@ -94,7 +96,7 @@ canvas#wheelCanvas:hover { box-shadow:0 0 0 6px rgba(255,255,255,0.1), 0 0 80px 
 .result-value { font-family:'DM Sans',sans-serif; font-size:clamp(20px,5vw,30px); font-weight:800; color:var(--gold); letter-spacing:-0.02em; line-height:1.2; }
 .result-placeholder { font-size:14px; color:var(--muted); font-style:italic; }
 
-.options-panel { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:24px; }
+.options-panel { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:24px; min-width:0; overflow:hidden; }
 .panel-title { font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
 .item-count { background:var(--gold-light); color:var(--gold); font-size:11px; font-weight:800; padding:2px 10px; border-radius:999px; letter-spacing:0; text-transform:none; }
 
