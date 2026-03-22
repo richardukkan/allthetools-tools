@@ -272,6 +272,14 @@ h1 em { font-style: italic; color: var(--sage); }
 
     <div class="prompts-list" id="promptsList"></div>
 
+    <div id="copyPanel" style="display:none;background:#eef4ef;border:1.5px solid #b5ceb9;border-radius:14px;padding:18px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-family:Jost,sans-serif;font-size:13px;font-weight:700;color:#2c6b3b;">Select all text below then press Ctrl+C to copy</span>
+        <button onclick="closeCopyPanel()" style="border:none;background:none;font-size:18px;cursor:pointer;color:#6b8f71;line-height:1;padding:0 4px;">×</button>
+      </div>
+      <textarea id="copyPanelBox" style="width:100%;height:160px;padding:10px;font-family:Jost,sans-serif;font-size:12px;color:#2c2416;border:1px solid #b5ceb9;border-radius:8px;resize:none;background:#fff;" readonly onclick="this.select()"></textarea>
+      <button onclick="selectCopyPanel()" style="margin-top:10px;width:100%;padding:10px;background:#6b8f71;color:#fff;border:none;border-radius:10px;font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;" id="copyPanelBtn">Select All & Copy</button>
+    </div>
     <div class="action-row no-print">
       <button class="act-btn primary" onclick="generate()">🔄 New Prompts</button>
       <button class="act-btn" onclick="window.print()">🖨️ Print Journal</button>
@@ -283,21 +291,7 @@ h1 em { font-style: italic; color: var(--sage); }
 
 
 
-  <div id="copyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#fff;border-radius:16px;padding:24px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <div style="font-family:Jost,sans-serif;font-size:14px;font-weight:700;color:#2c2416;">Your Journal Prompts</div>
-      <button onclick="closeCopyModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:#8a7a65;line-height:1;">×</button>
-    </div>
-    <div style="font-family:Jost,sans-serif;font-size:12px;color:#8a7a65;margin-bottom:10px;">Select all text below and copy (Ctrl+A then Ctrl+C)</div>
-    <textarea id="copyModalBox" style="width:100%;height:220px;padding:12px;font-family:Jost,sans-serif;font-size:13px;color:#2c2416;border:1.5px solid #d4c9b8;border-radius:8px;resize:none;background:#faf7f2;" readonly onclick="this.select()"></textarea>
-    <div style="display:flex;gap:10px;margin-top:14px;">
-      <button onclick="selectAllCopy()" style="flex:1;padding:11px;background:#6b8f71;color:#fff;border:none;border-radius:10px;font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Select All & Copy</button>
-      <button onclick="closeCopyModal()" style="flex:1;padding:11px;background:#f5f0e8;color:#8a7a65;border:1px solid #d4c9b8;border-radius:10px;font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Close</button>
-    </div>
-  </div>
-</div>
-<p class="footer-note">thatsthetool.com · Take a breath. You have so much to be grateful for. 🌿</p>
+  <p class="footer-note">thatsthetool.com · Take a breath. You have so much to be grateful for. 🌿</p>
 </div>
 
 <script>
@@ -985,43 +979,38 @@ function copyAll() {
   var lines = [theme.title.toUpperCase() + ' - GRATITUDE JOURNAL', ''];
   var cards = document.querySelectorAll('.prompt-card');
   for (var i = 0; i < cards.length; i++) {
-    var card = cards[i];
-    var qtEl = card.querySelector('.prompt-text');
-    var taEl = card.querySelector('textarea');
-    var q = qtEl ? qtEl.textContent.trim() : '';
-    var a = taEl ? taEl.value.trim() : '';
-    lines.push('Q' + (i+1) + ': ' + q);
-    if (a) lines.push('A' + (i+1) + ': ' + a);
+    var q = cards[i].querySelector('.prompt-text');
+    var a = cards[i].querySelector('textarea');
+    if (q) lines.push('Q' + (i+1) + ': ' + q.textContent.trim());
+    if (a && a.value.trim()) lines.push('A' + (i+1) + ': ' + a.value.trim());
     lines.push('');
   }
   lines.push('thatsthetool.com');
   var text = lines.join('\n');
-  var modal = document.getElementById('copyModal');
-  var box = document.getElementById('copyModalBox');
+  var panel = document.getElementById('copyPanel');
+  var box = document.getElementById('copyPanelBox');
   box.value = text;
-  modal.style.display = 'flex';
-  setTimeout(function() {
-    box.focus();
-    box.select();
-    try { document.execCommand('copy'); } catch(e) {}
-  }, 100);
+  panel.style.display = 'block';
+  setTimeout(function(){ box.focus(); box.select(); try { document.execCommand('copy'); } catch(e){} }, 50);
+  document.getElementById('copyLabel').textContent = 'Copied!';
+  setTimeout(function(){ document.getElementById('copyLabel').textContent = 'Copy All'; }, 3000);
+  // Scroll panel into view
+  setTimeout(function(){ panel.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 100);
 }
 
-function selectAllCopy() {
-  var box = document.getElementById('copyModalBox');
-  box.focus();
-  box.select();
-  box.setSelectionRange(0, 99999);
-  var success = false;
-  try { success = document.execCommand('copy'); } catch(e) {}
-  var btn = event.target;
-  btn.textContent = success ? 'Copied!' : 'Select all with Ctrl+A';
-  setTimeout(function() { btn.textContent = 'Select All & Copy'; }, 2000);
+function selectCopyPanel() {
+  var box = document.getElementById('copyPanelBox');
+  box.focus(); box.select(); box.setSelectionRange(0, 99999);
+  try { document.execCommand('copy'); } catch(e){}
+  document.getElementById('copyPanelBtn').textContent = 'Copied!';
+  setTimeout(function(){ document.getElementById('copyPanelBtn').textContent = 'Select All & Copy (Ctrl+A, Ctrl+C)'; }, 2000);
 }
 
-function closeCopyModal() {
-  document.getElementById('copyModal').style.display = 'none';
+function closeCopyPanel() {
+  document.getElementById('copyPanel').style.display = 'none';
 }
+
+
 
 
 function notifyHeight() {
@@ -1030,20 +1019,10 @@ function notifyHeight() {
     document.body.offsetHeight,
     document.documentElement.scrollHeight
   );
-  window.parent.postMessage({ iframeHeight: h + 80 }, '*');
+  window.parent.postMessage({ iframeHeight: h + 40 }, '*');
 }
-// Fire on load
-window.addEventListener('load', function(){ setTimeout(notifyHeight,200); setTimeout(notifyHeight,600); setTimeout(notifyHeight,1200); });
-// Fire on resize
+window.addEventListener('load', function(){ setTimeout(notifyHeight, 300); });
 window.addEventListener('resize', notifyHeight);
-// Fire every second
-setInterval(notifyHeight, 1000);
-// Fire on every click (catches generate/theme button clicks)
-document.addEventListener('click', function(){
-  setTimeout(notifyHeight, 200);
-  setTimeout(notifyHeight, 700);
-  setTimeout(notifyHeight, 1400);
-});
 </script>
 </body>
 </html>
