@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alcohol Unit Calculator – Calculate UK Alcohol Units</title>
+<meta name="description" content="Free UK alcohol unit calculator. Calculate how many alcohol units are in your drink. Compare against NHS guidelines of 14 units per week.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1e2a20;
+  --card: #263028;
+  --card2: #2e3830;
+  --warm: #324035;
+  --green: #4a9e5c;
+  --green-light: rgba(74,158,92,0.15);
+  --amber: #d48c2a;
+  --amber-light: rgba(212,140,42,0.15);
+  --red: #c0443a;
+  --red-light: rgba(192,68,58,0.15);
+  --border: rgba(255,255,255,0.1);
+  --ink: #e8f0e4;
+  --muted: #8aaa88;
+  --gold: #e8b84b;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 20%, rgba(74,158,92,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(212,140,42,0.06) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+.wrapper { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 36px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--green); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--green); opacity:0.5; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(30px, 7vw, 52px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--green); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+.disclaimer { background: rgba(212,140,42,0.12); border: 1px solid rgba(212,140,42,0.25); border-radius: 12px; padding: 12px 16px; margin-bottom: 24px; font-size: 12px; color: #d4b080; display: flex; gap: 10px; align-items: flex-start; line-height: 1.6; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.2); margin-bottom: 16px; }
+@media(max-width:520px){ .card { padding: 20px 14px; } }
+
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: block; }
+.field-label { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; display: block; }
+
+.input-wrap { display: flex; align-items: center; background: var(--warm); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+.input-wrap:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(74,158,92,0.15); }
+.input-wrap input { flex: 1; padding: 12px 14px; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; color: var(--ink); outline: none; min-width: 0; }
+.input-wrap input::placeholder { color: rgba(255,255,255,0.2); font-weight: 400; }
+.input-unit { padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--green); border-left: 1px solid var(--border); display: flex; align-items: center; min-height: 44px; white-space: nowrap; }
+
+/* Quick drink selector */
+.drinks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 10px; margin-bottom: 24px; }
+.drink-btn { padding: 14px 8px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--card2); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; text-align: center; }
+.drink-btn .d-icon { font-size: 24px; display: block; margin-bottom: 5px; }
+.drink-btn .d-name { display: block; margin-bottom: 2px; color: var(--ink); }
+.drink-btn .d-units { display: block; font-size: 10px; color: var(--green); font-weight: 700; }
+.drink-btn:hover { border-color: var(--green); background: var(--green-light); }
+.drink-btn.selected { border-color: var(--green); background: var(--green-light); }
+
+/* Custom drink inputs */
+.custom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+@media(max-width:440px){ .custom-grid { grid-template-columns: 1fr; } }
+
+/* Calc button */
+.calc-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2d7a3a, #4a9e5c); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(74,158,92,0.3); }
+.calc-btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(74,158,92,0.4); }
+.calc-btn:active { transform: none; }
+
+/* Results */
+.results { display: none; }
+.results.show { display: block; animation: fadeUp 0.4s ease both; }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(74,158,92,0.25), transparent); margin: 28px 0; }
+
+/* Unit display */
+.unit-hero { text-align: center; padding: 32px 20px 24px; border-radius: 18px; margin-bottom: 16px; border: 1px solid; }
+.unit-hero.safe { background: rgba(74,158,92,0.1); border-color: rgba(74,158,92,0.25); }
+.unit-hero.moderate { background: rgba(212,140,42,0.1); border-color: rgba(212,140,42,0.25); }
+.unit-hero.high { background: rgba(192,68,58,0.1); border-color: rgba(192,68,58,0.25); }
+.uh-label { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+.safe .uh-label { color: var(--green); }
+.moderate .uh-label { color: var(--amber); }
+.high .uh-label { color: var(--red); }
+.uh-value { font-family: 'DM Sans', sans-serif; font-size: clamp(52px, 14vw, 84px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
+.safe .uh-value { color: #6fcf82; }
+.moderate .uh-value { color: #e8b84b; }
+.high .uh-value { color: #e06a60; }
+.uh-unit { font-size: 16px; font-weight: 500; color: var(--muted); margin-bottom: 8px; }
+.uh-sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* NHS guideline bar */
+.guideline-section { margin-bottom: 16px; }
+.gl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.gl-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.gl-limit { font-size: 12px; font-weight: 700; color: var(--amber); }
+.gl-bar-bg { height: 12px; background: var(--warm); border-radius: 999px; overflow: visible; position: relative; border: 1px solid var(--border); }
+.gl-bar-fill { height: 100%; border-radius: 999px; transition: width 0.8s cubic-bezier(0.34,1.1,0.64,1); position: relative; }
+.gl-bar-fill.safe { background: linear-gradient(90deg, #2d7a3a, #4a9e5c); }
+.gl-bar-fill.moderate { background: linear-gradient(90deg, #4a9e5c, #d4a020); }
+.gl-bar-fill.high { background: linear-gradient(90deg, #d4a020, #c0443a); }
+.gl-marker { position: absolute; right: 0; top: -4px; width: 2px; height: 20px; background: rgba(255,255,255,0.5); }
+.gl-note { font-size: 11px; color: var(--muted); margin-top: 8px; display: flex; justify-content: space-between; }
+
+/* Info rows */
+.info-rows { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+.info-row:last-child { border-bottom: none; }
+.info-row:hover { background: rgba(255,255,255,0.03); }
+.info-key { color: var(--muted); }
+.info-val { font-weight: 700; color: var(--ink); }
+.info-val.green { color: #6fcf82; }
+.info-val.amber { color: var(--gold); }
+.info-val.red { color: #e06a60; }
+
+/* Weekly tracker */
+.weekly-section { }
+.weekly-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.days-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; margin-bottom: 14px; }
+.day-col { text-align: center; }
+.day-name { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.day-input { width: 100%; padding: 8px 4px; background: var(--warm); border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--ink); text-align: center; outline: none; transition: border-color 0.2s; }
+.day-input:focus { border-color: var(--green); }
+.day-input::placeholder { color: rgba(255,255,255,0.15); font-size: 11px; }
+.weekly-total-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.wt-label { font-size: 13px; color: var(--muted); }
+.wt-value { font-size: 22px; font-weight: 700; }
+.wt-value.safe { color: #6fcf82; }
+.wt-value.moderate { color: var(--gold); }
+.wt-value.high { color: #e06a60; }
+.weekly-bar-bg { height: 8px; background: var(--warm); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 8px; }
+.weekly-bar-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
+.weekly-bar-fill.safe { background: var(--green); }
+.weekly-bar-fill.moderate { background: var(--amber); }
+.weekly-bar-fill.high { background: var(--red); }
+.weekly-verdict { font-size: 12px; color: var(--muted); line-height: 1.5; padding: 10px 14px; background: var(--card2); border-radius: 10px; border: 1px solid var(--border); }
+
+.copy-btn { width: 100%; padding: 12px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; margin-top: 8px; }
+.copy-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
+.copy-btn.copied { border-color: var(--green); color: #6fcf82; background: var(--green-light); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #4a6648; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">🇬🇧 UK Alcohol Tool</div>
+    <h1>Alcohol Unit <em>Calculator</em></h1>
+    <p class="subtitle">Calculate the number of alcohol units in any drink and see how it compares to the NHS recommended limit of 14 units per week.</p>
+  </header>
+
+  <div class="disclaimer">
+    <span>⚠️</span>
+    <span>This tool is for informational purposes only. NHS guidelines recommend adults drink no more than 14 units per week spread over three or more days. If you are concerned about your drinking please speak to your GP or visit drinkaware.co.uk.</span>
+  </div>
+
+  <!-- Quick drink picker -->
+  <div class="card">
+    <span class="section-label">Quick Pick — Common UK Drinks</span>
+    <div class="drinks-grid" id="drinksGrid">
+      <button class="drink-btn" onclick="quickDrink(4.0,330,'Regular Lager Can 330ml')" id="d1"><span class="d-icon">🍺</span><span class="d-name">Lager Can</span><span class="d-units">1.3 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(4.0,568,'Pint of Lager')" id="d2"><span class="d-icon">🍻</span><span class="d-name">Pint Lager</span><span class="d-units">2.3 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(13.0,175,'Medium Glass Wine')" id="d3"><span class="d-icon">🍷</span><span class="d-name">Wine 175ml</span><span class="d-units">2.3 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(13.0,250,'Large Glass Wine')" id="d4"><span class="d-icon">🍷</span><span class="d-name">Wine 250ml</span><span class="d-units">3.3 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(40,25,'Single Spirit')" id="d5"><span class="d-icon">🥃</span><span class="d-name">Single Spirit</span><span class="d-units">1.0 unit</span></button>
+      <button class="drink-btn" onclick="quickDrink(40,50,'Double Spirit')" id="d6"><span class="d-icon">🥃</span><span class="d-name">Double Spirit</span><span class="d-units">2.0 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(5.0,440,'Cider Can 440ml')" id="d7"><span class="d-icon">🍎</span><span class="d-name">Cider Can</span><span class="d-units">2.2 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(4.5,568,'Pint of Ale')" id="d8"><span class="d-icon">🍺</span><span class="d-name">Pint Ale</span><span class="d-units">2.6 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(5.0,330,'Craft Beer Bottle')" id="d9"><span class="d-icon">🍶</span><span class="d-name">Craft Beer</span><span class="d-units">1.7 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(12.0,750,'Bottle of Wine')" id="d10"><span class="d-icon">🍾</span><span class="d-name">Bottle Wine</span><span class="d-units">9.0 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(37.5,700,'Bottle of Spirits')" id="d11"><span class="d-icon">🍶</span><span class="d-name">Bottle Spirits</span><span class="d-units">26.3 units</span></button>
+      <button class="drink-btn" onclick="quickDrink(5.0,275,'Alcopop 275ml')" id="d12"><span class="d-icon">🧃</span><span class="d-name">Alcopop</span><span class="d-units">1.4 units</span></button>
+    </div>
+
+    <span class="section-label">Or Enter Your Own Drink</span>
+    <div class="custom-grid">
+      <div>
+        <span class="field-label">ABV (Alcohol by Volume)</span>
+        <div class="input-wrap"><input type="number" id="abv" placeholder="e.g. 5" min="0.1" max="100" step="0.1"><span class="input-unit">%</span></div>
+      </div>
+      <div>
+        <span class="field-label">Volume</span>
+        <div class="input-wrap"><input type="number" id="volume" placeholder="e.g. 330" min="1" step="1"><span class="input-unit">ml</span></div>
+      </div>
+    </div>
+
+    <!-- Number of drinks -->
+    <div style="margin-bottom:20px;">
+      <span class="field-label">Number of Drinks</span>
+      <div style="display:flex;align-items:center;gap:0;background:var(--warm);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;width:160px;">
+        <button onclick="changeDrinks(-1)" style="width:44px;height:44px;border:none;background:none;font-size:22px;font-weight:700;color:var(--green);cursor:pointer;">−</button>
+        <div id="drinksCount" style="flex:1;text-align:center;font-size:18px;font-weight:700;color:var(--ink);border-left:1px solid var(--border);border-right:1px solid var(--border);height:44px;display:flex;align-items:center;justify-content:center;">1</div>
+        <button onclick="changeDrinks(1)" style="width:44px;height:44px;border:none;background:none;font-size:22px;font-weight:700;color:var(--green);cursor:pointer;">+</button>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">🍺 Calculate Units</button>
+
+    <!-- Results -->
+    <div class="results" id="results">
+      <div class="divider"></div>
+
+      <!-- Hero -->
+      <div class="unit-hero safe" id="unitHero">
+        <div class="uh-label" id="uhLabel">Units in This Drink</div>
+        <div class="uh-value" id="uhValue">0</div>
+        <div class="uh-unit">UK alcohol units</div>
+        <div class="uh-sub" id="uhSub"></div>
+      </div>
+
+      <!-- NHS guideline bar -->
+      <div class="card guideline-section">
+        <div class="gl-header">
+          <span class="gl-title">vs NHS 14 Unit Weekly Guideline</span>
+          <span class="gl-limit">14 units / week max</span>
+        </div>
+        <div class="gl-bar-bg">
+          <div class="gl-bar-fill safe" id="glBarFill" style="width:0%">
+            <div class="gl-marker"></div>
+          </div>
+        </div>
+        <div class="gl-note">
+          <span id="glNote">0 of 14 weekly units</span>
+          <span id="glPct">0%</span>
+        </div>
+      </div>
+
+      <!-- Info rows -->
+      <div class="info-rows">
+        <div class="info-row"><span class="info-key">Units in this drink</span><span class="info-val green" id="infoUnits">—</span></div>
+        <div class="info-row"><span class="info-key">Calories (approx)</span><span class="info-val" id="infoCals">—</span></div>
+        <div class="info-row"><span class="info-key">% of NHS weekly limit</span><span class="info-val" id="infoPct">—</span></div>
+        <div class="info-row"><span class="info-key">Drinks left in weekly limit</span><span class="info-val" id="infoDrinksLeft">—</span></div>
+        <div class="info-row"><span class="info-key">Time to process (approx)</span><span class="info-val" id="infoTime">—</span></div>
+        <div class="info-row"><span class="info-key">NHS guideline (weekly)</span><span class="info-val amber">14 units max</span></div>
+      </div>
+
+      <button class="copy-btn" id="copyBtn" onclick="copyResults()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span id="copyLabel">Copy Results</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Weekly tracker -->
+  <div class="card">
+    <span class="section-label">📅 Weekly Unit Tracker</span>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Enter the units you drank each day this week to see your weekly total against the NHS limit.</p>
+    <div class="days-grid">
+      <div class="day-col"><div class="day-name">Mon</div><input class="day-input" id="wMon" type="number" placeholder="0" min="0" step="0.1" oninput="updateWeekly()"></div>
+      <div class="day-col"><div class="day-name">Tue</div><input class="day-input" id="wTue" type="number" placeholder="0" min="0" step="0.1" oninput="updateWeekly()"></div>
+      <div class="day-col"><div class="day-name">Wed</div><input class="day-input" id="wWed" type="number" placeholder="0" min="0" step="0.1" oninput="updateWeekly()"></div>
+      <div class="day-col"><div class="day-name">Thu</div><input class="day-input" id="wThu" type="number" placeholder="0" min="0" step="0.1" oninput="updateWeekly()"></div>
+      <div class="day-col"><div class="day-name">Fri</div><input class="day-input" id="wFri" type="number" placeholder="0" min="0" step="0.1" oninput="updateWeekly()"></div>
+      <div class="day-col"><div class="day-name">Sat</div><input class="day-input" id="wSat" type="number" placeholder="0" min="0" step="0.1" oninput="updateWeekly()"></div>
+      <div class="day-col"><div class="day-name">Sun</div><input class="day-input" id="wSun" type="number" placeholder="0" min="0" step="0.1" oninput="updateWeekly()"></div>
+    </div>
+    <div class="weekly-total-row">
+      <span class="wt-label">Weekly total:</span>
+      <span class="wt-value safe" id="weeklyTotal">0.0 units</span>
+    </div>
+    <div class="weekly-bar-bg">
+      <div class="weekly-bar-fill safe" id="weeklyBarFill" style="width:0%"></div>
+    </div>
+    <div class="weekly-verdict" id="weeklyVerdict">Enter your daily units above to see your weekly total against the NHS 14 unit guideline.</div>
+  </div>
+
+  <p class="footer-note">allthetools.com · Based on NHS UK guidelines · drinkaware.co.uk for support</p>
+</div>
+
+<script>
+var drinksNum = 1;
+var lastABV = 0, lastVol = 0;
+
+function changeDrinks(d) {
+  drinksNum = Math.max(1, Math.min(20, drinksNum + d));
+  document.getElementById('drinksCount').textContent = drinksNum;
+}
+
+function quickDrink(abv, vol, name) {
+  document.getElementById('abv').value = abv;
+  document.getElementById('volume').value = vol;
+  document.querySelectorAll('.drink-btn').forEach(function(b){ b.className='drink-btn'; });
+  calculate();
+}
+
+function calcUnits(abv, vol) {
+  return (abv * vol) / 1000;
+}
+
+function getStatus(units) {
+  var weekly = units;
+  if (weekly <= 4) return 'safe';
+  if (weekly <= 8) return 'moderate';
+  return 'high';
+}
+
+function calculate() {
+  var abv = parseFloat(document.getElementById('abv').value);
+  var vol = parseFloat(document.getElementById('volume').value);
+  if (!abv || !vol || abv <= 0 || vol <= 0) return;
+
+  lastABV = abv; lastVol = vol;
+  var unitsPerDrink = calcUnits(abv, vol);
+  var totalUnits = unitsPerDrink * drinksNum;
+
+  // Calories: 7 calories per gram of alcohol, alcohol density ~0.789g/ml
+  var calsPerDrink = Math.round(vol * (abv/100) * 0.789 * 7);
+  var totalCals = calsPerDrink * drinksNum;
+
+  var pctOfWeekly = Math.min(200, (totalUnits / 14) * 100);
+  var status = getStatus(totalUnits);
+
+  // Hero
+  var hero = document.getElementById('unitHero');
+  hero.className = 'unit-hero ' + status;
+  document.getElementById('uhLabel').textContent = drinksNum > 1 ? 'Units in ' + drinksNum + ' Drinks' : 'Units in This Drink';
+  document.getElementById('uhValue').textContent = totalUnits.toFixed(1);
+
+  var subs = {
+    safe: 'Within a reasonable single-session amount. Always pace yourself and stay hydrated.',
+    moderate: 'A moderate amount. Be mindful of your weekly total — NHS recommends max 14 units per week.',
+    high: 'This is a significant amount of alcohol. Consider spreading drinks over more days and alcohol-free days each week.'
+  };
+  document.getElementById('uhSub').textContent = subs[status];
+
+  // Guideline bar
+  var barFill = document.getElementById('glBarFill');
+  barFill.style.width = Math.min(100, pctOfWeekly) + '%';
+  barFill.className = 'gl-bar-fill ' + status;
+  document.getElementById('glNote').textContent = totalUnits.toFixed(1) + ' of 14 weekly units';
+  document.getElementById('glPct').textContent = Math.round(pctOfWeekly) + '% of weekly limit';
+
+  // Info rows
+  document.getElementById('infoUnits').textContent = totalUnits.toFixed(2) + ' units';
+  document.getElementById('infoCals').textContent = '~' + totalCals + ' kcal';
+  document.getElementById('infoPct').textContent = Math.round(pctOfWeekly) + '%';
+  var drinksLeft = Math.max(0, (14 - totalUnits) / unitsPerDrink);
+  document.getElementById('infoDrinksLeft').textContent = drinksLeft > 0 ? drinksLeft.toFixed(1) + ' more of this drink' : 'Weekly limit reached';
+  var hoursToProcess = totalUnits; // ~1 unit per hour
+  document.getElementById('infoTime').textContent = '~' + hoursToProcess.toFixed(1) + ' hours';
+
+  document.getElementById('results').className = 'results show';
+  setTimeout(function(){ document.getElementById('results').scrollIntoView({behavior:'smooth',block:'nearest'}); }, 50);
+}
+
+function updateWeekly() {
+  var days = ['wMon','wTue','wWed','wThu','wFri','wSat','wSun'];
+  var total = 0;
+  days.forEach(function(id){ total += parseFloat(document.getElementById(id).value)||0; });
+
+  var pct = Math.min(100, (total/14)*100);
+  var status = total <= 7 ? 'safe' : total <= 14 ? 'moderate' : 'high';
+
+  var totalEl = document.getElementById('weeklyTotal');
+  totalEl.textContent = total.toFixed(1) + ' units';
+  totalEl.className = 'wt-value ' + status;
+
+  var bar = document.getElementById('weeklyBarFill');
+  bar.style.width = pct + '%';
+  bar.className = 'weekly-bar-fill ' + status;
+
+  var verdicts = {
+    safe: '✅ You are well within the NHS recommended limit of 14 units per week. Keep it up!',
+    moderate: '⚠️ You are approaching the NHS limit of 14 units per week. Try to spread your drinking over 3 or more days and have several alcohol-free days.',
+    high: '🚨 You have exceeded the NHS recommended limit of 14 units per week. The NHS advises spreading drinking over 3+ days and having regular alcohol-free days. Consider speaking to your GP.'
+  };
+  document.getElementById('weeklyVerdict').textContent = verdicts[status];
+}
+
+function copyResults() {
+  var lines = [
+    'ALCOHOL UNIT CALCULATOR RESULTS',
+    '--------------------------------',
+    'Units: ' + document.getElementById('uhValue').textContent,
+    'Calories: ' + document.getElementById('infoCals').textContent,
+    '% of NHS weekly limit: ' + document.getElementById('infoPct').textContent,
+    'Time to process: ' + document.getElementById('infoTime').textContent,
+    '',
+    'NHS guideline: max 14 units per week',
+    'For support: drinkaware.co.uk',
+    'Calculated at allthetools.com'
+  ].join('\n');
+  var btn=document.getElementById('copyBtn'),lbl=document.getElementById('copyLabel');
+  function ok(){ btn.className='copy-btn copied'; lbl.textContent='\u2713 Copied!'; setTimeout(function(){btn.className='copy-btn';lbl.textContent='Copy Results';},2500); }
+  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(lines).then(ok).catch(function(){fallback(lines,ok);}); } else { fallback(lines,ok); }
+}
+function fallback(t,cb){ var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');cb();}catch(e){}document.body.removeChild(ta); }
+</script>
+</body>
+</html>
