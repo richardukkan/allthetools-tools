@@ -35,7 +35,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: 'Jost', sans-serif;
-  min-height: 100vh;
+  height: auto;
 }
 
 body::before {
@@ -46,7 +46,7 @@ body::before {
     radial-gradient(ellipse 50% 40% at 10% 80%, rgba(107,143,113,0.06), transparent 60%);
 }
 
-.wrapper { position: relative; z-index: 1; max-width: 740px; margin: 0 auto; padding: 48px 20px 80px; }
+.wrapper { position: relative; z-index: 1; max-width: 740px; margin: 0 auto; padding: 28px 16px 40px; }
 
 /* Header */
 header { text-align: center; margin-bottom: 44px; }
@@ -765,6 +765,131 @@ var THEMES = {
       { q: "What are three things about your life that you would not trade for anything in the world?", starter: "Three things about my life I would not trade for anything are..." }
     ]
   }
+,
+  women: {
+    icon: "👑", title: "Women - Strength & Power", color: "#c2185b", bg: "#fdf0f5",
+    tag: "WOMEN'S REFLECTION",
+    prompts: [
+      { q: "What is one thing about being a woman that you are deeply grateful for today?", starter: "Something about being a woman that I am grateful for is..." },
+      { q: "What strength in yourself has surprised you recently - something you did not know you had until you needed it?", starter: "A strength that surprised me recently is..." },
+      { q: "What woman in your life - past or present - has shaped who you are? What did she give you?", starter: "A woman who shaped who I am is [name]. She gave me..." },
+      { q: "What version of yourself are you most proud of - and what did it take to become her?", starter: "The version of myself I am most proud of is the one who... it took..." },
+      { q: "What boundary have you set recently that was an act of love for yourself?", starter: "A boundary I set that was an act of self-love was..." },
+      { q: "What does your intuition tell you that you are finally learning to trust?", starter: "My intuition regularly tells me... and I am learning to trust it by..." },
+      { q: "What does your body know that your mind sometimes forgets? What is it telling you today?", starter: "What my body knows that my mind sometimes forgets is..." },
+      { q: "What do you know about your own power that took you years to believe?", starter: "Something about my own power that took years to believe is..." },
+      { q: "What season of womanhood are you in right now - and what gift does it carry?", starter: "The season I am in right now is... and its gift is..." },
+      { q: "What would you tell a younger version of yourself about her worth, her beauty and her voice?", starter: "I would tell my younger self that her worth is... and her voice..." },
+      { q: "What have you carried alone that you are ready to put down or share?", starter: "Something I have been carrying alone that I am ready to release is..." },
+      { q: "What female friendship has been one of the most nourishing relationships of your life?", starter: "A female friendship that has nourished my life is with [name], because..." },
+      { q: "What achievement - recognised or unrecognised - deserves your own deep acknowledgment today?", starter: "An achievement that deserves my own acknowledgment is..." },
+      { q: "What are you becoming that is bigger than what you were once told you were allowed to be?", starter: "I am becoming... which is bigger than what I was told because..." },
+      { q: "What does rest mean to you as a woman who gives so much? When did you last truly receive?", starter: "Rest for me means... and the last time I truly received was..." },
+      { q: "What part of your story - the messy, non-linear parts - are you grateful for?", starter: "A messy, non-linear part of my story I am grateful for is..." },
+      { q: "What woman in history or fiction has given you permission to be more fully yourself?", starter: "A woman who gave me permission to be more myself is [name], because..." },
+      { q: "What does your life look like when you are living from your power rather than your fear?", starter: "When I live from my power rather than my fear, my life looks like..." },
+      { q: "What is the most courageous thing you have done quietly, without applause?", starter: "The most courageous quiet thing I have done is..." },
+      { q: "What do you love about the way you love - as a mother, a friend, a partner, a daughter?", starter: "Something I love about the way I love others is..." },
+      { q: "What have you forgiven yourself for that you once thought was unforgivable?", starter: "Something I have forgiven myself for that once felt unforgivable is..." },
+      { q: "What does abundance look like in your life right now - beyond money?", starter: "Abundance in my life right now, beyond money, looks like..." },
+      { q: "What has grief, loss or disappointment made you appreciate more deeply about yourself?", starter: "What grief or disappointment has made me appreciate about myself is..." },
+      { q: "What do the women who love you most see in you that you struggle to see in yourself?", starter: "The women who love me would say I have... but I struggle to see it because..." },
+      { q: "What prayer, intention or affirmation is your heart carrying into this day?", starter: "The intention my heart is carrying today is..." }
+    ]
+  },
+  mindfulness: {
+    icon: "🧘", title: "Mindfulness & Present Moment", color: "#4a8b8c", bg: "#eef6f6",
+    tag: "MINDFULNESS REFLECTION",
+    prompts: [
+      { q: "What is happening in your body right now, in this exact moment? What do you notice without judgment?", starter: "Right now in my body I notice..." },
+      { q: "What are five things you can sense right now - see, hear, feel, smell or taste?", starter: "Right now I can sense: I see... I hear... I feel... I notice..." },
+      { q: "What thought has been visiting you repeatedly today? Can you observe it without becoming it?", starter: "A thought visiting me today is... and when I observe it without becoming it I notice..." },
+      { q: "What would it mean to be fully present in this one moment - not fixing the past or planning the future?", starter: "Being fully present in this moment would mean..." },
+      { q: "What small ordinary moment from today deserves to be noticed and appreciated exactly as it is?", starter: "A small ordinary moment from today that deserves to be noticed is..." },
+      { q: "What does your breath feel like right now? Take three slow breaths and describe what shifts.", starter: "After three slow breaths I notice... what shifted was..." },
+      { q: "What emotion is present in you right now - not good or bad, just present? Can you sit with it?", starter: "The emotion present in me right now is... when I sit with it I notice..." },
+      { q: "What has slowing down this week revealed to you that busyness would have hidden?", starter: "Slowing down has revealed to me that..." },
+      { q: "What is one thing you did today on autopilot that you could do more consciously tomorrow?", starter: "One thing I did on autopilot today was... I could do it more consciously by..." },
+      { q: "What beauty exists in your immediate surroundings right now that you almost walked past?", starter: "Something beautiful in my surroundings right now that I almost missed is..." },
+      { q: "What story is your mind telling about your current situation? Is that story actually true?", starter: "The story my mind is telling about my situation is... and when I ask if it is true I find..." },
+      { q: "What would radical acceptance of this moment - exactly as it is - feel like?", starter: "Radically accepting this moment exactly as it is would feel like..." },
+      { q: "What are you resisting right now? What would happen if you stopped resisting for one minute?", starter: "Something I am resisting right now is... if I stopped resisting it for one minute I think..." },
+      { q: "What does gratitude feel like in your body when you truly drop into it - not just think it?", starter: "When I drop into gratitude in my body rather than just think it, I feel..." },
+      { q: "What thought are you trying to chase away today? Can you let it be here without acting on it?", starter: "I have been trying to chase away... and when I let it be here without acting on it I notice..." },
+      { q: "What would it mean to offer yourself the same gentle presence you offer someone you love?", starter: "Offering myself the same gentle presence I offer someone I love would look like..." },
+      { q: "What is the quality of your attention right now - scattered, focused, soft? What does it need?", starter: "The quality of my attention right now is... and what it needs is..." },
+      { q: "What is one thing you can choose to do with full attention for just five minutes today?", starter: "One thing I choose to do with full attention for five minutes today is..." },
+      { q: "What gift does stillness offer you that activity cannot?", starter: "The gift that stillness offers me that activity cannot is..." },
+      { q: "What noise - external or internal - has been loudest today? What happens when you let it quiet?", starter: "The noise that has been loudest today is... when I let it quiet I find..." },
+      { q: "What does this particular moment in your life ask of you - not next year, not tomorrow?", starter: "This particular moment in my life asks of me..." },
+      { q: "What are you grateful for that only exists in this present moment - not in memory or anticipation?", starter: "Something I am grateful for that only exists right now is..." },
+      { q: "If you had nowhere to be and nothing to fix right now, what would you notice about being alive?", starter: "If I had nowhere to be and nothing to fix right now, I would notice..." },
+      { q: "What does your nervous system most need right now - soothing, grounding, energy or rest?", starter: "My nervous system most needs right now... and I can offer it that by..." },
+      { q: "What would it feel like to end this day with a full and settled heart?", starter: "Ending this day with a full and settled heart would feel like..." }
+    ]
+  },
+  friendship: {
+    icon: "🌻", title: "Friendship & Belonging", color: "#6b8f71", bg: "#eef4ef",
+    tag: "FRIENDSHIP REFLECTION",
+    prompts: [
+      { q: "Who is the friend who has known you the longest? What do they know about you that nobody else does?", starter: "The friend who has known me longest is [name]. They know that I..." },
+      { q: "What friendship in your life right now feels most nourishing? What makes it feel that way?", starter: "The friendship that feels most nourishing is with [name] because..." },
+      { q: "What is the most generous thing a friend has ever done for you? Did you let yourself receive it fully?", starter: "The most generous thing a friend did for me was when [name]... I received it by..." },
+      { q: "What kind of friend are you - and what do you love about how you show up for the people you care about?", starter: "The kind of friend I am is one who... and what I love about that is..." },
+      { q: "Who do you feel most like yourself around? What does that friendship give you?", starter: "I feel most like myself around [name] because... that friendship gives me..." },
+      { q: "What friendship has grown stronger through difficulty or distance? What made it last?", starter: "A friendship that grew stronger through difficulty is with [name]. What made it last was..." },
+      { q: "What friend have you been meaning to reach out to? What would you say if you did it today?", starter: "A friend I have been meaning to reach out to is [name]. I would say..." },
+      { q: "What have you learned about yourself through your friendships that you could not have learned alone?", starter: "Something I learned about myself through friendship that I could not have learned alone is..." },
+      { q: "What shared memory with a friend do you treasure most - one that still makes you smile?", starter: "A shared memory with [name] that I treasure most is when... it still makes me smile because..." },
+      { q: "What does loyalty look like in your most cherished friendships? Have you shown it recently?", starter: "Loyalty in my cherished friendships looks like... recently I showed it by..." },
+      { q: "What friendship from your past - even one that has ended - gave you something you still carry?", starter: "A friendship from my past that gave me something I still carry is with [name]..." },
+      { q: "What do you bring to a friendship that is uniquely yours - your humour, presence, honesty?", starter: "What I bring to a friendship that is uniquely mine is..." },
+      { q: "What new friendship has surprised you recently with its depth or ease?", starter: "A new friendship that has surprised me with its depth is with [name], because..." },
+      { q: "What does belonging feel like for you - when do you feel most at home with other people?", starter: "Belonging feels like... for me. I feel most at home with others when..." },
+      { q: "Who has seen you at your lowest and stayed anyway? What does their loyalty mean?", starter: "Someone who saw me at my lowest and stayed is [name]. Their loyalty means..." },
+      { q: "What act of forgiveness - given or received - strengthened a friendship rather than ending it?", starter: "An act of forgiveness that strengthened a friendship was when..." },
+      { q: "What is something you have never told a close friend that they would probably want to hear?", starter: "Something I have never told [name] that they would want to hear is..." },
+      { q: "What community - online or offline - gives you a sense of shared purpose and belonging?", starter: "A community that gives me shared purpose is... what it gives me is..." },
+      { q: "What is the most fun you have ever had with a group of friends? What made it memorable?", starter: "The most fun I have had with friends was when... it was memorable because..." },
+      { q: "What small consistent act does a friend do for you that you have started to take for granted?", starter: "A small consistent act a friend does that I take for granted is when [name]..." },
+      { q: "What friendship needs more of your time and attention right now than you have been giving it?", starter: "A friendship that needs more of my attention right now is with [name], because..." },
+      { q: "What has friendship taught you about vulnerability - about letting people in even when it is scary?", starter: "Friendship has taught me about vulnerability by showing me..." },
+      { q: "What do you love about how your closest friends celebrate you, check in and hold you?", starter: "What I love about how my closest friends love me is the way they..." },
+      { q: "What does the word friend mean to you at this season of your life?", starter: "At this season of my life, friend means..." },
+      { q: "If you wrote a thank you letter to your friendships, what would the first line say?", starter: "If I wrote a thank you letter to my friendships, the first line would say..." }
+    ]
+  },
+  career: {
+    icon: "💼", title: "Work & Purpose", color: "#5c6bc0", bg: "#f0f1fa",
+    tag: "WORK & PURPOSE",
+    prompts: [
+      { q: "What aspect of your work or daily responsibilities are you genuinely grateful for today?", starter: "Something about my work I am genuinely grateful for today is..." },
+      { q: "What skill or ability do you bring to your work that you rarely pause to appreciate?", starter: "A skill I bring to my work that I rarely appreciate is..." },
+      { q: "Who in your professional life - a mentor, colleague or collaborator - has made your work better?", starter: "Someone who has made my work better is [name], who..." },
+      { q: "What has your work taught you about yourself that you could not have learned any other way?", starter: "What my work has taught me about myself is..." },
+      { q: "What moment of genuine contribution felt most meaningful in your work recently?", starter: "A recent moment of genuine contribution that felt meaningful was when I..." },
+      { q: "What do you believe your work contributes to the world, however indirectly?", starter: "What I believe my work contributes to the world is..." },
+      { q: "What challenge in your work right now is growing you in an important way?", starter: "A challenge in my work that is growing me is... and it is growing me by..." },
+      { q: "What have you built, created or contributed this week that deserves acknowledgment?", starter: "Something I built, created or contributed this week that deserves acknowledgment is..." },
+      { q: "What part of your daily work would you miss if it were gone?", starter: "A part of my daily work I would miss if it were gone is..." },
+      { q: "What does purpose feel like in your work when you touch it - even briefly?", starter: "Purpose in my work feels like... and the last time I felt it was when..." },
+      { q: "What progress have you made in your career this year that you have been underselling?", starter: "Progress in my work this year that I have been underselling is..." },
+      { q: "What professional relationship has been unexpectedly meaningful or supportive?", starter: "A professional relationship that has been unexpectedly meaningful is with [name], who..." },
+      { q: "What has failure or setback in your work ultimately given you - a perspective, a pivot, a strength?", starter: "A failure that ultimately gave me something valuable was... it gave me..." },
+      { q: "What does a good day at work feel like in your body - where do you feel flow or pride?", starter: "A good day at work feels in my body like... I usually feel it when..." },
+      { q: "What are you learning right now in your work that excites or stretches you?", starter: "Something I am learning in my work right now that excites me is..." },
+      { q: "What boundary have you set in your work life that protected your energy or integrity?", starter: "A boundary I set in my work life that protected my energy is..." },
+      { q: "What would you want said about the quality of your work and the way you show up?", starter: "What I want said about how I show up in my work is..." },
+      { q: "What does financial provision from your work - however modest - make possible in your life?", starter: "What financial provision from my work makes possible is..." },
+      { q: "What did a colleague, client or customer say recently that reminded you your work matters?", starter: "Something someone said recently that reminded me my work matters was..." },
+      { q: "What is the most creative thing you have done in your work recently?", starter: "The most creative thing I have done in my work recently is..." },
+      { q: "What does your work look like on the days when you are operating at your best?", starter: "My work on the days when I am at my best looks like..." },
+      { q: "What have you sacrificed for your work that you respect yourself for?", starter: "Something I have sacrificed for my work that I respect myself for is..." },
+      { q: "What does your ideal working life look like - and how close are you to building it?", starter: "My ideal working life looks like... and I am building it by..." },
+      { q: "What legacy do you want your work to leave - even in a small corner of the world?", starter: "The legacy I want my work to leave is..." },
+      { q: "What would you do in your work if you knew you could not fail?", starter: "If I knew I could not fail in my work, I would..." }
+    ]
+  }
 };
 
 
@@ -850,6 +975,9 @@ function generate() {
   document.getElementById('results').className = 'results show';
   document.getElementById('copyLabel').textContent = 'Copy All';
   setTimeout(function(){ document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'}); }, 50);
+  setTimeout(notifyHeight, 300);
+  setTimeout(notifyHeight, 800);
+  setTimeout(notifyHeight, 1500);
 }
 
 function copyAll() {
