@@ -172,15 +172,7 @@ h1 em { font-style: italic; color: var(--sage); }
 .act-btn.primary { background: var(--sage); color: #fff; border-color: var(--sage); }
 .act-btn.primary:hover { background: #4a6741; }
 
-/* Saved entries */
-.saved-section { display: none; }
-.saved-section.show { display: block; animation: fadeUp 0.3s ease both; }
-.saved-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-.clear-saved { font-size: 11px; font-weight: 600; color: var(--rose); cursor: pointer; text-transform: none; letter-spacing: 0; }
-.saved-list { display: flex; flex-direction: column; gap: 8px; }
-.saved-item { background: var(--warm); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
-.si-prompt { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic; color: var(--muted); margin-bottom: 6px; }
-.si-response { font-size: 13px; color: var(--ink); line-height: 1.6; }
+
 
 .footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #b0a48c; }
 
@@ -284,29 +276,34 @@ h1 em { font-style: italic; color: var(--sage); }
       <button class="act-btn primary" onclick="generate()">🔄 New Prompts</button>
       <button class="act-btn" onclick="window.print()">🖨️ Print Journal</button>
       <button class="act-btn" onclick="copyAll()">📋 <span id="copyLabel">Copy All</span></button>
-      <button class="act-btn" onclick="saveEntries()">💾 <span id="saveLabel">Save Entries</span></button>
+
     </div>
 
   </div>
 
-  <!-- Saved entries -->
-  <div class="saved-section" id="savedSection">
-    <div class="saved-title">
-      <span>📓 Saved Journal Entries</span>
-      <span class="clear-saved" onclick="clearSaved()">Clear all</span>
-    </div>
-    <div class="saved-list" id="savedList"></div>
-  </div>
 
-  <textarea id="copyBox" style="display:none;position:fixed;top:0;left:0;width:100%;height:60px;z-index:9999;font-size:13px;padding:8px;" readonly></textarea>
-  <p class="footer-note">thatsthetool.com · Take a breath. You have so much to be grateful for. 🌿</p>
+
+  <div id="copyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:24px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-family:Jost,sans-serif;font-size:14px;font-weight:700;color:#2c2416;">Your Journal Prompts</div>
+      <button onclick="closeCopyModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:#8a7a65;line-height:1;">×</button>
+    </div>
+    <div style="font-family:Jost,sans-serif;font-size:12px;color:#8a7a65;margin-bottom:10px;">Select all text below and copy (Ctrl+A then Ctrl+C)</div>
+    <textarea id="copyModalBox" style="width:100%;height:220px;padding:12px;font-family:Jost,sans-serif;font-size:13px;color:#2c2416;border:1.5px solid #d4c9b8;border-radius:8px;resize:none;background:#faf7f2;" readonly onclick="this.select()"></textarea>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button onclick="selectAllCopy()" style="flex:1;padding:11px;background:#6b8f71;color:#fff;border:none;border-radius:10px;font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Select All & Copy</button>
+      <button onclick="closeCopyModal()" style="flex:1;padding:11px;background:#f5f0e8;color:#8a7a65;border:1px solid #d4c9b8;border-radius:10px;font-family:Jost,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Close</button>
+    </div>
+  </div>
+</div>
+<p class="footer-note">thatsthetool.com · Take a breath. You have so much to be grateful for. 🌿</p>
 </div>
 
 <script>
 var currentTheme = 'morning';
 var currentCount = 3;
 var usedPrompts = {};
-var savedEntries = [];
 
 var QUOTES = [
   { text: "Gratitude turns what we have into enough.", author: "Melody Beattie" },
@@ -852,7 +849,6 @@ function generate() {
 
   document.getElementById('results').className = 'results show';
   document.getElementById('copyLabel').textContent = 'Copy All';
-  document.getElementById('saveLabel').textContent = 'Save Entries';
   setTimeout(function(){ document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'}); }, 50);
 }
 
@@ -866,77 +862,47 @@ function copyAll() {
     var taEl = card.querySelector('textarea');
     var q = qtEl ? qtEl.textContent.trim() : '';
     var a = taEl ? taEl.value.trim() : '';
-    lines.push((i+1) + '. ' + q);
-    if (a) lines.push('My answer: ' + a);
+    lines.push('Q' + (i+1) + ': ' + q);
+    if (a) lines.push('A' + (i+1) + ': ' + a);
     lines.push('');
   }
-  lines.push('Generated at thatsthetool.com');
+  lines.push('thatsthetool.com');
   var text = lines.join('\n');
-  var copyBox = document.getElementById('copyBox');
-  copyBox.value = text;
-  copyBox.style.display = 'block';
-  copyBox.select();
-  copyBox.setSelectionRange(0, 99999);
+  var modal = document.getElementById('copyModal');
+  var box = document.getElementById('copyModalBox');
+  box.value = text;
+  modal.style.display = 'flex';
+  setTimeout(function() {
+    box.focus();
+    box.select();
+    try { document.execCommand('copy'); } catch(e) {}
+  }, 100);
+}
+
+function selectAllCopy() {
+  var box = document.getElementById('copyModalBox');
+  box.focus();
+  box.select();
+  box.setSelectionRange(0, 99999);
   var success = false;
   try { success = document.execCommand('copy'); } catch(e) {}
-  copyBox.style.display = 'none';
-  var lbl = document.getElementById('copyLabel');
-  if (success) {
-    lbl.textContent = 'Copied!';
-  } else {
-    lbl.textContent = 'Copied!';
-    // Show the box so user can manually copy
-    copyBox.style.display = 'block';
-    setTimeout(function(){ copyBox.style.display = 'none'; }, 5000);
-  }
-  setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
+  var btn = event.target;
+  btn.textContent = success ? 'Copied!' : 'Select all with Ctrl+A';
+  setTimeout(function() { btn.textContent = 'Select All & Copy'; }, 2000);
 }
 
-function saveEntries() {
-  var theme = THEMES[currentTheme];
-  var hasContent = false;
-  var cards = document.querySelectorAll('.prompt-card');
-  for (var i = 0; i < cards.length; i++) {
-    var card = cards[i];
-    var ta = card.querySelector('textarea');
-    var qtEl = card.querySelector('.prompt-text');
-    if (ta && ta.value.trim()) {
-      hasContent = true;
-      var prompt = qtEl ? qtEl.textContent.trim() : '';
-      savedEntries.unshift({
-        theme: theme.title,
-        icon: theme.icon,
-        prompt: prompt,
-        response: ta.value.trim(),
-        date: new Date().toLocaleDateString()
-      });
-    }
-  }
-  var lbl = document.getElementById('saveLabel');
-  if (!hasContent) {
-    lbl.textContent = 'Write something first!';
-    setTimeout(function(){ lbl.textContent = 'Save Entries'; }, 2500);
-    return;
-  }
-  renderSaved();
-  // Scroll to saved section
-  var sec = document.getElementById('savedSection');
-  if (sec) setTimeout(function(){ sec.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
-  lbl.textContent = 'Saved!';
-  setTimeout(function(){ lbl.textContent = 'Save Entries'; }, 2500);
+function closeCopyModal() {
+  document.getElementById('copyModal').style.display = 'none';
 }
 
-function renderSaved() {
-  if (!savedEntries.length) { document.getElementById('savedSection').className='saved-section'; return; }
-  document.getElementById('savedSection').className = 'saved-section show';
-  document.getElementById('savedList').innerHTML = savedEntries.slice(0,20).map(function(e) {
-    return '<div class="saved-item"><div class="si-prompt">' + e.icon + ' ' + e.prompt + '</div><div class="si-response">' + e.response + '</div></div>';
-  }).join('');
+
+function notifyHeight() {
+  var h = document.body.scrollHeight;
+  window.parent.postMessage({ iframeHeight: h }, '*');
 }
-
-function clearSaved() { savedEntries=[]; renderSaved(); }
-
-window.addEventListener('load', init);
+window.addEventListener('load', notifyHeight);
+window.addEventListener('resize', notifyHeight);
+setInterval(notifyHeight, 800);
 </script>
 </body>
 </html>
