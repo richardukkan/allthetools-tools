@@ -31,11 +31,15 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible;
+}
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: 'Jost', sans-serif;
-  height: auto;
 }
 
 body::before {
@@ -46,7 +50,7 @@ body::before {
     radial-gradient(ellipse 50% 40% at 10% 80%, rgba(107,143,113,0.06), transparent 60%);
 }
 
-.wrapper { position: relative; z-index: 1; max-width: 740px; margin: 0 auto; padding: 28px 16px 40px; }
+.wrapper { position: relative; z-index: 1; max-width: 740px; margin: 0 auto; padding: 24px 16px 24px; }
 
 /* Header */
 header { text-align: center; margin-bottom: 44px; }
@@ -1014,12 +1018,9 @@ function closeCopyPanel() {
 
 
 function notifyHeight() {
-  var h = Math.max(
-    document.body.scrollHeight,
-    document.body.offsetHeight,
-    document.documentElement.scrollHeight
-  );
-  window.parent.postMessage({ iframeHeight: h + 40 }, '*');
+  var wrapper = document.querySelector('.wrapper');
+  var h = wrapper ? (wrapper.getBoundingClientRect().bottom + window.scrollY + 20) : document.body.scrollHeight;
+  window.parent.postMessage({ iframeHeight: Math.ceil(h) }, '*');
 }
 window.addEventListener('load', function(){ setTimeout(notifyHeight, 300); });
 window.addEventListener('resize', notifyHeight);
