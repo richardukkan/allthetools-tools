@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Truth or Dare – Fun Party Game for Friends & Couples</title>
+<meta name="description" content="Free Truth or Dare game. Play with friends, couples or at parties. Choose from Kids, Teen, Adult or Couples mode. Hundreds of questions and dares included.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0a14;
+  --card: #151020;
+  --card2: #1c1530;
+  --truth: #7c3aed;
+  --truth-light: rgba(124,58,237,0.15);
+  --dare: #dc2626;
+  --dare-light: rgba(220,38,38,0.15);
+  --gold: #f59e0b;
+  --border: rgba(255,255,255,0.08);
+  --ink: #f0ecff;
+  --muted: #8a7aaa;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+/* Animated background */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,58,237,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(220,38,38,0.08) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+.wrapper { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; padding: 40px 20px 80px; }
+
+header { text-align: center; margin-bottom: 36px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.eyebrow::before, .eyebrow::after { content:''; width:28px; height:1px; background:var(--gold); opacity:0.5; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(36px, 9vw, 64px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; margin-bottom: 10px; }
+h1 .truth-word { color: var(--truth); font-family: 'Playfair Display', serif; font-style: italic; }
+h1 .dare-word { color: var(--dare); }
+.subtitle { font-size: 14px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+/* Mode selector */
+.mode-section { margin-bottom: 24px; }
+.mode-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block; text-align: center; }
+.mode-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+@media(max-width:400px){ .mode-grid { grid-template-columns: 1fr 1fr; } }
+.mode-btn { padding: 12px 6px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--card); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; text-align: center; }
+.mode-btn .mode-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+.mode-btn:hover { border-color: var(--truth); color: var(--ink); }
+.mode-btn.active { border-color: var(--gold); background: rgba(245,158,11,0.1); color: var(--gold); }
+
+/* Players */
+.players-section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+.players-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.players-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.add-player-row { display: flex; gap: 8px; }
+.player-input { flex: 1; padding: 10px 14px; background: var(--card2); border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--ink); outline: none; }
+.player-input::placeholder { color: rgba(255,255,255,0.2); }
+.player-input:focus { border-color: var(--truth); }
+.add-btn { padding: 10px 16px; background: var(--truth); color: #fff; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+.add-btn:hover { opacity: 0.85; }
+.players-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; min-height: 20px; }
+.player-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--card2); border: 1px solid var(--border); border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.player-chip .remove-player { cursor: pointer; color: var(--muted); font-size: 14px; line-height: 1; }
+.player-chip .remove-player:hover { color: var(--dare); }
+.current-player { background: rgba(124,58,237,0.15); border-color: var(--truth); color: var(--truth); }
+
+/* Current turn display */
+.turn-display { text-align: center; margin-bottom: 20px; min-height: 28px; }
+.turn-text { font-size: 16px; font-weight: 700; color: var(--ink); }
+.turn-name { color: var(--gold); font-size: 18px; }
+
+/* Big action buttons */
+.action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.action-btn { padding: 22px 10px; border: none; border-radius: 18px; font-family: 'DM Sans', sans-serif; font-size: 20px; font-weight: 800; color: #fff; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s; letter-spacing: -0.01em; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.action-btn .btn-icon { font-size: 32px; }
+.action-btn:hover { transform: translateY(-3px); }
+.action-btn:active { transform: scale(0.97); }
+.truth-btn { background: linear-gradient(135deg, #5b21b6, #7c3aed); box-shadow: 0 6px 24px rgba(124,58,237,0.35); }
+.dare-btn { background: linear-gradient(135deg, #991b1b, #dc2626); box-shadow: 0 6px 24px rgba(220,38,38,0.35); }
+.truth-btn:hover { box-shadow: 0 10px 32px rgba(124,58,237,0.5); }
+.dare-btn:hover { box-shadow: 0 10px 32px rgba(220,38,38,0.5); }
+
+/* Card display */
+.question-card { display: none; position: relative; border-radius: 20px; padding: 36px 28px; margin-bottom: 20px; text-align: center; min-height: 200px; align-items: center; justify-content: center; flex-direction: column; }
+.question-card.show { display: flex; animation: cardPop 0.4s cubic-bezier(0.34,1.4,0.64,1) both; }
+.question-card.truth-card { background: linear-gradient(135deg, #2e1065, #4c1d95); border: 1px solid rgba(124,58,237,0.3); box-shadow: 0 8px 40px rgba(124,58,237,0.25); }
+.question-card.dare-card { background: linear-gradient(135deg, #450a0a, #7f1d1d); border: 1px solid rgba(220,38,38,0.3); box-shadow: 0 8px 40px rgba(220,38,38,0.2); }
+.qc-type { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; margin-bottom: 16px; opacity: 0.7; }
+.truth-card .qc-type { color: #c4b5fd; }
+.dare-card .qc-type { color: #fca5a5; }
+.qc-player { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.truth-card .qc-player { color: #c4b5fd; }
+.dare-card .qc-player { color: #fca5a5; }
+.qc-text { font-size: clamp(16px, 4vw, 22px); font-weight: 700; color: #fff; line-height: 1.45; letter-spacing: -0.01em; }
+
+/* Skip / Next buttons */
+.card-actions { display: flex; gap: 10px; margin-bottom: 20px; }
+.skip-btn { flex: 1; padding: 13px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.skip-btn:hover { border-color: var(--dare); color: var(--dare); }
+.next-btn { flex: 2; padding: 13px; background: var(--card2); border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; transition: all 0.2s; }
+.next-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Stats */
+.stats-row { display: flex; gap: 10px; margin-bottom: 20px; }
+.stat-box { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+.stat-num { font-size: 22px; font-weight: 800; color: var(--ink); line-height: 1; }
+.stat-num.truth-col { color: #a78bfa; }
+.stat-num.dare-col { color: #f87171; }
+.stat-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+
+/* History */
+.history-section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+.history-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; justify-content: space-between; }
+.clear-hist { font-weight: 600; cursor: pointer; color: var(--dare); text-transform: none; letter-spacing: 0; font-size: 11px; }
+.history-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
+.hist-item { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; padding: 8px 10px; border-radius: 8px; background: var(--card2); }
+.hist-badge { font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; margin-top: 1px; }
+.hist-badge.truth { background: rgba(124,58,237,0.3); color: #c4b5fd; }
+.hist-badge.dare { background: rgba(220,38,38,0.25); color: #f87171; }
+.hist-text { color: rgba(255,255,255,0.7); line-height: 1.4; }
+.hist-player { font-weight: 700; color: var(--gold); }
+.no-history { font-size: 13px; color: var(--muted); font-style: italic; }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #4a4060; }
+
+/* Shuffle button */
+.shuffle-btn {
+  width: 100%; padding: 32px 20px;
+  background: linear-gradient(135deg, #2e1065, #4c1d95, #7f1d1d);
+  background-size: 300% 300%;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 22px; font-weight: 800;
+  color: #fff; cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+  letter-spacing: 0.06em;
+  box-shadow: 0 8px 32px rgba(100,30,200,0.35);
+  transition: transform 0.15s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+.shuffle-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(124,58,237,0.4), rgba(220,38,38,0.4));
+  opacity: 0; transition: opacity 0.3s;
+}
+.shuffle-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(100,30,200,0.5); }
+.shuffle-btn:hover::before { opacity: 1; }
+.shuffle-btn:active { transform: scale(0.97); }
+.shuffle-btn.spinning { animation: shuffleSpin 0.6s ease both; }
+.shuffle-icon { font-size: 48px; display: block; transition: transform 0.3s; }
+.shuffle-btn.spinning .shuffle-icon { animation: iconSpin 0.6s ease both; }
+.shuffle-btn.truth-result { background: linear-gradient(135deg, #3b0764, #5b21b6, #7c3aed); }
+.shuffle-btn.dare-result { background: linear-gradient(135deg, #450a0a, #991b1b, #dc2626); }
+
+@keyframes shuffleSpin {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(0.95) rotate(-2deg); }
+  40%  { transform: scale(1.04) rotate(2deg); }
+  60%  { transform: scale(0.97) rotate(-1deg); }
+  80%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+@keyframes iconSpin {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(-20deg) scale(1.3); }
+  50%  { transform: rotate(20deg) scale(0.8); }
+  75%  { transform: rotate(-10deg) scale(1.2); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes cardPop { from{opacity:0;transform:scale(0.85) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">✦ Party Game ✦</div>
+    <h1><span class="truth-word">Truth</span> or <span class="dare-word">Dare</span></h1>
+    <p class="subtitle">The ultimate party game. Pick your mode, add players and let the fun begin!</p>
+  </header>
+
+  <!-- Mode -->
+  <div class="mode-section">
+    <span class="mode-label">Game Mode</span>
+    <div class="mode-grid">
+      <button class="mode-btn" id="mode-kids" onclick="setMode('kids')"><span class="mode-icon">🧒</span>Kids</button>
+      <button class="mode-btn active" id="mode-teen" onclick="setMode('teen')"><span class="mode-icon">🎒</span>Teen</button>
+      <button class="mode-btn" id="mode-adult" onclick="setMode('adult')"><span class="mode-icon">🔥</span>Adult</button>
+      <button class="mode-btn" id="mode-couples" onclick="setMode('couples')"><span class="mode-icon">💑</span>Couples</button>
+    </div>
+  </div>
+
+  <!-- Players -->
+  <div class="players-section">
+    <div class="players-header">
+      <span class="players-title">Players</span>
+    </div>
+    <div class="add-player-row">
+      <input class="player-input" id="playerInput" placeholder="Enter player name..." maxlength="20" onkeydown="if(event.key==='Enter')addPlayer()">
+      <button class="add-btn" onclick="addPlayer()">+ Add</button>
+    </div>
+    <div class="players-list" id="playersList">
+      <span style="font-size:12px;color:var(--muted);font-style:italic;">Add players above or play without — questions will show for everyone!</span>
+    </div>
+  </div>
+
+  <!-- Current turn -->
+  <div class="turn-display" id="turnDisplay"></div>
+
+  <!-- Shuffle button -->
+  <div style="margin-bottom:20px;">
+    <button class="shuffle-btn" id="shuffleBtn" onclick="shuffleCard()">
+      <span class="shuffle-icon" id="shuffleIcon">🎲</span>
+      <span id="shuffleLabel">TAP TO SPIN</span>
+    </button>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button class="action-btn truth-btn" onclick="getCard('truth')" style="flex:1;padding:12px 6px;font-size:13px;">
+        <span style="font-size:18px;">💜</span> TRUTH
+      </button>
+      <button class="action-btn dare-btn" onclick="getCard('dare')" style="flex:1;padding:12px 6px;font-size:13px;">
+        <span style="font-size:18px;">🔥</span> DARE
+      </button>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px;">Or pick manually above</div>
+  </div>
+
+  <!-- Question card -->
+  <div class="question-card" id="questionCard">
+    <div class="qc-type" id="qcType">TRUTH</div>
+    <div class="qc-player" id="qcPlayer"></div>
+    <div class="qc-text" id="qcText">—</div>
+  </div>
+
+  <!-- Card actions -->
+  <div class="card-actions" id="cardActions" style="display:none;">
+    <button class="skip-btn" onclick="skipCard()">Skip</button>
+    <button class="next-btn" onclick="nextTurn()">✓ Done — Next Player →</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Rounds</div></div>
+    <div class="stat-box"><div class="stat-num truth-col" id="statTruths">0</div><div class="stat-lbl">Truths</div></div>
+    <div class="stat-box"><div class="stat-num dare-col" id="statDares">0</div><div class="stat-lbl">Dares</div></div>
+  </div>
+
+  <!-- History -->
+  <div class="history-section">
+    <div class="history-title">
+      <span>Round History</span>
+      <span class="clear-hist" onclick="clearHistory()">Clear All</span>
+    </div>
+    <div class="history-list" id="historyList">
+      <span class="no-history">No rounds yet — pick Truth or Dare to start!</span>
+    </div>
+  </div>
+
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var mode = 'teen';
+var players = [];
+var currentPlayerIdx = 0;
+var gameHistory = [];
+var stats = { total: 0, truths: 0, dares: 0 };
+var usedTruths = [], usedDares = [];
+
+var QUESTIONS = {
+  kids: {
+    truth: [
+      "What is your biggest fear?",
+      "What is the silliest thing you have ever done?",
+      "If you could be any animal what would you be?",
+      "What is your favourite food of all time?",
+      "Have you ever blamed someone else for something you did?",
+      "What is your most embarrassing moment at school?",
+      "If you could have any superpower what would it be?",
+      "What is the weirdest dream you have ever had?",
+      "Have you ever cried during a movie?",
+      "What is one thing you are really bad at?",
+      "If you could meet any famous person who would it be?",
+      "What is your biggest secret talent?",
+      "Have you ever cheated at a board game?",
+      "What is your favourite thing about your best friend?",
+      "If you had a million dollars what would you buy first?",
+      "What is one thing you wish you could change about school?",
+      "Have you ever eaten something off the floor?",
+      "What is the funniest thing that has ever happened to you?",
+      "If you could live anywhere in the world where would it be?",
+      "What is your most prized possession?"
+    ],
+    dare: [
+      "Do your best impression of a teacher.",
+      "Speak in a funny accent for the next 3 rounds.",
+      "Sing the alphabet backwards.",
+      "Do 10 jumping jacks right now.",
+      "Make a funny face and hold it for 30 seconds.",
+      "Say the tongue twister 'She sells seashells by the seashore' three times fast.",
+      "Act like a monkey for one full minute.",
+      "Do your best robot dance.",
+      "Pretend you are swimming on the floor for 30 seconds.",
+      "Make up a short song about the person to your left.",
+      "Walk like a penguin around the room.",
+      "Do your best impression of a famous cartoon character.",
+      "Try to lick your elbow.",
+      "Do a silly walk around the room.",
+      "Balance a book on your head for one minute.",
+      "Speak only in whispers for the next two rounds.",
+      "Do your best impression of a baby.",
+      "Pretend you are a news reporter and give a 30 second report.",
+      "Howl like a wolf for 20 seconds.",
+      "Do your best superhero landing pose."
+    ]
+  },
+  teen: {
+    truth: [
+      "Who is your biggest crush right now?",
+      "What is the most embarrassing song on your playlist?",
+      "Have you ever lied to your parents and got away with it?",
+      "What is one thing you would change about yourself?",
+      "Who was your first kiss?",
+      "Have you ever ghosted someone?",
+      "What is the most embarrassing thing that has happened to you in public?",
+      "Have you ever sent a text to the wrong person?",
+      "What is your biggest regret so far?",
+      "Have you ever had a crush on a friend's partner?",
+      "What is the worst lie you have ever told?",
+      "Have you ever stalked someone's social media profile?",
+      "What is something you would never want your parents to find out?",
+      "Who do you text the most?",
+      "Have you ever pretended to be sick to avoid going to school?",
+      "What is the most childish thing you still do?",
+      "Have you ever walked into a room and completely forgotten why you went there?",
+      "What is your most toxic habit?",
+      "Have you ever liked someone you knew you should not?",
+      "What is one thing you are insecure about?",
+      "Have you ever talked badly about someone who was in the same room?",
+      "What is the most embarrassing photo of you that exists?",
+      "Have you ever accidentally called a teacher mum or dad?",
+      "What is something you are secretly really proud of?",
+      "Have you ever had a dream about someone in this group?"
+    ],
+    dare: [
+      "Text your crush right now and say hi.",
+      "Post a selfie with no filter on your story right now.",
+      "Let someone send one text from your phone to anyone in your contacts.",
+      "Call a random contact in your phone and sing happy birthday.",
+      "Do your best impression of someone in this group — without saying their name.",
+      "Read the last text you sent out loud.",
+      "Show everyone the last photo you took on your phone.",
+      "Try to fit as many grapes in your mouth as you can.",
+      "Talk in a British accent for the next three rounds.",
+      "Do a dramatic reading of the last thing someone said to you.",
+      "Show everyone your most recent Google search.",
+      "Make a TikTok-style dance move right now.",
+      "Eat a spoonful of something random from the kitchen.",
+      "Say something nice about every person in the group.",
+      "Let the group go through your phone for 60 seconds.",
+      "Do your best catwalk down an imaginary runway.",
+      "Speak only in questions for the next two rounds.",
+      "Write a short poem about the person to your right, on the spot.",
+      "Do your best impression of a famous celebrity.",
+      "Start every sentence with 'Oh baby' for the next three rounds."
+    ]
+  },
+  adult: {
+    truth: [
+      "What is the most embarrassing thing you have done while drunk?",
+      "Have you ever had feelings for someone in this room?",
+      "What is the biggest lie you have told in the past year?",
+      "Have you ever cheated in a relationship?",
+      "What is the most awkward date you have ever been on?",
+      "What is something you have done that you are not proud of?",
+      "Have you ever sent a flirty message to the wrong person?",
+      "What is your worst habit that you hope nobody knows about?",
+      "Have you ever faked sick to avoid plans?",
+      "What is the most spontaneous thing you have ever done?",
+      "Have you ever been caught doing something you should not?",
+      "What is the biggest secret you are keeping from your family?",
+      "Have you ever had a one night stand?",
+      "What is the worst thing someone has caught you doing?",
+      "Have you ever talked badly about someone behind their back?",
+      "What is the most childish thing you still do as an adult?",
+      "Have you ever told someone you loved them without meaning it?",
+      "What is something you would never admit in real life?",
+      "Have you ever been blocked by someone and deserved it?",
+      "What is the most desperate thing you have done for attention?",
+      "What is the most impulsive purchase you have ever made?",
+      "Have you ever pretended not to see someone in public?",
+      "What is your biggest regret from your twenties?",
+      "Have you ever done something embarrassing for money?",
+      "What is the most uncomfortable truth about yourself?"
+    ],
+    dare: [
+      "Let someone write a post on your social media that you have to post right now.",
+      "Send a voice note to your most recent contact saying something random.",
+      "Do a 60 second stand-up comedy routine about your life.",
+      "Eat a spoonful of the spiciest thing in the kitchen.",
+      "Let someone draw on your face with a marker.",
+      "Talk in a heavy accent of the group's choosing for the next 5 rounds.",
+      "Call someone from your contacts and confess something embarrassing.",
+      "Let the group read your most recent DMs.",
+      "Do your best impression of every single person in the room.",
+      "Text your ex right now — the group decides what to say.",
+      "Do 20 push ups right now.",
+      "Swap clothes with someone for the next 2 rounds.",
+      "Lick your elbow — or fail trying — for 30 seconds.",
+      "Let someone post a story on your behalf.",
+      "Dramatically reenact your most embarrassing moment.",
+      "Speak only using song lyrics for the next 3 rounds.",
+      "Tell everyone in the group one genuine compliment.",
+      "Try to breakdance for one full minute.",
+      "Make a convincing argument that cats are better than dogs — or vice versa.",
+      "Do a full dramatic monologue about your day."
+    ]
+  },
+  couples: {
+    truth: [
+      "What was your first impression of me when we met?",
+      "What is one thing about me that drives you absolutely crazy in a bad way?",
+      "When did you first realise you had feelings for me?",
+      "What is your favourite memory of us together?",
+      "Have you ever kept a secret from me that you feel guilty about?",
+      "What is something you wish I did more of?",
+      "What was the moment you knew I was the one?",
+      "What is one thing you would change about our relationship?",
+      "What is your favourite physical feature of mine?",
+      "Have you ever pretended to like something I love just to make me happy?",
+      "What is the most romantic thing I have ever done for you?",
+      "What is one dream you have that you have never told me?",
+      "Have you ever been jealous in our relationship?",
+      "What is one habit of mine that secretly annoys you?",
+      "What is the most important thing I have taught you?",
+      "What do you think is the biggest challenge we have overcome together?",
+      "If you could relive one day with me which would it be?",
+      "What is something you have always wanted to do with me but never said?",
+      "What do you love most about where we are in our relationship right now?",
+      "Have you ever been embarrassed by something I did in public?"
+    ],
+    dare: [
+      "Give your partner the longest hug you have given them in months.",
+      "Whisper three things you love about your partner in their ear.",
+      "Cook your partner's favourite meal this week — promise right now.",
+      "Send your partner the most sincere voice message you can right now.",
+      "Recreate your first photo together right now.",
+      "Write your partner a poem — you have 90 seconds.",
+      "Give your partner a 3 minute massage right now.",
+      "Sing a song that reminds you of your partner to them.",
+      "Tell your partner one thing you have always held back.",
+      "Plan a date night right now — book it on your phone.",
+      "Say the nicest thing you can think of about your partner out loud.",
+      "Show your partner your favourite photo of them on your phone.",
+      "Do the thing your partner has been asking you to do for weeks.",
+      "Look your partner in the eyes for one full minute without laughing.",
+      "Tell everyone in the room what you love most about your partner.",
+      "Re-enact the moment you two first met.",
+      "Let your partner pick your outfit or hairstyle for the rest of the evening.",
+      "Tell your partner something you are grateful for that you rarely say.",
+      "Give your partner a compliment for every year you have been together.",
+      "Dance together to the song that means the most to you as a couple."
+    ]
+  }
+};
+
+function setMode(m) {
+  mode = m;
+  ['kids','teen','adult','couples'].forEach(function(id){
+    document.getElementById('mode-'+id).className='mode-btn';
+  });
+  document.getElementById('mode-'+m).className='mode-btn active';
+  usedTruths=[]; usedDares=[];
+  hideCard();
+}
+
+function addPlayer() {
+  var input = document.getElementById('playerInput');
+  var name = input.value.trim();
+  if (!name || players.indexOf(name) !== -1) { input.value=''; return; }
+  players.push(name);
+  input.value = '';
+  renderPlayers();
+  updateTurnDisplay();
+}
+
+function removePlayer(name) {
+  players = players.filter(function(p){ return p !== name; });
+  if (currentPlayerIdx >= players.length) currentPlayerIdx = 0;
+  renderPlayers();
+  updateTurnDisplay();
+}
+
+function renderPlayers() {
+  var list = document.getElementById('playersList');
+  if (players.length === 0) {
+    list.innerHTML = '<span style="font-size:12px;color:var(--muted);font-style:italic;">Add players above or play without — questions will show for everyone!</span>';
+    return;
+  }
+  list.innerHTML = players.map(function(p, i) {
+    return '<div class="player-chip'+(i===currentPlayerIdx?' current-player':'')+'">'+p+'<span class="remove-player" onclick="removePlayer(\''+p+'\')">×</span></div>';
+  }).join('');
+}
+
+function updateTurnDisplay() {
+  var el = document.getElementById('turnDisplay');
+  if (players.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="turn-text">It\'s <span class="turn-name">'+players[currentPlayerIdx]+'\'s</span> turn!</div>';
+}
+
+function getRandom(arr, used) {
+  var available = arr.filter(function(q, i){ return used.indexOf(i) === -1; });
+  if (available.length === 0) { used.length = 0; available = arr; }
+  var randomIdx = Math.floor(Math.random() * available.length);
+  var original = arr.indexOf(available[randomIdx]);
+  used.push(original);
+  return available[randomIdx];
+}
+
+function getCard(type) {
+  var pool = QUESTIONS[mode][type];
+  var used = type === 'truth' ? usedTruths : usedDares;
+  var question = getRandom(pool, used);
+
+  var card = document.getElementById('questionCard');
+  var qcType = document.getElementById('qcType');
+  var qcPlayer = document.getElementById('qcPlayer');
+  var qcText = document.getElementById('qcText');
+
+  card.className = 'question-card ' + type + '-card show';
+  qcType.textContent = type === 'truth' ? '💜 TRUTH' : '🔥 DARE';
+  qcPlayer.textContent = players.length > 0 ? players[currentPlayerIdx] + ':' : '';
+  qcText.textContent = question;
+
+  document.getElementById('cardActions').style.display = 'flex';
+
+  // Add to history
+  var playerName = players.length > 0 ? players[currentPlayerIdx] : 'Everyone';
+  gameHistory.unshift({ type: type, player: playerName, text: question });
+  if (gameHistory.length > 50) gameHistory.pop();
+
+  // Stats
+  stats.total++;
+  if (type === 'truth') stats.truths++; else stats.dares++;
+  updateStats();
+  renderHistory();
+}
+
+function skipCard() {
+  // Just get a new question of the same type
+  var current = document.getElementById('questionCard').classList.contains('truth-card') ? 'truth' : 'dare';
+  getCard(current);
+}
+
+function nextTurn() {
+  if (players.length > 0) {
+    currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
+    renderPlayers();
+    updateTurnDisplay();
+  }
+  hideCard();
+}
+
+function hideCard() {
+  document.getElementById('questionCard').className = 'question-card';
+  document.getElementById('cardActions').style.display = 'none';
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = stats.total;
+  document.getElementById('statTruths').textContent = stats.truths;
+  document.getElementById('statDares').textContent = stats.dares;
+}
+
+function renderHistory() {
+  var el = document.getElementById('historyList');
+  if (gameHistory.length === 0) {
+    el.innerHTML = '<span class="no-history">No rounds yet — pick Truth or Dare to start!</span>';
+    return;
+  }
+  el.innerHTML = gameHistory.slice(0,20).map(function(h) {
+    return '<div class="hist-item"><span class="hist-badge '+h.type+'">'+(h.type==='truth'?'TRUTH':'DARE')+'</span><span class="hist-text"><span class="hist-player">'+h.player+'</span> — '+h.text+'</span></div>';
+  }).join('');
+}
+
+function clearHistory() {
+  gameHistory = [];
+  stats = { total: 0, truths: 0, dares: 0 };
+  usedTruths = []; usedDares = [];
+  updateStats();
+  renderHistory();
+  hideCard();
+}
+
+function shuffleCard() {
+  var btn = document.getElementById('shuffleBtn');
+  var icon = document.getElementById('shuffleIcon');
+  var label = document.getElementById('shuffleLabel');
+
+  // Spinning state
+  btn.className = 'shuffle-btn spinning';
+  icon.textContent = '🎲';
+  label.textContent = 'SPINNING...';
+
+  // Rapid flicker between truth/dare icons during spin
+  var flickers = ['💜','🔥','💜','🔥','💜','🔥'];
+  var delay = 0;
+  flickers.forEach(function(f, i) {
+    setTimeout(function(){ icon.textContent = f; }, delay);
+    delay += 80;
+  });
+
+  // Reveal result after spin
+  setTimeout(function() {
+    var type = Math.random() < 0.5 ? 'truth' : 'dare';
+    btn.className = 'shuffle-btn ' + type + '-result';
+    icon.textContent = type === 'truth' ? '💜' : '🔥';
+    label.textContent = type === 'truth' ? 'TRUTH!' : 'DARE!';
+    getCard(type);
+
+    // Reset button after 2.5s
+    setTimeout(function(){
+      btn.className = 'shuffle-btn';
+      icon.textContent = '🎲';
+      label.textContent = 'TAP TO SPIN';
+    }, 2500);
+  }, 600);
+}
+
+// Init
+updateTurnDisplay();
+renderHistory();
+</script>
+</body>
+</html>
