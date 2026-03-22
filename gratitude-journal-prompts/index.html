@@ -1025,12 +1025,25 @@ function closeCopyModal() {
 
 
 function notifyHeight() {
-  var h = document.body.scrollHeight;
-  window.parent.postMessage({ iframeHeight: h }, '*');
+  var h = Math.max(
+    document.body.scrollHeight,
+    document.body.offsetHeight,
+    document.documentElement.scrollHeight
+  );
+  window.parent.postMessage({ iframeHeight: h + 80 }, '*');
 }
-window.addEventListener('load', notifyHeight);
+// Fire on load
+window.addEventListener('load', function(){ setTimeout(notifyHeight,200); setTimeout(notifyHeight,600); setTimeout(notifyHeight,1200); });
+// Fire on resize
 window.addEventListener('resize', notifyHeight);
-setInterval(notifyHeight, 800);
+// Fire every second
+setInterval(notifyHeight, 1000);
+// Fire on every click (catches generate/theme button clicks)
+document.addEventListener('click', function(){
+  setTimeout(notifyHeight, 200);
+  setTimeout(notifyHeight, 700);
+  setTimeout(notifyHeight, 1400);
+});
 </script>
 </body>
 </html>
