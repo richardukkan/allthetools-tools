@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Card Game – Flip and Match Pairs</title>
+<meta name="description" content="Free online memory card game. Flip cards to find matching pairs. Choose from Animals, Food, Sports and more. Play on any device, no sign up needed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4ff;
+  --card-bg: #ffffff;
+  --card-back: linear-gradient(135deg, #4f46e5, #7c3aed);
+  --border: rgba(79,70,229,0.15);
+  --ink: #1e1b4b;
+  --muted: #6b7280;
+  --purple: #4f46e5;
+  --purple-light: #eef2ff;
+  --green: #059669;
+  --green-light: #ecfdf5;
+  --gold: #d97706;
+  --gold-light: #fef3c7;
+  --red: #dc2626;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'Nunito', sans-serif; min-height: 100vh; }
+
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(79,70,229,0.07), transparent 60%);
+}
+
+.wrapper { position: relative; max-width: 720px; margin: 0 auto; padding: 32px 16px 60px; }
+
+header { text-align: center; margin-bottom: 28px; }
+.eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple); margin-bottom: 10px; }
+h1 { font-size: clamp(28px, 7vw, 48px); font-weight: 900; color: var(--ink); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 6px; }
+h1 span { color: var(--purple); }
+.subtitle { font-size: 14px; color: var(--muted); font-weight: 600; }
+
+/* Setup panel */
+.setup-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 28px; box-shadow: 0 2px 20px rgba(0,0,0,0.06); margin-bottom: 20px; }
+
+.setup-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.setup-label { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); min-width: 70px; }
+.opt-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.opt-btn { padding: 7px 14px; border: 2px solid var(--border); border-radius: 10px; background: var(--bg); font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.18s; }
+.opt-btn:hover { border-color: var(--purple); color: var(--purple); }
+.opt-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+.start-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #4338ca, #7c3aed); color: #fff; border: none; border-radius: 14px; font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 900; cursor: pointer; letter-spacing: 0.02em; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px rgba(79,70,229,0.35); }
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.45); }
+.start-btn:active { transform: none; }
+
+/* Stats bar */
+.stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 12px 8px; text-align: center; }
+.stat-num { font-size: clamp(20px, 4vw, 28px); font-weight: 900; color: var(--ink); line-height: 1; letter-spacing: -0.02em; }
+.stat-num.green { color: var(--green); }
+.stat-num.gold { color: var(--gold); }
+.stat-num.red { color: var(--red); }
+.stat-lbl { font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+
+/* Game grid */
+.game-grid { display: grid; gap: 10px; margin-bottom: 20px; }
+.grid-4x4 { grid-template-columns: repeat(4, 1fr); }
+.grid-4x5 { grid-template-columns: repeat(5, 1fr); }
+.grid-4x6 { grid-template-columns: repeat(6, 1fr); }
+@media(max-width:480px){
+  .grid-4x5 { grid-template-columns: repeat(4, 1fr); }
+  .grid-4x6 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Card flip */
+.card-wrap { aspect-ratio: 1; cursor: pointer; perspective: 600px; }
+.card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.25,0.8,0.25,1.4); border-radius: 14px; }
+.card-wrap.flipped .card-inner { transform: rotateY(180deg); }
+.card-wrap.matched .card-inner { transform: rotateY(180deg); }
+
+.card-face { position: absolute; inset: 0; border-radius: 14px; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
+.card-back {
+  background: var(--card-back);
+  box-shadow: 0 5px 18px rgba(79,70,229,0.4);
+  font-size: clamp(22px, 5vw, 32px);
+  border: 3px solid rgba(255,255,255,0.15);
+}
+.card-back::after { content: '?'; font-size: clamp(22px,5vw,32px); font-weight: 900; color: rgba(255,255,255,0.7); text-shadow: 0 0 12px rgba(255,255,255,0.5); }
+.card-front {
+  background: var(--card-bg); transform: rotateY(180deg);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.15);
+  font-size: clamp(30px, 7vw, 48px);
+  border: 3px solid rgba(79,70,229,0.25);
+}
+.card-wrap.matched .card-front {
+  background: var(--green-light);
+  border-color: rgba(5,150,105,0.5);
+  box-shadow: 0 5px 20px rgba(5,150,105,0.35);
+}
+.card-wrap.wrong .card-inner { animation: shake 0.4s ease both; }
+.card-wrap:not(.flipped):not(.matched) .card-back:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 8px 24px rgba(79,70,229,0.55);
+}
+
+/* Controls */
+.controls-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.ctrl-btn { padding: 11px 22px; border: 2px solid var(--border); border-radius: 12px; background: var(--card-bg); font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; color: var(--muted); cursor: pointer; transition: all 0.18s; }
+.ctrl-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+.ctrl-btn.primary { background: var(--purple); color: #fff; border-color: var(--purple); }
+.ctrl-btn.primary:hover { background: #4338ca; }
+
+/* Win screen */
+.win-screen { display: none; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 40px 28px; text-align: center; box-shadow: 0 4px 30px rgba(79,70,229,0.12); }
+.win-screen.show { display: block; animation: popIn 0.5s cubic-bezier(0.34,1.4,0.64,1) both; }
+.win-emoji { font-size: 64px; margin-bottom: 16px; display: block; }
+.win-title { font-size: clamp(24px,6vw,36px); font-weight: 900; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.02em; }
+.win-sub { font-size: 15px; color: var(--muted); font-weight: 600; margin-bottom: 24px; }
+.win-stats { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+.win-stat { background: var(--purple-light); border-radius: 12px; padding: 14px 20px; text-align: center; }
+.ws-val { font-size: 28px; font-weight: 900; color: var(--purple); letter-spacing: -0.02em; line-height: 1; }
+.ws-lbl { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.win-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.best-badge { background: var(--gold-light); border: 1px solid rgba(217,119,6,0.2); border-radius: 10px; padding: 8px 16px; font-size: 12px; font-weight: 800; color: var(--gold); margin-bottom: 20px; display: inline-block; }
+
+.footer-note { text-align: center; margin-top: 32px; font-size: 12px; color: #a0a8c0; }
+
+@keyframes shake { 0%,100%{transform:rotateY(180deg)} 20%{transform:rotateY(180deg) translateX(-8px) scale(0.96)} 40%{transform:rotateY(180deg) translateX(8px) scale(0.96)} 60%{transform:rotateY(180deg) translateX(-6px)} 80%{transform:rotateY(180deg) translateX(6px)} }
+@keyframes popIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+@keyframes matched { 0%{transform:rotateY(180deg) scale(1)} 30%{transform:rotateY(180deg) scale(1.18)} 60%{transform:rotateY(180deg) scale(0.95)} 100%{transform:rotateY(180deg) scale(1)} }
+.card-wrap.matched .card-inner { animation: matched 0.35s ease both; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">🃏 Free Browser Game</div>
+    <h1>Memory <span>Card Game</span></h1>
+    <p class="subtitle">Flip cards to find matching pairs. Train your memory!</p>
+  </header>
+
+  <!-- Setup -->
+  <div class="setup-card" id="setupCard">
+    <div class="setup-row">
+      <span class="setup-label">Theme</span>
+      <div class="opt-btns" id="themeOpts">
+        <button class="opt-btn active" onclick="setTheme('animals')">🐾 Animals</button>
+        <button class="opt-btn" onclick="setTheme('food')">🍕 Food</button>
+        <button class="opt-btn" onclick="setTheme('sports')">⚽ Sports</button>
+        <button class="opt-btn" onclick="setTheme('nature')">🌿 Nature</button>
+        <button class="opt-btn" onclick="setTheme('faces')">😀 Faces</button>
+        <button class="opt-btn" onclick="setTheme('travel')">✈️ Travel</button>
+        <button class="opt-btn" onclick="setTheme('vehicles')">🚗 Vehicles</button>
+        <button class="opt-btn" onclick="setTheme('music')">🎵 Music</button>
+        <button class="opt-btn" onclick="setTheme('flags')">🏁 Flags</button>
+        <button class="opt-btn" onclick="setTheme('fantasy')">🧙 Fantasy</button>
+      </div>
+    </div>
+    <div class="setup-row">
+      <span class="setup-label">Difficulty</span>
+      <div class="opt-btns" id="diffOpts">
+        <button class="opt-btn active" onclick="setDiff('easy')">😊 Easy (4×4)</button>
+        <button class="opt-btn" onclick="setDiff('medium')">🤔 Medium (4×5)</button>
+        <button class="opt-btn" onclick="setDiff('hard')">🔥 Hard (4×6)</button>
+      </div>
+    </div>
+    <button class="start-btn" onclick="startGame()">🎮 Start Game!</button>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="statsBar" style="display:none;">
+    <div class="stat-item"><div class="stat-num" id="statMoves">0</div><div class="stat-lbl">Moves</div></div>
+    <div class="stat-item"><div class="stat-num green" id="statMatches">0</div><div class="stat-lbl">Matched</div></div>
+    <div class="stat-item"><div class="stat-num gold" id="statTimer">0:00</div><div class="stat-lbl">Time</div></div>
+    <div class="stat-item"><div class="stat-num red" id="statLeft">0</div><div class="stat-lbl">Left</div></div>
+  </div>
+
+  <!-- Game grid -->
+  <div class="game-grid" id="gameGrid" style="display:none;"></div>
+
+  <!-- Controls -->
+  <div class="controls-row" id="gameControls" style="display:none;">
+    <button class="ctrl-btn" onclick="restartGame()">🔄 Restart</button>
+    <button class="ctrl-btn" onclick="newGame()">🎲 New Game</button>
+    <button class="ctrl-btn primary" onclick="showSetup()">⚙️ Change Settings</button>
+  </div>
+
+  <!-- Win screen -->
+  <div class="win-screen" id="winScreen">
+    <span class="win-emoji">🎉</span>
+    <div class="win-title">You Win!</div>
+    <div class="win-sub" id="winSub">Amazing memory!</div>
+    <div class="best-badge" id="bestBadge" style="display:none;">🏆 New Best Score!</div>
+    <div class="win-stats">
+      <div class="win-stat"><div class="ws-val" id="wsMoves">0</div><div class="ws-lbl">Moves</div></div>
+      <div class="win-stat"><div class="ws-val" id="wsTime">0:00</div><div class="ws-lbl">Time</div></div>
+      <div class="win-stat"><div class="ws-val" id="wsAccuracy">0%</div><div class="ws-lbl">Accuracy</div></div>
+    </div>
+    <div class="win-btns">
+      <button class="ctrl-btn primary" onclick="restartGame()">🔄 Play Again</button>
+      <button class="ctrl-btn" onclick="newGame()">🎲 New Game</button>
+      <button class="ctrl-btn" onclick="showSetup()">⚙️ Settings</button>
+    </div>
+  </div>
+
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var THEMES = {
+  animals: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐵','🐔','🐧','🦆','🦅','🦉','🐺','🦋'],
+  food:    ['🍕','🍔','🌮','🍜','🍣','🍦','🍩','🎂','🍇','🍓','🍋','🍉','🥑','🌽','🧁','🍟','🥪','🍱','🥗','🍿'],
+  sports:  ['⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🏸','🥊','🏋️','🤸','🏊','🚴','🤺','🧗','🏄','🤾','🎿'],
+  nature:  ['🌸','🌺','🌻','🌹','🍀','🌴','🌵','🍁','🍄','🌊','⛰️','🌋','🌈','☀️','🌙','⭐','❄️','🌪️','🌿','🎋'],
+  faces:   ['😀','😂','🥰','😎','🤩','😴','🥳','😡','🤔','😱','🤗','😜','🥸','😍','🤯','😇','🥺','😤','😒','🤭'],
+  travel:   ['✈️','🚀','🚂','🚢','🚁','🏰','🗽','🗼','🎡','⛺','🏖️','🎭','🗺️','🧳','🎠','🏔️','🌉','🎪','🏟️','🗿'],
+  vehicles: ['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍️','🛵','🚲','🛴','🚁','🛸'],
+  music:    ['🎵','🎸','🎹','🎺','🎻','🥁','🎷','🎤','🎧','🎼','🪘','🪗','🎙️','📯','🎚️','🎛️','🎶','🪕','🪈','📻'],
+  flags:    ['🏳️','🏴','🚩','🎌','🏁','🇺🇸','🇬🇧','🇫🇷','🇩🇪','🇯🇵','🇧🇷','🇦🇺','🇨🇦','🇮🇳','🇨🇳','🇮🇹','🇪🇸','🇲🇽','🇰🇷','🇷🇺'],
+  fantasy:  ['🧙','🧝','🧛','🧟','🧜','🧚','🐉','🦄','🧿','⚗️','🔮','🗡️','🛡️','🧲','💎','👑','🌟','🔯','🪄','🧸']
+};
+
+var DIFF = { easy:{pairs:8,cols:'grid-4x4'}, medium:{pairs:10,cols:'grid-4x5'}, hard:{cols:'grid-4x6',pairs:12} };
+
+var theme='animals', diff='easy';
+var cards=[], flipped=[], matched=0, moves=0, pairs=0;
+var timerInterval=null, seconds=0, gameActive=false;
+var bestScores={};
+
+function setTheme(t){
+  theme=t;
+  document.querySelectorAll('#themeOpts .opt-btn').forEach(function(b){ b.className='opt-btn'; });
+  event.target.className='opt-btn active';
+}
+function setDiff(d){
+  diff=d;
+  document.querySelectorAll('#diffOpts .opt-btn').forEach(function(b){ b.className='opt-btn'; });
+  event.target.className='opt-btn active';
+}
+
+function shuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+
+function startGame(){
+  document.getElementById('setupCard').style.display='none';
+  document.getElementById('statsBar').style.display='grid';
+  document.getElementById('winScreen').className='win-screen';
+  var cfg=DIFF[diff];
+  pairs=cfg.pairs;
+  var pool=shuffle(THEMES[theme]).slice(0,pairs);
+  cards=shuffle(pool.concat(pool));
+  flipped=[]; matched=0; moves=0; seconds=0; gameActive=true;
+  clearInterval(timerInterval);
+  timerInterval=setInterval(tickTimer,1000);
+  updateStats();
+  renderGrid(cfg.cols);
+  document.getElementById('gameGrid').style.display='grid';
+  document.getElementById('gameControls').style.display='flex';
+}
+
+function tickTimer(){
+  seconds++;
+  var m=Math.floor(seconds/60), s=seconds%60;
+  document.getElementById('statTimer').textContent=m+':'+(s<10?'0':'')+s;
+}
+
+function renderGrid(colClass){
+  var grid=document.getElementById('gameGrid');
+  grid.className='game-grid '+colClass;
+  grid.innerHTML='';
+  cards.forEach(function(emoji,i){
+    var wrap=document.createElement('div');
+    wrap.className='card-wrap';
+    wrap.setAttribute('data-index',i);
+    wrap.innerHTML='<div class="card-inner"><div class="card-face card-back"></div><div class="card-face card-front">'+emoji+'</div></div>';
+    wrap.addEventListener('click',function(){ flipCard(i,wrap); });
+    grid.appendChild(wrap);
+  });
+}
+
+function flipCard(idx,el){
+  if(!gameActive) return;
+  if(el.classList.contains('flipped')||el.classList.contains('matched')) return;
+  if(flipped.length>=2) return;
+  el.classList.add('flipped');
+  flipped.push({idx:idx,el:el,emoji:cards[idx]});
+  if(flipped.length===2){
+    moves++;
+    updateStats();
+    if(flipped[0].emoji===flipped[1].emoji){
+      // Match!
+      setTimeout(function(){
+        flipped[0].el.classList.add('matched');
+        flipped[1].el.classList.add('matched');
+        flipped[0].el.classList.remove('flipped');
+        flipped[1].el.classList.remove('flipped');
+        matched++;
+        flipped=[];
+        updateStats();
+        playMatchSound();
+        if(matched===pairs) setTimeout(winGame,400);
+      },400);
+    } else {
+      // No match
+      setTimeout(function(){
+        flipped[0].el.classList.add('wrong');
+        flipped[1].el.classList.add('wrong');
+        setTimeout(function(){
+          flipped[0].el.classList.remove('flipped','wrong');
+          flipped[1].el.classList.remove('flipped','wrong');
+          flipped=[];
+        },500);
+      },600);
+    }
+  }
+}
+
+function updateStats(){
+  document.getElementById('statMoves').textContent=moves;
+  document.getElementById('statMatches').textContent=matched;
+  document.getElementById('statLeft').textContent=pairs-matched;
+}
+
+function winGame(){
+  gameActive=false;
+  clearInterval(timerInterval);
+  var key=theme+'_'+diff;
+  var isNew=!bestScores[key]||moves<bestScores[key].moves;
+  if(isNew) bestScores[key]={moves:moves,time:seconds};
+  var accuracy=moves>0?Math.round((pairs/moves)*100):100;
+  var m=Math.floor(seconds/60),s=seconds%60;
+  var timeStr=m+':'+(s<10?'0':'')+s;
+  document.getElementById('wsMoves').textContent=moves;
+  document.getElementById('wsTime').textContent=timeStr;
+  document.getElementById('wsAccuracy').textContent=Math.min(100,accuracy)+'%';
+  var subs=['You have an incredible memory!','Outstanding performance!','Super impressive — well done!','Brilliant! You crushed it!','Memory master! Amazing!'];
+  document.getElementById('winSub').textContent=subs[Math.floor(Math.random()*subs.length)];
+  document.getElementById('bestBadge').style.display=isNew?'inline-block':'none';
+  document.getElementById('winScreen').className='win-screen show';
+  playWinSound();
+}
+
+function restartGame(){ startGame(); }
+function newGame(){ var pool=shuffle(THEMES[theme]).slice(0,DIFF[diff].pairs); cards=shuffle(pool.concat(pool)); flipped=[]; matched=0; moves=0; seconds=0; gameActive=true; clearInterval(timerInterval); timerInterval=setInterval(tickTimer,1000); updateStats(); renderGrid(DIFF[diff].cols); document.getElementById('winScreen').className='win-screen'; }
+function showSetup(){ clearInterval(timerInterval); gameActive=false; document.getElementById('setupCard').style.display='block'; document.getElementById('statsBar').style.display='none'; document.getElementById('gameGrid').style.display='none'; document.getElementById('gameControls').style.display='none'; document.getElementById('winScreen').className='win-screen'; }
+
+function playMatchSound(){
+  try{
+    var a=new(window.AudioContext||window.webkitAudioContext)();
+    [523,659].forEach(function(f,i){
+      var o=a.createOscillator(),g=a.createGain();
+      o.connect(g);g.connect(a.destination);o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0.2,a.currentTime+i*0.1);
+      g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2);
+      o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.25);
+    });
+  }catch(e){}
+}
+function playWinSound(){
+  try{
+    var a=new(window.AudioContext||window.webkitAudioContext)();
+    [523,659,784,1047,1319].forEach(function(f,i){
+      var o=a.createOscillator(),g=a.createGain();
+      o.connect(g);g.connect(a.destination);o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0.25,a.currentTime+i*0.1);
+      g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.3);
+      o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.35);
+    });
+  }catch(e){}
+}
+</script>
+</body>
+</html>
