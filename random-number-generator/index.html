@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Number Generator – Generate Random Numbers Instantly</title>
+<meta name="description" content="Free random number generator. Generate single or multiple random numbers between any range. Includes dice roller, coin flip mode and lottery number picker.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1218;
+  --bg: #f0f4ff;
+  --warm: #e4e9ff;
+  --card: #ffffff;
+  --indigo: #3730a3;
+  --indigo-light: #eef0ff;
+  --indigo-mid: #5048c8;
+  --border: rgba(55,48,163,0.15);
+  --muted: #5a6080;
+  --green: #1a7a48;
+  --green-light: #eaf5f0;
+  --orange: #c86820;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+.wrapper { max-width: 680px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--indigo); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--indigo); opacity:0.4; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(30px, 7vw, 54px); font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--indigo); font-weight: 700; }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: 0 2px 30px rgba(55,48,163,0.07); margin-bottom: 16px; }
+@media(max-width:520px){ .card { padding: 22px 16px; } }
+
+.field-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+/* Mode tabs */
+.mode-tabs { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 28px; }
+@media(max-width:460px){ .mode-tabs { grid-template-columns: 1fr 1fr; } }
+.mode-tab { padding: 10px 6px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--warm); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; text-align: center; line-height: 1.4; }
+.mode-tab .tab-icon { font-size: 18px; display: block; margin-bottom: 3px; }
+.mode-tab:hover { border-color: var(--indigo); color: var(--indigo); }
+.mode-tab.active { background: var(--indigo); color: #fff; border-color: var(--indigo); }
+
+/* Input wrap */
+.input-wrap { display: flex; align-items: center; background: var(--warm); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+.input-wrap:focus-within { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(55,48,163,0.1); }
+.input-wrap input { flex: 1; padding: 13px 14px; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; color: var(--ink); outline: none; min-width: 0; }
+.input-wrap input::placeholder { color: #b0b8d0; font-weight: 400; }
+.input-unit { padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--indigo); border-left: 1px solid var(--border); display: flex; align-items: center; min-height: 46px; }
+
+/* Range row */
+.range-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 20px; }
+@media(max-width:400px){ .range-row { grid-template-columns: 1fr; } }
+.range-to { font-size: 16px; font-weight: 700; color: var(--muted); text-align: center; }
+
+/* Count row */
+.count-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.count-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+.count-ctrl { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--warm); }
+.cnt-btn { width: 40px; height: 40px; border: none; background: none; font-size: 20px; font-weight: 700; color: var(--indigo); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.cnt-btn:hover { background: var(--indigo-light); }
+.cnt-val { font-size: 16px; font-weight: 700; color: var(--ink); min-width: 44px; text-align: center; border-left: 1px solid var(--border); border-right: 1px solid var(--border); height: 40px; display: flex; align-items: center; justify-content: center; }
+
+/* Options */
+.options-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.opt-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
+.opt-check input { width: 16px; height: 16px; accent-color: var(--indigo); cursor: pointer; }
+
+/* Generate button */
+.gen-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--indigo), var(--indigo-mid)); color: #fff; border: none; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: 0.02em; transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(55,48,163,0.3); }
+.gen-btn:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(55,48,163,0.4); }
+.gen-btn:active { transform: none; }
+
+/* BIG result display */
+.result-display {
+  text-align: center; padding: 40px 20px 32px;
+  background: linear-gradient(135deg, #1a1060, #2d1a8a);
+  border-radius: 18px; margin-bottom: 16px;
+  position: relative; overflow: hidden;
+  min-height: 160px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.result-display::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(150,120,255,0.15), transparent 60%);
+  pointer-events: none;
+}
+.result-label { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(200,190,255,0.7); margin-bottom: 12px; }
+.result-number { font-family: 'DM Sans', sans-serif; font-size: clamp(52px, 16vw, 96px); font-weight: 800; color: #fff; letter-spacing: -0.04em; line-height: 1; }
+.result-multiple { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.result-chip { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 10px 18px; font-size: clamp(18px,4vw,28px); font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+
+/* Dice display */
+.dice-display { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.die { width: 64px; height: 64px; background: #fff; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); animation: diceRoll 0.4s ease both; }
+@keyframes diceRoll { 0%{transform:rotate(-15deg) scale(0.7);opacity:0} 60%{transform:rotate(5deg) scale(1.05)} 100%{transform:rotate(0deg) scale(1);opacity:1} }
+
+/* History */
+.history-section { }
+.history-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+.clear-hist { font-size: 11px; font-weight: 600; color: var(--indigo); cursor: pointer; text-transform: none; letter-spacing: 0; }
+.clear-hist:hover { opacity: 0.7; }
+.history-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.hist-chip { padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--indigo-light); color: var(--indigo); border: 1px solid rgba(55,48,163,0.15); animation: popIn 0.2s ease both; }
+@keyframes popIn { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+.no-history { font-size: 13px; color: var(--muted); font-style: italic; }
+
+/* Lottery balls */
+.lottery-display { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.lotto-ball { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; color: #fff; animation: popIn 0.3s ease both; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+.copy-btn { width: 100%; padding: 12px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; margin-top: 4px; }
+.copy-btn:hover { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-light); }
+.copy-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-light); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #a0a8c8; }
+
+/* Panels */
+.panel { display: none; }
+.panel.active { display: block; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Free Online Tool</div>
+    <h1>Random Number <em>Generator</em></h1>
+    <p class="subtitle">Generate truly random numbers instantly. Single numbers, multiple numbers, dice, or lottery picks.</p>
+  </header>
+
+  <div class="card">
+
+    <!-- Mode tabs -->
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-number" onclick="setMode('number')"><span class="tab-icon">🔢</span>Number</button>
+      <button class="mode-tab" id="tab-multiple" onclick="setMode('multiple')"><span class="tab-icon">📋</span>Multiple</button>
+      <button class="mode-tab" id="tab-dice" onclick="setMode('dice')"><span class="tab-icon">🎲</span>Dice</button>
+      <button class="mode-tab" id="tab-lottery" onclick="setMode('lottery')"><span class="tab-icon">🎰</span>Lottery</button>
+    </div>
+
+    <!-- Panel: Single Number -->
+    <div class="panel active" id="panel-number">
+      <div class="range-row">
+        <div>
+          <span class="field-label">Minimum</span>
+          <div class="input-wrap"><input type="number" id="minNum" value="1" oninput="autoGenerate()"></div>
+        </div>
+        <div class="range-to">to</div>
+        <div>
+          <span class="field-label">Maximum</span>
+          <div class="input-wrap"><input type="number" id="maxNum" value="100" oninput="autoGenerate()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Multiple Numbers -->
+    <div class="panel" id="panel-multiple">
+      <div class="range-row">
+        <div>
+          <span class="field-label">Minimum</span>
+          <div class="input-wrap"><input type="number" id="minMult" value="1"></div>
+        </div>
+        <div class="range-to">to</div>
+        <div>
+          <span class="field-label">Maximum</span>
+          <div class="input-wrap"><input type="number" id="maxMult" value="100"></div>
+        </div>
+      </div>
+      <div class="count-row">
+        <span class="count-label">How many numbers:</span>
+        <div class="count-ctrl">
+          <button class="cnt-btn" onclick="changeCount(-1)">−</button>
+          <div class="cnt-val" id="countVal">5</div>
+          <button class="cnt-btn" onclick="changeCount(1)">+</button>
+        </div>
+      </div>
+      <div class="options-row">
+        <label class="opt-check"><input type="checkbox" id="noRepeat"> No duplicates</label>
+        <label class="opt-check"><input type="checkbox" id="sortNums"> Sort results</label>
+      </div>
+    </div>
+
+    <!-- Panel: Dice -->
+    <div class="panel" id="panel-dice">
+
+      <div class="count-row">
+        <span class="count-label">Number of dice:</span>
+        <div class="count-ctrl">
+          <button class="cnt-btn" onclick="changeDiceCount(-1)">−</button>
+          <div class="cnt-val" id="diceCountVal">1</div>
+          <button class="cnt-btn" onclick="changeDiceCount(1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Lottery -->
+    <div class="panel" id="panel-lottery">
+      <div style="margin-bottom:16px;">
+        <span class="field-label">Lottery Preset</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="mode-tab active" id="lotto-us" onclick="setLottery(1,69,5,1,26,'Powerball')" style="font-size:11px;padding:8px 10px;">🇺🇸 Powerball</button>
+          <button class="mode-tab" id="lotto-mm" onclick="setLottery(1,70,5,1,25,'Mega Millions')" style="font-size:11px;padding:8px 10px;">🇺🇸 Mega Millions</button>
+          <button class="mode-tab" id="lotto-uk" onclick="setLottery(1,59,6,0,0,'UK Lotto')" style="font-size:11px;padding:8px 10px;">🇬🇧 UK Lotto</button>
+          <button class="mode-tab" id="lotto-custom" onclick="setLottery(1,49,6,0,0,'Custom')" style="font-size:11px;padding:8px 10px;">Custom</button>
+        </div>
+      </div>
+      <div class="range-row">
+        <div>
+          <span class="field-label">Pick</span>
+          <div class="input-wrap"><input type="number" id="lottoPick" value="6" min="1" max="10"></div>
+        </div>
+        <div class="range-to">from</div>
+        <div>
+          <span class="field-label">1 to</span>
+          <div class="input-wrap"><input type="number" id="lottoMax" value="49" min="2" max="100"></div>
+        </div>
+      </div>
+      <div id="bonusRow" style="display:none;margin-bottom:16px;">
+        <span class="field-label" id="bonusLabel">Bonus Ball (1 – 26)</span>
+      </div>
+    </div>
+
+    <!-- Generate button -->
+    <button class="gen-btn" id="genBtn" onclick="generate()">🎲 Generate Random Number</button>
+
+    <!-- Result display -->
+    <div class="result-display" id="resultDisplay" style="margin-top:20px;">
+      <div class="result-label" id="resultLabel">Press Generate to start</div>
+      <div class="result-number" id="resultNumber" style="color:rgba(255,255,255,0.2);font-size:40px;">?</div>
+    </div>
+
+    <!-- History -->
+    <div class="history-section">
+      <div class="history-title">
+        <span>Recent Results</span>
+        <span class="clear-hist" onclick="clearHistory()">Clear</span>
+      </div>
+      <div class="history-chips" id="historyChips">
+        <span class="no-history">No results yet — press Generate!</span>
+      </div>
+    </div>
+
+    <button class="copy-btn" id="copyBtn" onclick="copyResult()" style="margin-top:16px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      <span id="copyLabel">Copy Result</span>
+    </button>
+
+  </div>
+
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+</div>
+
+<script>
+var mode = 'number';
+var diceType = 6;
+var diceCount = 1;
+var numCount = 5;
+var lottoConfig = { pick: 6, max: 49, bonusPick: 0, bonusMax: 0, name: 'Custom' };
+var lastResult = '';
+var resultHistory = [];
+
+var DICE_FACES = { 1:'⚀',2:'⚁',3:'⚂',4:'⚃',5:'⚄',6:'⚅' };
+var BALL_COLORS = ['#e53e3e','#3182ce','#38a169','#d69e2e','#805ad5','#e53e3e','#3182ce'];
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-tab[id^="tab-"]').forEach(function(b){ b.className='mode-tab'; });
+  document.getElementById('tab-'+m).className='mode-tab active';
+  document.querySelectorAll('.panel').forEach(function(p){ p.className='panel'; });
+  document.getElementById('panel-'+m).className='panel active';
+  var labels={number:'🎲 Generate Random Number',multiple:'🎲 Generate Numbers',dice:'🎲 Roll Dice',lottery:'🎰 Pick Lottery Numbers'};
+  document.getElementById('genBtn').textContent=labels[m];
+  resetDisplay();
+}
+
+function setDice(d) {
+  diceType=d;
+  ['d4','d6','d8','d10','d12','d20'].forEach(function(id){ document.getElementById(id+'-btn').className='mode-tab'; });
+  document.getElementById('d'+d+'-btn').className='mode-tab active';
+}
+
+function changeDiceCount(d) { diceCount=Math.max(1,Math.min(10,diceCount+d)); document.getElementById('diceCountVal').textContent=diceCount; }
+function changeCount(d) { numCount=Math.max(2,Math.min(20,numCount+d)); document.getElementById('countVal').textContent=numCount; }
+
+function setLottery(min,max,pick,bPick,bMax,name) {
+  lottoConfig={pick:pick,max:max,bonusPick:bPick,bonusMax:bMax,name:name};
+  document.getElementById('lottoPick').value=pick;
+  document.getElementById('lottoMax').value=max;
+  document.getElementById('bonusRow').style.display=bPick>0?'block':'none';
+  if(bPick>0) document.getElementById('bonusLabel').textContent='Bonus Ball (1 – '+bMax+')';
+  ['lotto-us','lotto-mm','lotto-uk','lotto-custom'].forEach(function(id){ document.getElementById(id).className='mode-tab'; });
+  var ids={Powerball:'lotto-us','Mega Millions':'lotto-mm','UK Lotto':'lotto-uk',Custom:'lotto-custom'};
+  if(ids[name]) document.getElementById(ids[name]).className='mode-tab active';
+}
+
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+function autoGenerate(){ if(mode==='number' && document.getElementById('minNum') && document.getElementById('maxNum')) generate(); }
+
+function generate() {
+  var display=document.getElementById('resultDisplay');
+  if(!display) return;
+
+  if(mode==='number') {
+    var min=parseInt(document.getElementById('minNum').value)||1;
+    var max=parseInt(document.getElementById('maxNum').value)||100;
+    if(min>max){ min=Math.min(parseInt(document.getElementById('minNum').value),parseInt(document.getElementById('maxNum').value)); max=Math.max(parseInt(document.getElementById('minNum').value),parseInt(document.getElementById('maxNum').value)); }
+    var n=randInt(min,max);
+    lastResult=String(n);
+    display.innerHTML='<div class="result-label">Random number between '+min+' and '+max+'</div><div class="result-number"><span style="animation:popIn 0.3s ease both">'+n+'</span></div>';
+    addHistory(String(n));
+
+  } else if(mode==='multiple') {
+    var min2=parseInt(document.getElementById('minMult').value)||1;
+    var max2=parseInt(document.getElementById('maxMult').value)||100;
+    var noRep=document.getElementById('noRepeat').checked;
+    var sortN=document.getElementById('sortNums').checked;
+    var nums=[];
+    var attempts=0;
+    while(nums.length<numCount && attempts<1000) {
+      var r=randInt(min2,max2);
+      if(!noRep||nums.indexOf(r)===-1) nums.push(r);
+      attempts++;
+    }
+    if(sortN) nums.sort(function(a,b){return a-b;});
+    lastResult=nums.join(', ');
+    var chips=nums.map(function(n,i){ return '<div class="result-chip" style="animation-delay:'+i*0.05+'s">'+n+'</div>'; }).join('');
+    display.innerHTML='<div class="result-label">'+nums.length+' random numbers</div><div class="result-multiple">'+chips+'</div>';
+    addHistory(nums.join(', '));
+
+  } else if(mode==='dice') {
+    var rolls=[];
+    for(var i=0;i<diceCount;i++) rolls.push(randInt(1,diceType));
+    lastResult='Rolled: '+rolls.join(', ')+' (Total: '+rolls.reduce(function(a,b){return a+b;},0)+')';
+    var diceHtml;
+    if(diceType===6) {
+      diceHtml=rolls.map(function(r,i){ return '<div class="die" style="animation-delay:'+i*0.08+'s;font-size:36px;">'+DICE_FACES[r]+'</div>'; }).join('');
+    } else {
+      diceHtml=rolls.map(function(r,i){ return '<div class="die" style="animation-delay:'+i*0.08+'s;font-size:22px;font-weight:800;color:#3730a3;">'+r+'<div style="font-size:9px;color:#888;margin-top:2px;">d'+diceType+'</div></div>'; }).join('');
+    }
+    var total=rolls.reduce(function(a,b){return a+b;},0);
+    display.innerHTML='<div class="result-label">'+diceCount+'d'+diceType+' — Total: '+total+'</div><div class="dice-display">'+diceHtml+'</div>';
+    addHistory('d'+diceType+': '+rolls.join(', ')+' = '+total);
+
+  } else if(mode==='lottery') {
+    var pick=parseInt(document.getElementById('lottoPick').value)||6;
+    var max3=parseInt(document.getElementById('lottoMax').value)||49;
+    var balls=[];
+    while(balls.length<pick){ var b=randInt(1,max3); if(balls.indexOf(b)===-1) balls.push(b); }
+    balls.sort(function(a,b){return a-b;});
+    var bonusBall=lottoConfig.bonusMax>0?randInt(1,lottoConfig.bonusMax):null;
+    lastResult=balls.join(', ')+(bonusBall?' + Bonus: '+bonusBall:'');
+    var ballHtml=balls.map(function(b,i){
+      return '<div class="lotto-ball" style="background:'+BALL_COLORS[i%BALL_COLORS.length]+';animation-delay:'+i*0.08+'s;">'+b+'</div>';
+    }).join('');
+    if(bonusBall) ballHtml+='<div style="display:flex;align-items:center;gap:6px;"><span style="color:rgba(255,255,255,0.5);font-size:20px;">+</span><div class="lotto-ball" style="background:#c86820;animation-delay:'+(pick*0.08)+'s;">'+bonusBall+'</div></div>';
+    display.innerHTML='<div class="result-label">'+(lottoConfig.name||'Lottery')+' Numbers</div><div class="lottery-display">'+ballHtml+'</div>';
+    addHistory(balls.join('-')+(bonusBall?' B:'+bonusBall:''));
+  }
+}
+
+function addHistory(val) {
+  resultHistory.unshift(val);
+  if(resultHistory.length>20) resultHistory.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  var el=document.getElementById('historyChips');
+  if(resultHistory.length===0){ el.innerHTML='<span class="no-history">No results yet — press Generate!</span>'; return; }
+  el.innerHTML=resultHistory.slice(0,15).map(function(v,i){ return '<span class="hist-chip" style="animation-delay:'+i*0.02+'s">'+v+'</span>'; }).join('');
+}
+
+function clearHistory() { resultHistory=[]; renderHistory(); }
+
+function resetDisplay() {
+  document.getElementById('resultDisplay').innerHTML='<div class="result-label" style="color:rgba(200,190,255,0.7)">Press Generate to start</div><div class="result-number" style="color:rgba(255,255,255,0.2);font-size:40px;">?</div>';
+  lastResult='';
+}
+
+function copyResult() {
+  if(!lastResult){ return; }
+  var btn=document.getElementById('copyBtn');
+  var lbl=document.getElementById('copyLabel');
+  function ok(){ btn.className='copy-btn copied'; lbl.textContent='\u2713 Copied!'; setTimeout(function(){btn.className='copy-btn';lbl.textContent='Copy Result';},2500); }
+  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(lastResult).then(ok).catch(function(){fallback(lastResult,ok);}); } else { fallback(lastResult,ok); }
+}
+
+function fallback(t,cb){ var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');cb();}catch(e){}document.body.removeChild(ta); }
+
+document.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); generate(); } });
+</script>
+</body>
+</html>
