@@ -858,40 +858,66 @@ function generate() {
 function copyAll() {
   var theme = THEMES[currentTheme];
   var lines = [theme.title.toUpperCase() + ' — GRATITUDE JOURNAL', ''];
-  document.querySelectorAll('.prompt-card').forEach(function(card, i) {
-    var q = card.querySelector('.prompt-text').textContent;
-    var a = card.querySelector('.writing-area') ? card.querySelector('.writing-area').value : '';
+  var cards = document.querySelectorAll('.prompt-card');
+  for (var i = 0; i < cards.length; i++) {
+    var card = cards[i];
+    var qtEl = card.querySelector('.prompt-text');
+    var taEl = card.querySelector('textarea');
+    var q = qtEl ? qtEl.textContent : '';
+    var a = taEl ? taEl.value : '';
     lines.push((i+1) + '. ' + q);
-    if (a) lines.push('   → ' + a);
+    if (a.trim()) lines.push('   ' + a.trim());
     lines.push('');
-  });
+  }
   lines.push('Generated at thatsthetool.com');
   var text = lines.join('\n');
-  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(text); }
-  else { var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta); }
-  var lbl = document.getElementById('copyLabel');
-  lbl.textContent = '✓ Copied!';
-  setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function(){
+        var lbl = document.getElementById('copyLabel');
+        lbl.textContent = '\u2713 Copied!';
+        setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      var lbl = document.getElementById('copyLabel');
+      lbl.textContent = '\u2713 Copied!';
+      setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
+    }
+  } catch(e) {
+    var lbl = document.getElementById('copyLabel');
+    lbl.textContent = 'Try again!';
+    setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
+  }
 }
 
 function saveEntries() {
   var theme = THEMES[currentTheme];
   var hasContent = false;
-  document.querySelectorAll('.writing-area').forEach(function(ta, i) {
-    if (ta.value.trim()) {
+  var cards = document.querySelectorAll('.prompt-card');
+  for (var i = 0; i < cards.length; i++) {
+    var card = cards[i];
+    var ta = card.querySelector('textarea');
+    var qtEl = card.querySelector('.prompt-text');
+    if (ta && ta.value.trim()) {
       hasContent = true;
-      var prompt = document.querySelectorAll('.prompt-text')[i].textContent;
+      var prompt = qtEl ? qtEl.textContent : '';
       savedEntries.unshift({ theme: theme.title, icon: theme.icon, prompt: prompt, response: ta.value.trim(), date: new Date().toLocaleDateString() });
     }
-  });
+  }
+  var lbl = document.getElementById('saveLabel');
   if (!hasContent) {
-    var lbl = document.getElementById('saveLabel');
     lbl.textContent = 'Write something first!';
     setTimeout(function(){ lbl.textContent = 'Save Entries'; }, 2000);
     return;
   }
   renderSaved();
-  var lbl = document.getElementById('saveLabel');
   lbl.textContent = '✓ Saved!';
   setTimeout(function(){ lbl.textContent = 'Save Entries'; }, 2000);
 }
