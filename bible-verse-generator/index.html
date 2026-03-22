@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bible Verse of the Day – Find Encouragement for Every Need</title>
+<meta name="description" content="Free Bible verse generator. Choose what you need — hope, strength, peace, healing or gratitude — and receive an encouraging Bible verse with reflection and prayer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf8f3;
+  --card: #ffffff;
+  --warm: #f5f0e8;
+  --gold: #b8860b;
+  --gold-light: #fdf8ed;
+  --gold-mid: #d4a843;
+  --brown: #6b4c2a;
+  --cream: #f9f4e8;
+  --border: rgba(184,134,11,0.2);
+  --ink: #2a1f0e;
+  --muted: #7a6848;
+  --green: #2d6a4f;
+  --green-light: #eaf4ee;
+  --rose: #9b4a5a;
+  --rose-light: #fdf0f2;
+  --blue: #2c5f8a;
+  --blue-light: #edf4fb;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(184,134,11,0.07), transparent 60%),
+    radial-gradient(ellipse 40% 30% at 10% 80%, rgba(107,76,42,0.05), transparent 60%);
+}
+
+.wrapper { position: relative; max-width: 700px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 36px; }
+.cross { font-size: 28px; margin-bottom: 10px; display: block; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--gold); opacity:0.5; }
+h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 6vw, 46px); font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; margin-bottom: 12px; color: var(--ink); }
+h1 em { font-style: italic; color: var(--gold); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+/* Time of day banner */
+.time-banner { background: var(--gold-light); border: 1px solid var(--border); border-radius: 12px; padding: 12px 20px; margin-bottom: 28px; text-align: center; font-size: 13px; color: var(--muted); font-weight: 500; }
+.time-banner strong { color: var(--gold); }
+
+/* Verse of the week */
+.votw { background: linear-gradient(135deg, #2a1f0e, #3d2d12); border-radius: 20px; padding: 28px 28px 24px; margin-bottom: 28px; text-align: center; position: relative; overflow: hidden; }
+.votw::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 0%, rgba(212,168,67,0.12), transparent 60%); pointer-events:none; }
+.votw-label { font-size: 9px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(212,168,67,0.7); margin-bottom: 14px; }
+.votw-text { font-family: 'Playfair Display', serif; font-size: clamp(15px,3vw,20px); font-style: italic; color: #f5e8c8; line-height: 1.7; margin-bottom: 12px; }
+.votw-ref { font-size: 13px; font-weight: 700; color: var(--gold-mid); letter-spacing: 0.06em; }
+
+/* Need selector */
+.need-section { margin-bottom: 28px; }
+.need-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: block; text-align: center; }
+.need-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media(max-width:500px){ .need-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.need-btn { padding: 13px 8px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--card); font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; text-align: center; }
+.need-btn .n-icon { font-size: 22px; display: block; margin-bottom: 5px; }
+.need-btn .n-name { font-size: 11px; font-weight: 700; color: var(--muted); }
+.need-btn:hover { border-color: var(--gold); background: var(--gold-light); }
+.need-btn.active { border-color: var(--gold); background: var(--gold-light); box-shadow: 0 0 0 3px rgba(184,134,11,0.1); }
+.need-btn.active .n-name { color: var(--gold); }
+
+/* Mode toggle */
+.mode-row { display: flex; gap: 10px; margin-bottom: 24px; }
+.mode-btn { flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--card); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; text-align: center; }
+.mode-btn.active { background: var(--brown); color: #fff; border-color: var(--brown); }
+.mode-btn:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
+
+/* Generate button */
+.gen-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--brown), #8b6230); color: #fff; border: none; border-radius: 16px; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: 0.03em; box-shadow: 0 4px 20px rgba(107,76,42,0.3); transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s; margin-bottom: 24px; }
+.gen-btn:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(107,76,42,0.4); }
+
+/* Verse card */
+.verse-card { display: none; border-radius: 24px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 8px 40px rgba(107,76,42,0.15); }
+.verse-card.show { display: block; animation: fadeUp 0.5s ease both; }
+
+.vc-top { padding: 36px 32px 28px; text-align: center; position: relative; }
+@media(max-width:480px){ .vc-top { padding: 28px 20px 22px; } }
+.vc-mood { font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 16px; opacity: 0.7; }
+.vc-verse { font-family: 'DM Sans', sans-serif; font-size: clamp(16px, 3.5vw, 22px); font-style: normal; font-weight: 500; line-height: 1.75; margin-bottom: 18px; color: var(--ink); }
+.vc-reference { font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 10px; }
+.vc-version { font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* Colours per mood */
+.mood-hope .vc-top { background: linear-gradient(135deg, #fdf8ed, #fef9f0); }
+.mood-strength .vc-top { background: linear-gradient(135deg, #f0f4ff, #eef2ff); }
+.mood-peace .vc-top { background: linear-gradient(135deg, #eaf4ee, #f0f9f4); }
+.mood-healing .vc-top { background: linear-gradient(135deg, #fdf0f2, #fef4f5); }
+.mood-gratitude .vc-top { background: linear-gradient(135deg, #fdf8ed, #fffbf0); }
+.mood-guidance .vc-top { background: linear-gradient(135deg, #f5f0ff, #f3eeff); }
+.mood-love .vc-top { background: linear-gradient(135deg, #fff0f5, #fdf0f2); }
+.mood-anxiety .vc-top { background: linear-gradient(135deg, #edf4fb, #eef6ff); }
+.mood-grief .vc-top { background: linear-gradient(135deg, #f5f0e8, #f9f5ee); }
+.mood-purpose .vc-top { background: linear-gradient(135deg, #f0fdf4, #eafaf0); }
+.mood-parenting .vc-top { background: linear-gradient(135deg, #fff9f0, #fef6ec); }
+.mood-morning .vc-top { background: linear-gradient(135deg, #fffbf0, #fdf8e8); }
+.mood-evening .vc-top { background: linear-gradient(135deg, #1a1030, #251840); }
+.mood-evening .vc-verse { color: #e8e0ff; }
+.mood-evening .vc-mood { color: rgba(200,180,255,0.7); }
+.mood-evening .vc-version { color: rgba(200,180,255,0.5); }
+
+/* Reflection */
+.vc-reflection { padding: 20px 32px; background: var(--cream); border-top: 1px solid var(--border); }
+@media(max-width:480px){ .vc-reflection { padding: 16px 20px; } }
+.ref-title { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.ref-text { font-size: 14px; color: var(--muted); line-height: 1.7; font-style: italic; }
+
+/* Prayer */
+.vc-prayer { padding: 20px 32px; background: var(--warm); border-top: 1px solid var(--border); }
+@media(max-width:480px){ .vc-prayer { padding: 16px 20px; } }
+.pray-title { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brown); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.pray-text { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 400; color: var(--ink); line-height: 1.8; }
+
+/* Actions */
+.actions-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+@media(max-width:400px){ .actions-row { grid-template-columns: 1fr 1fr; } }
+.act-btn { padding: 11px 8px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--card); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.act-btn .ab-icon { font-size: 18px; }
+.act-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+.act-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-light); }
+
+/* Favourites */
+.favs-section { display: none; }
+.favs-section.show { display: block; animation: fadeUp 0.3s ease both; }
+.favs-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.clear-favs { font-size: 11px; font-weight: 600; color: var(--rose); cursor: pointer; text-transform: none; letter-spacing: 0; }
+.favs-list { display: flex; flex-direction: column; gap: 8px; }
+.fav-item { background: var(--gold-light); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.fav-verse { font-family: 'Playfair Display', serif; font-size: 13px; font-style: italic; color: var(--ink); line-height: 1.6; margin-bottom: 4px; }
+.fav-ref { font-size: 11px; font-weight: 700; color: var(--gold); }
+
+/* Kid mode */
+.kid-badge { display: inline-block; background: #fff3e0; border: 1px solid rgba(245,124,0,0.3); color: #e65100; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-left: 8px; }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #b0a088; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <span class="cross">✝️</span>
+    <div class="eyebrow">Daily Scripture</div>
+    <h1>Bible Verse <em>of the Day</em></h1>
+    <p class="subtitle">Choose what your heart needs today and receive an encouraging verse, a reflection and a short prayer.</p>
+  </header>
+
+  <!-- Time banner -->
+  <div class="time-banner" id="timeBanner">✨ <strong id="timeGreeting">Good morning</strong> — may today's verse bless your day</div>
+
+  <!-- Verse of the week -->
+  <div class="votw">
+    <div class="votw-label">✦ Verse of the Week ✦</div>
+    <div class="votw-text" id="votwText">"For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future."</div>
+    <div class="votw-ref" id="votwRef">Jeremiah 29:11 (NIV)</div>
+  </div>
+
+  <!-- Mode toggle -->
+  <div class="mode-row">
+    <button class="mode-btn active" id="mode-adult" onclick="setMode('adult')">📖 Standard</button>
+    <button class="mode-btn" id="mode-kids" onclick="setMode('kids')">🌈 Kids Mode <span class="kid-badge">Ages 4–12</span></button>
+  </div>
+
+  <!-- Need selector -->
+  <div class="need-section">
+    <span class="need-label">What does your heart need today?</span>
+    <div class="need-grid" id="needGrid">
+      <button class="need-btn active" id="need-hope" onclick="setNeed('hope')"><span class="n-icon">🌅</span><span class="n-name">Hope</span></button>
+      <button class="need-btn" id="need-strength" onclick="setNeed('strength')"><span class="n-icon">💪</span><span class="n-name">Strength</span></button>
+      <button class="need-btn" id="need-peace" onclick="setNeed('peace')"><span class="n-icon">🕊️</span><span class="n-name">Peace</span></button>
+      <button class="need-btn" id="need-healing" onclick="setNeed('healing')"><span class="n-icon">🌿</span><span class="n-name">Healing</span></button>
+      <button class="need-btn" id="need-gratitude" onclick="setNeed('gratitude')"><span class="n-icon">🙏</span><span class="n-name">Gratitude</span></button>
+      <button class="need-btn" id="need-guidance" onclick="setNeed('guidance')"><span class="n-icon">🧭</span><span class="n-name">Guidance</span></button>
+      <button class="need-btn" id="need-love" onclick="setNeed('love')"><span class="n-icon">❤️</span><span class="n-name">Love</span></button>
+      <button class="need-btn" id="need-anxiety" onclick="setNeed('anxiety')"><span class="n-icon">🌊</span><span class="n-name">Anxiety</span></button>
+      <button class="need-btn" id="need-grief" onclick="setNeed('grief')"><span class="n-icon">🤍</span><span class="n-name">Grief</span></button>
+      <button class="need-btn" id="need-purpose" onclick="setNeed('purpose')"><span class="n-icon">⭐</span><span class="n-name">Purpose</span></button>
+      <button class="need-btn" id="need-parenting" onclick="setNeed('parenting')"><span class="n-icon">👨‍👩‍👧</span><span class="n-name">Parenting</span></button>
+      <button class="need-btn" id="need-morning" onclick="setNeed('morning')"><span class="n-icon">☀️</span><span class="n-name">Morning</span></button>
+      <button class="need-btn" id="need-courage" onclick="setNeed('courage')"><span class="n-icon">🦁</span><span class="n-name">Courage</span></button>
+      <button class="need-btn" id="need-kindness" onclick="setNeed('kindness')"><span class="n-icon">🌸</span><span class="n-name">Kindness</span></button>
+      <button class="need-btn" id="need-friendship" onclick="setNeed('friendship')"><span class="n-icon">🤝</span><span class="n-name">Friendship</span></button>
+    </div>
+  </div>
+
+  <button class="gen-btn" onclick="generate()">🙏 Receive Today's Verse</button>
+
+  <!-- Verse card -->
+  <div class="verse-card" id="verseCard">
+    <div class="vc-top" id="vcTop">
+      <div class="vc-mood" id="vcMood">HOPE</div>
+      <div class="vc-verse" id="vcVerse">—</div>
+      <div class="vc-reference" id="vcRef">—</div>
+      <div class="vc-version" id="vcVersion">NIV</div>
+    </div>
+    <div class="vc-reflection">
+      <div class="ref-title">✦ Reflect on This</div>
+      <div class="ref-text" id="vcReflection">—</div>
+    </div>
+    <div class="vc-prayer">
+      <div class="pray-title">🙏 A Short Prayer</div>
+      <div class="pray-text" id="vcPrayer">—</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions-row" id="actionsRow" style="display:none;">
+    <button class="act-btn" onclick="copyVerse()"><span class="ab-icon">📋</span><span id="copyLabel">Copy Verse</span></button>
+    <button class="act-btn" onclick="shareWhatsApp()"><span class="ab-icon">💬</span><span>WhatsApp</span></button>
+    <button class="act-btn" onclick="heartVerse()"><span class="ab-icon" id="heartIcon">🤍</span><span>Favourite</span></button>
+    <button class="act-btn" onclick="generate()"><span class="ab-icon">🔄</span><span>New Verse</span></button>
+    <button class="act-btn" onclick="copyShareMessage()"><span class="ab-icon">✉️</span><span id="shareLabel">Share Message</span></button>
+    <button class="act-btn" onclick="copyPrayer()"><span class="ab-icon">🙏</span><span id="prayLabel">Copy Prayer</span></button>
+  </div>
+
+  <!-- Favourites -->
+  <div class="favs-section" id="favsSection">
+    <div class="favs-title">
+      <span>❤️ Your Favourites</span>
+      <span class="clear-favs" onclick="clearFavs()">Clear all</span>
+    </div>
+    <div class="favs-list" id="favsList"></div>
+  </div>
+
+  <p class="footer-note">thatsthetool.com · May these words bring you peace, strength and joy 🙏</p>
+</div>
+
+<script>
+var currentMode = 'adult';
+var currentNeed = 'hope';
+var currentVerse = null;
+var favourites = [];
+var usedVerses = {};
+
+var VERSES = {
+  hope: [
+    { v: '"For I know the plans I have for you," declares the Lord, "plans to prosper you and not to harm you, plans to give you hope and a future."', r: 'Jeremiah 29:11', reflection: 'God has a specific plan designed just for you. What area of your life do you most need to trust Him with today?', prayer: 'Lord, when I cannot see the path ahead, remind me that You already hold my future. Help me to trust Your plan even when I cannot understand it. Amen.' },
+    { v: '"But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint."', r: 'Isaiah 40:31', reflection: 'Placing your hope in God renews your energy for the journey. Where have you been running on your own strength lately?', prayer: 'Father, I lay my tiredness at Your feet. Renew my strength today and help me to soar above the things that weigh me down. Amen.' },
+    { v: '"May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit."', r: 'Romans 15:13', reflection: 'Hope in God produces joy and peace. Can you identify one reason to feel hopeful today, however small?', prayer: 'God of hope, fill my heart with joy and peace today. Let Your Spirit overflow in me and spill out onto everyone I meet. Amen.' },
+    { v: '"We have this hope as an anchor for the soul, firm and secure."', r: 'Hebrews 6:19', reflection: 'An anchor holds steady through every storm. What storms are you facing, and how can you anchor yourself in God today?', prayer: 'Lord, be my anchor when life feels uncertain. Hold me firm when the waves come and remind me that my hope is secure in You. Amen.' },
+    { v: '"\"For I am the Lord your God who takes hold of your right hand and says to you, Do not fear; I will help you.\""', r: 'Isaiah 41:13', reflection: 'God personally takes your hand and says do not be afraid. What fear do you need to release to Him right now?', prayer: 'Father, thank You that You take my hand. Help me to release my fears and walk forward in the confidence that You are with me. Amen.' }
+  ],
+  strength: [
+    { v: '"I can do all this through him who gives me strength."', r: 'Philippians 4:13', reflection: 'This strength is not self-generated — it comes through Christ. What challenge today needs His strength more than yours?', prayer: 'Lord Jesus, I admit I cannot do this on my own. Flow through me today. Let Your strength carry me where mine runs out. Amen.' },
+    { v: '"Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go."', r: 'Joshua 1:9', reflection: 'God commanded Joshua to be courageous — not because it was easy but because God would be with him. Where do you need courage today?', prayer: 'Lord, give me the courage to face what lies ahead. Remind me that I am never facing anything alone because You go before me. Amen.' },
+    { v: '"The Lord is my strength and my shield; my heart trusts in him, and he helps me."', r: 'Psalm 28:7', reflection: 'A shield protects us in battle. What area of your life needs God\'s protection and strength right now?', prayer: 'Father, be my strength and my shield today. I trust You with everything I face. Thank You that You help me. Amen.' },
+    { v: '"He gives strength to the weary and increases the power of the weak."', r: 'Isaiah 40:29', reflection: 'God specifically meets us in our weakness. Where do you feel most weak today, and can you bring that to Him?', prayer: 'God, I am tired and I feel weak. Meet me in this place and fill me with the strength that only You can give. Amen.' },
+    { v: '"Finally, be strong in the Lord and in his mighty power."', r: 'Ephesians 6:10', reflection: 'The instruction is to draw strength from the Lord — not from willpower or circumstances. How can you position yourself to receive His strength today?', prayer: 'Lord, help me to stop striving in my own power and to draw from Yours. Fill me with Your mighty strength for this day. Amen.' }
+  ],
+  peace: [
+    { v: '"Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid."', r: 'John 14:27', reflection: 'Jesus offers a peace that is different from anything the world can give. What is troubling your heart today that you can release to Him?', prayer: 'Jesus, I receive the peace You offer. Still the troubled places in my heart and replace my anxiety with Your deep, lasting peace. Amen.' },
+    { v: '"And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus."', r: 'Philippians 4:7', reflection: 'This peace guards like a soldier. It doesn\'t always make sense — it just works. Where do you need God to stand guard in your mind today?', prayer: 'Father, post Your peace as a guard over my heart and mind. Protect me from thoughts that steal my peace and fill me with Your calm. Amen.' },
+    { v: '"You will keep in perfect peace those whose minds are steadfast, because they trust in you."', r: 'Isaiah 26:3', reflection: 'A steadfast mind stays fixed on God rather than on the problem. What would it look like to keep your focus on God today?', prayer: 'Lord, help me to keep my eyes on You rather than on my circumstances. Thank You for the perfect peace You give to those who trust You. Amen.' },
+    { v: '"Cast all your anxiety on him because he cares for you."', r: '1 Peter 5:7', reflection: 'God tells you to throw every worry at Him — and the reason is that He genuinely cares. What worries can you cast at His feet right now?', prayer: 'Father, I cast every worry, fear and anxiety at Your feet. Thank You that You care so deeply about what concerns me. Amen.' },
+    { v: '"The Lord gives strength to his people; the Lord blesses his people with peace."', r: 'Psalm 29:11', reflection: 'Peace is a blessing God gives — not something we manufacture. Have you asked Him for it today?', prayer: 'Lord, I receive the blessing of peace You have for me today. Thank You that strength and peace both come from You. Amen.' }
+  ],
+  healing: [
+    { v: '"He heals the brokenhearted and binds up their wounds."', r: 'Psalm 147:3', reflection: 'God is specifically a healer of broken hearts. What hurt have you been carrying that you need Him to bind up today?', prayer: 'Healing Father, You see every wound I carry. Come and bind them up today. Heal the broken places and make me whole. Amen.' },
+    { v: '"But he was pierced for our transgressions, he was crushed for our iniquities; the punishment that brought us peace was on him, and by his wounds we are healed."', r: 'Isaiah 53:5', reflection: 'Jesus bore every wound so that we could be healed. How does it feel to know He chose to carry your pain?', prayer: 'Lord Jesus, thank You for what You bore for me. I receive healing — physical, emotional and spiritual — in Your name. Amen.' },
+    { v: '"\"I am the Lord, who heals you.\""', r: 'Exodus 15:26', reflection: 'Healing is part of who God is — not just something He does occasionally. Can you believe today that He is your healer?', prayer: 'Lord God, I believe You are my healer. Touch my body, my mind and my heart. I trust You with my healing in Your perfect time. Amen.' },
+    { v: '"Is anyone among you sick? Let them call the elders of the church to pray over them and anoint them with oil in the name of the Lord. And the prayer offered in faith will make the sick person well."', r: 'James 5:14-15', reflection: 'God works through community and prayer. Is there someone you can ask to pray with you for healing today?', prayer: 'Father, raise up people around me who will pray in faith. I believe in the power of prayer and I trust You for my healing. Amen.' },
+    { v: '"For I will restore health to you, and your wounds I will heal, declares the Lord."', r: 'Jeremiah 30:17', reflection: 'God declares your restoration personally. What does health and wholeness look like for you, and can you ask Him for it today?', prayer: 'Lord, I stand on Your promise to restore my health. Heal every wound — seen and unseen. I trust in Your declaration over my life. Amen.' }
+  ],
+  gratitude: [
+    { v: '"Give thanks to the Lord, for he is good; his love endures forever."', r: 'Psalm 107:1', reflection: 'Gratitude starts with who God is — good — before it counts what He has done. Can you thank Him for His character today?', prayer: 'Lord, thank You that You are good. No matter what today holds, Your goodness never changes. I am grateful for Your endless love. Amen.' },
+    { v: '"Rejoice always, pray continually, give thanks in all circumstances; for this is God\'s will for you in Christ Jesus."', r: '1 Thessalonians 5:16-18', reflection: '"All circumstances" includes the hard ones. What difficult situation can you begin to bring gratitude into today?', prayer: 'Father, teach me to give thanks in every season. Help me to find Your goodness even in the hard places and to be grateful for it. Amen.' },
+    { v: '"Every good and perfect gift is from above, coming down from the Father of the heavenly lights."', r: 'James 1:17', reflection: 'Every good thing in your life is a gift from God. Take a moment to name three specific gifts He has given you.', prayer: 'Generous Father, thank You for every good thing in my life. Open my eyes to see Your gifts more clearly and make me a grateful heart. Amen.' },
+    { v: '"Enter his gates with thanksgiving and his courts with praise; give thanks to him and praise his name."', r: 'Psalm 100:4', reflection: 'Thanksgiving is the doorway into God\'s presence. What can you bring to Him in thanks right now?', prayer: 'Lord, I come before You with a thankful heart. Thank You for life, for breath, for Your presence and for Your love that never gives up on me. Amen.' },
+    { v: '"I will give thanks to you, Lord, with all my heart; I will tell of all your wonderful deeds."', r: 'Psalm 9:1', reflection: 'Whole-hearted gratitude — not just words. What wonderful thing has God done in your life recently that you can tell someone about today?', prayer: 'Father, I give You my whole heart in gratitude today. Remind me of Your wonderful deeds when I am tempted to forget how faithful You have been. Amen.' }
+  ],
+  guidance: [
+    { v: '"Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight."', r: 'Proverbs 3:5-6', reflection: 'Leaning on your own understanding is the opposite of trusting God. What decision are you trying to figure out on your own right now?', prayer: 'Lord, I choose to trust You rather than my own reasoning. Take my plans and make my paths straight. I submit this to You. Amen.' },
+    { v: '"Your word is a lamp for my feet, a light on my path."', r: 'Psalm 119:105', reflection: 'A lamp lights the next step — not the whole journey. Are you trying to see too far ahead when God just wants to guide your next step?', prayer: 'Father, I trust You for the next step even when I cannot see the whole road. Light my path with Your Word and guide my feet. Amen.' },
+    { v: '"Whether you turn to the right or to the left, your ears will hear a voice behind you, saying, \'This is the way; walk in it.\'"', r: 'Isaiah 30:21', reflection: 'God promises to speak direction to you. How are you creating space to hear His voice today?', prayer: 'Lord, open my ears to hear Your voice. Speak clearly to my heart and give me the courage to walk in the direction You point. Amen.' },
+    { v: '"Commit to the Lord whatever you do, and he will establish your plans."', r: 'Proverbs 16:3', reflection: 'Committing your plans to God is an act of surrender. What plans are you holding tightly that need to be placed in His hands?', prayer: 'Father, I commit my plans to You. Not my will but Yours. Establish the work of my hands according to Your perfect purpose. Amen.' },
+    { v: '"For this God is our God for ever and ever; he will be our guide even to the end."', r: 'Psalm 48:14', reflection: 'God does not only guide in the big moments — He guides for ever. How does it feel to know He is with you for the whole journey?', prayer: 'Thank You Lord that You are my guide to the very end. I do not have to figure out the future alone. Lead me all the days of my life. Amen.' }
+  ],
+  love: [
+    { v: '"For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."', r: 'John 3:16', reflection: 'The greatest act of love ever performed was for you. How does it change your day to remember that you are personally loved by God?', prayer: 'Father, thank You for loving me enough to give Your Son. Help me to live today fully aware of how deeply and unconditionally I am loved. Amen.' },
+    { v: '"Neither height nor depth, nor anything else in all creation, will be able to separate us from the love of God that is in Christ Jesus our Lord."', r: 'Romans 8:39', reflection: 'Nothing — absolutely nothing — can cut you off from God\'s love. What in your life makes you feel unworthy of His love?', prayer: 'Lord, Your love is unbreakable. On the days I feel unworthy, remind me that nothing separates me from You. I receive Your love today. Amen.' },
+    { v: '"This is how we know what love is: Jesus Christ laid down his life for us."', r: '1 John 3:16', reflection: 'Real love gives everything. How can you love someone in your life today with that same selfless generosity?', prayer: 'Lord Jesus, thank You for showing me what true love looks like. Fill me with the ability to love others the way You have loved me. Amen.' },
+    { v: '"Love is patient, love is kind. It does not envy, it does not boast, it is not proud."', r: '1 Corinthians 13:4', reflection: 'Which quality of love in this verse feels most challenging for you to show to someone in your life right now?', prayer: 'Father, grow love in me — the patient, kind, humble kind. Let Your love flow through me to the people who need it most today. Amen.' },
+    { v: '"See what great love the Father has lavished on us, that we should be called children of God! And that is what we are!"', r: '1 John 3:1', reflection: 'You are not just loved — you are called a child of God. How does your identity as His child change how you see yourself today?', prayer: 'Father, thank You that I am Yours. Help me to walk today in the confidence of a loved child — secure, known and deeply valued. Amen.' }
+  ],
+  anxiety: [
+    { v: '"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God."', r: 'Philippians 4:6', reflection: '"Every situation" — nothing is too small or too big to bring to God. What specific worry can you turn into a prayer right now?', prayer: 'Father, I bring my anxious thoughts to You right now. I trade my worry for prayer. Thank You that You hear every request I bring. Amen.' },
+    { v: '"Cast all your anxiety on him because he cares for you."', r: '1 Peter 5:7', reflection: 'God asks you to throw — not carry — your anxiety. What would it feel like to truly release what you are holding right now?', prayer: 'Lord, I throw every anxiety at Your feet. I cannot carry this anymore. Thank You that You take it from me because You love me. Amen.' },
+    { v: '"When anxiety was great within me, your consolation brought me joy."', r: 'Psalm 94:19', reflection: 'The Psalmist knew deep anxiety and found God\'s comfort in the middle of it. Can you invite God\'s comfort into the anxious places today?', prayer: 'Father, come into the anxious places in my heart. Replace the worry with Your consolation and let Your joy rise up in me. Amen.' },
+    { v: '"So do not fear, for I am with you; do not be dismayed, for I am your God. I will strengthen you and help you."', r: 'Isaiah 41:10', reflection: 'God says do not fear — not because the danger isn\'t real but because He is present with you in it. What fear needs His presence today?', prayer: 'Lord, I choose not to fear because You are with me. Strengthen me, help me and remind me that I am never facing anything alone. Amen.' },
+    { v: '"Come to me, all you who are weary and burdened, and I will give you rest."', r: 'Matthew 11:28', reflection: 'This is an open invitation from Jesus Himself. What burden are you carrying today that He is waiting to take from you?', prayer: 'Jesus, I come to You right now — weary, burdened and anxious. I accept Your invitation to rest. Take this weight from my shoulders. Amen.' }
+  ],
+  grief: [
+    { v: '"The Lord is close to the brokenhearted and saves those who are crushed in spirit."', r: 'Psalm 34:18', reflection: 'God does not stay distant in your grief — He draws close. Can you sense Him near you in this pain today?', prayer: 'Lord, come close to my broken heart. I am crushed and I need You. Remind me that You see my grief and that You are here. Amen.' },
+    { v: '"Blessed are those who mourn, for they will be comforted."', r: 'Matthew 5:4', reflection: 'Jesus called mourners blessed and promised them comfort. What would it mean to receive His comfort in your grief today?', prayer: 'Father, I mourn today. I bring my sadness to You and I receive the comfort You have promised. Hold me in this season of grief. Amen.' },
+    { v: '"He will wipe every tear from their eyes. There will be no more death or mourning or crying or pain."', r: 'Revelation 21:4', reflection: 'There is a day coming with no more tears. How does this promise of restoration change how you hold your grief today?', prayer: 'Lord, thank You for the promise of a day with no more tears. Comfort me now in my grief and give me hope in what is to come. Amen.' },
+    { v: '"Even though I walk through the darkest valley, I will fear no evil, for you are with me."', r: 'Psalm 23:4', reflection: 'The valley is real — but God walks through it with you. Where is the valley you are walking through right now?', prayer: 'Shepherd God, walk with me through this dark valley. I will not fear because You are beside me. Let Your presence be my comfort. Amen.' },
+    { v: '"Weeping may stay for the night, but rejoicing comes in the morning."', r: 'Psalm 30:5', reflection: 'The night of grief is not permanent. Morning is coming. How can you hold on to this promise while the tears are still falling?', prayer: 'Father, the night feels long and the weeping feels unending. Remind me that morning is coming. Hold me until joy returns. Amen.' }
+  ],
+  purpose: [
+    { v: '"For we are God\'s handiwork, created in Christ Jesus to do good works, which God prepared in advance for us to do."', r: 'Ephesians 2:10', reflection: 'You are not an accident — you are God\'s masterpiece with a pre-prepared purpose. What good works do you sense He has prepared for you?', prayer: 'Lord, thank You that I am Your handiwork. Reveal the good works You have prepared for me and give me courage to walk in them. Amen.' },
+    { v: '"\"For I know the plans I have for you,\" declares the Lord."', r: 'Jeremiah 29:11', reflection: 'God has specific plans for you — not just general goodwill. How does it feel to know you are on His mind today?', prayer: 'Father, thank You that my life is not random. You have plans for me. Help me to align with Your purpose and walk boldly in it. Amen.' },
+    { v: '"Many are the plans in a person\'s heart, but it is the Lord\'s purpose that prevails."', r: 'Proverbs 19:21', reflection: 'Our plans and God\'s purpose are not always the same. Are you open to His purpose today even if it differs from your own plan?', prayer: 'Lord, let Your purpose prevail in my life. I surrender my plans to Yours and trust that Your way is better than anything I could design. Amen.' },
+    { v: '"And we know that in all things God works for the good of those who love him, who have been called according to his purpose."', r: 'Romans 8:28', reflection: '"All things" — including the painful ones. Can you trust today that God is working even in what does not make sense?', prayer: 'Father, I trust that You are working all things together for good. Even what I cannot understand. Fulfil Your purpose in every part of my life. Amen.' },
+    { v: '"Before I formed you in the womb I knew you, before you were born I set you apart."', r: 'Jeremiah 1:5', reflection: 'Your purpose predates your birth. God knew and set you apart before you took your first breath. How does that change how you see yourself?', prayer: 'Lord, You knew me before I was born and set me apart for purpose. Help me to live fully in that calling and to never believe my life is without meaning. Amen.' }
+  ],
+  parenting: [
+    { v: '"Start children off on the way they should go, and even when they are old they will not turn from it."', r: 'Proverbs 22:6', reflection: 'The seeds you plant today will bear fruit for decades. What truth do you want to plant in your child\'s heart this week?', prayer: 'Father, help me to parent with wisdom and intention. Give me the words, the patience and the love to point my children toward You. Amen.' },
+    { v: '"Children are a heritage from the Lord, offspring a reward from him."', r: 'Psalm 127:3', reflection: 'Your children are a gift from God — even on the hard days. How can you see them through His eyes of love today?', prayer: 'Lord, thank You for the gift of my children. On the days I am tired and stretched, remind me that they are a reward from You. Give me Your eyes for them. Amen.' },
+    { v: '"Love is patient, love is kind."', r: '1 Corinthians 13:4', reflection: 'Patience and kindness — both feel harder on some parenting days. Which do you need more of today, and can you ask God for it?', prayer: 'Father, fill me with patience and kindness for my children today. When I am running low, pour more of Your love into me so I have more to give. Amen.' },
+    { v: '"Come to me, all you who are weary and burdened, and I will give you rest."', r: 'Matthew 11:28', reflection: 'Parenting is exhausting. Jesus specifically invites the weary to come. Have you brought your tired parent-heart to Him recently?', prayer: 'Jesus, I come to You today weary and burdened. I need rest and renewal. Replenish me so I can love my children well tomorrow. Amen.' },
+    { v: '"I can do all this through him who gives me strength."', r: 'Philippians 4:13', reflection: 'Parenting requires more than human strength. Where are you trying to parent in your own power instead of drawing on His?', prayer: 'Lord, I cannot do this parenting journey alone. Give me Your strength for every challenge today — patient moments and hard conversations alike. Amen.' }
+  ],
+  morning: [
+    { v: '"This is the day the Lord has made; let us rejoice and be glad in it."', r: 'Psalm 118:24', reflection: 'This exact day was made by God. What is one thing about today you can choose to rejoice in before it has even begun?', prayer: 'Lord, thank You for this new day. I choose to rejoice in it. Fill me with Your presence from the very first moment and let this be a day that honours You. Amen.' },
+    { v: '"Great is his faithfulness; his mercies begin afresh each morning."', r: 'Lamentations 3:23 (NLT)', reflection: 'Every single morning is a fresh start with new mercies. What do you need a fresh start with today?', prayer: 'Thank You Father for Your new mercies this morning. Yesterday is forgiven and today is fresh. I receive Your grace and step forward in it. Amen.' },
+    { v: '"In the morning, Lord, you hear my voice; in the morning I lay my requests before you and wait expectantly."', r: 'Psalm 5:3', reflection: 'Morning prayer sets the tone for the day. What specific request can you lay before God right now and wait expectantly for His answer?', prayer: 'Lord, here is my heart this morning. I lay my needs before You and I wait in expectation — trusting that You hear every word. Amen.' },
+    { v: '"Because of the Lord\'s great love we are not consumed, for his compassions never fail. They are new every morning; great is your faithfulness."', r: 'Lamentations 3:22-23', reflection: 'Fresh compassion is waiting for you this morning. What does it mean to you that God\'s compassion never runs out?', prayer: 'Faithful God, thank You that Your compassions are new this morning. I receive them fully and I choose to walk in Your faithfulness today. Amen.' },
+    { v: '"Let the morning bring me word of your unfailing love, for I have put my trust in you. Show me the way I should go, for to you I entrust my life."', r: 'Psalm 143:8', reflection: 'This is a beautiful morning prayer already written. Can you make it your own prayer right now?', prayer: 'Lord, bring me Your love this morning. I trust You fully. Show me the way I should walk today and I will follow You. My life is Yours. Amen.' }
+  ]
+};
+
+var KIDS_VERSES = {
+  hope: [
+    { v: '"God has good plans for you — plans to help you and not to hurt you, plans to give you hope and a wonderful future!"', r: 'Jeremiah 29:11 (Simplified)', reflection: 'God loves you so much that He already has amazing plans for your life! What do you dream God might have planned for you?', prayer: 'Dear God, thank You that Your plans for me are good. Help me to trust You even when I don\'t know what is coming next. Amen.' },
+    { v: '"With God, nothing is impossible!"', r: 'Luke 1:37 (Simplified)', reflection: 'Nothing is too big or too hard for God! What is something you have been hoping for that feels too big?', prayer: 'Dear God, You can do anything! Help me to remember that with You, nothing is impossible. Thank You for being such an amazing God. Amen.' }
+  ],
+  strength: [
+    { v: '"I can do all things because Christ gives me strength!"', r: 'Philippians 4:13 (Simplified)', reflection: 'With God\'s help you can do hard things! What is something hard you are facing that God can help you with?', prayer: 'Dear Jesus, please give me strength when things feel hard. Thank You that I am never alone. Amen.' },
+    { v: '"Be strong and brave! Do not be frightened. God your Lord will be with you everywhere you go."', r: 'Joshua 1:9 (Simplified)', reflection: 'God goes everywhere with you — even to school, even to a new place. Does knowing that make you feel less scared?', prayer: 'Dear God, sometimes I feel scared. Thank You for always being with me and giving me the strength to be brave. Amen.' }
+  ],
+  peace: [
+    { v: '"Do not worry about anything. Instead pray about everything and God\'s peace will fill your heart."', r: 'Philippians 4:6-7 (Simplified)', reflection: 'When you feel worried, you can talk to God about it just like talking to a friend. What are you worried about today?', prayer: 'Dear God, I give You my worries. Please take them and fill my heart with Your peace. Thank You for listening to me. Amen.' },
+    { v: '"Jesus said: Peace I give to you. Do not be afraid!"', r: 'John 14:27 (Simplified)', reflection: 'Jesus gives a special kind of peace that feels like a big warm hug on the inside. Can you ask Him for it right now?', prayer: 'Dear Jesus, please give me Your peace. When I feel scared or worried, remind me that You are right here with me. Amen.' }
+  ],
+  love: [
+    { v: '"God loves you so much that He sent His Son Jesus so you could be with Him forever!"', r: 'John 3:16 (Simplified)', reflection: 'God loves YOU so much! Can you think of someone you love very much? God loves you even more than that!', prayer: 'Dear God, thank You for loving me so, so much. Help me to love others the way You love me. Amen.' },
+    { v: '"Nothing — absolutely nothing — can ever separate you from God\'s love!"', r: 'Romans 8:39 (Simplified)', reflection: 'No matter what happens, God will never stop loving you. That is the most amazing thing! How does that make you feel?', prayer: 'Dear God, thank You that You will never ever stop loving me. That makes me so happy! I love You too. Amen.' }
+  ],
+  gratitude: [
+    { v: '"Give thanks to God because He is so good and His love lasts forever!"', r: 'Psalm 107:1 (Simplified)', reflection: 'What are THREE things you are thankful to God for today? Try to think of things you don\'t usually remember to say thank you for!', prayer: 'Dear God, thank You for everything You give me. Help me to remember to say thank You every single day. Amen.' },
+    { v: '"Every good thing we have comes from God above — He is the giver of every perfect gift!"', r: 'James 1:17 (Simplified)', reflection: 'Every good thing in your life is a gift from God — your family, your friends, your food and even your smile! What gift will you thank Him for today?', prayer: 'Dear God, thank You for all the wonderful gifts You give me every day. You are so good! Amen.' }
+  ],
+  morning: [
+    { v: '"This is the day God has made — let\'s be happy and celebrate!"', r: 'Psalm 118:24 (Simplified)', reflection: 'God made TODAY especially! What is one thing you are excited about today?', prayer: 'Dear God, thank You for making today! Help me to have a wonderful, happy day and to remember You are with me all the time. Amen.' },
+    { v: '"God\'s love is new every single morning — He is so faithful!"', r: 'Lamentations 3:22-23 (Simplified)', reflection: 'Every morning God gives you fresh new love — like opening a brand new gift! How does that make you feel?', prayer: 'Good morning God! Thank You for a brand new day and brand new love. Help me to shine Your light to everyone I meet today. Amen.' }
+  ]
+};
+
+// Extra kids verses
+KIDS_VERSES["courage"] = [
+  { v: "Be strong and brave! Do not be afraid because God your Lord goes with you everywhere!", r: "Joshua 1:9 (Simplified)", reflection: "God goes with you everywhere — to school, to a new place, anywhere scary. What is something brave you can do today knowing God is with you?", prayer: "Dear God, sometimes I feel scared. Help me to be brave and remind me that You are always right beside me. Amen." },
+  { v: "When I am afraid, I put my trust in God.", r: "Psalm 56:3 (Simplified)", reflection: "Even when we feel scared it is okay — we can choose to trust God! What makes you feel scared sometimes?", prayer: "Dear God, when I feel scared I choose to trust You. Thank You that You are bigger than anything I am afraid of. Amen." },
+  { v: "God did not give us a spirit of fear. He gave us a spirit of power, love and a sound mind!", r: "2 Timothy 1:7 (Simplified)", reflection: "Fear does not come from God — power and love do! Which one do you need more of today?", prayer: "Dear God, thank You that You gave me power and love, not fear. Help me to be bold and brave today. Amen." }
+];
+KIDS_VERSES["kindness"] = [
+  { v: "Be kind and caring to one another.", r: "Ephesians 4:32 (Simplified)", reflection: "Who is one person you can be extra kind to today? Maybe a classmate, a sibling or a neighbour?", prayer: "Dear God, help me to be kind to everyone today — even people who are hard to be kind to. Fill my heart with Your kindness. Amen." },
+  { v: "Do to others what you would want them to do to you.", r: "Matthew 7:12 (Simplified)", reflection: "The Golden Rule! How would you want people to treat you? Now go and treat others that way!", prayer: "Dear Jesus, help me to treat others the way I want to be treated. Give me a kind heart every single day. Amen." },
+  { v: "A kind word cheers a person up!", r: "Proverbs 12:25 (Simplified)", reflection: "Your words have the power to make someone happy! What kind thing could you say to someone today?", prayer: "Dear God, help my words to be kind and encouraging. Let me cheer someone up with my words today. Amen." }
+];
+KIDS_VERSES["friendship"] = [
+  { v: "A true friend loves you all the time.", r: "Proverbs 17:17 (Simplified)", reflection: "Who is a true friend who loves you no matter what? And who can YOU be that kind of friend to?", prayer: "Dear God, thank You for my friends. Help me to be a true, loyal friend and to love my friends the way You love me. Amen." },
+  { v: "Two are better than one — if one falls down, the other helps them up!", r: "Ecclesiastes 4:9-10 (Simplified)", reflection: "Real friends help each other when things go wrong. Has a friend ever helped you up when you were feeling down?", prayer: "Dear God, thank You for friends who lift me up. Help me to be the kind of friend who always helps others back up. Amen." },
+  { v: "Jesus said: I call you my friends.", r: "John 15:15 (Simplified)", reflection: "Did you know Jesus calls YOU His friend? That means you always have the best friend in the world! How does that make you feel?", prayer: "Dear Jesus, thank You for calling me Your friend. Help me to talk to You every day just like I talk to my best friend. Amen." }
+];
+
+var VOTW = [
+  { text: '"For I know the plans I have for you," declares the Lord, "plans to prosper you and not to harm you, plans to give you hope and a future."', ref: 'Jeremiah 29:11 (NIV)' },
+  { text: '"The Lord is my shepherd; I shall not want."', ref: 'Psalm 23:1 (KJV)' },
+  { text: '"I can do all this through him who gives me strength."', ref: 'Philippians 4:13 (NIV)' },
+  { text: '"For God so loved the world that he gave his one and only Son."', ref: 'John 3:16 (NIV)' },
+  { text: '"Trust in the Lord with all your heart and lean not on your own understanding."', ref: 'Proverbs 3:5 (NIV)' },
+  { text: '"Be still, and know that I am God."', ref: 'Psalm 46:10 (NIV)' },
+  { text: '"The Lord is my light and my salvation — whom shall I fear?"', ref: 'Psalm 27:1 (NIV)' }
+];
+
+function init() {
+  var h = new Date().getHours();
+  var greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('timeGreeting').textContent = greeting;
+  // Set verse of the week based on day of week
+  var dow = new Date().getDay();
+  var votw = VOTW[dow % VOTW.length];
+  document.getElementById('votwText').textContent = '"' + votw.text.replace(/^"|"$/g,'') + '"';
+  document.getElementById('votwRef').textContent = votw.ref;
+}
+
+function setMode(m) {
+  currentMode = m;
+  document.getElementById('mode-adult').className = 'mode-btn' + (m==='adult'?' active':'');
+  document.getElementById('mode-kids').className = 'mode-btn' + (m==='kids'?' active':'');
+  // Show only relevant needs for kids
+  var kidsNeeds = ['hope','strength','peace','gratitude','morning','courage','kindness','friendship'];
+  var allNeeds = document.querySelectorAll('.need-btn');
+  allNeeds.forEach(function(btn) {
+    var need = btn.id.replace('need-','');
+    if (m === 'kids') {
+      btn.style.display = kidsNeeds.indexOf(need) !== -1 ? '' : 'none';
+    } else {
+      btn.style.display = '';
+    }
+  });
+  document.getElementById('verseCard').className = 'verse-card';
+  document.getElementById('actionsRow').style.display = 'none';
+}
+
+function setNeed(n) {
+  currentNeed = n;
+  document.querySelectorAll('.need-btn').forEach(function(b){ b.className='need-btn'; });
+  document.getElementById('need-'+n).className='need-btn active';
+}
+
+function getPool() {
+  if (currentMode === 'kids') {
+    var pool = KIDS_VERSES[currentNeed] || KIDS_VERSES["hope"];
+    return pool;
+  }
+  return VERSES[currentNeed] || VERSES['hope'];
+}
+
+function generate() {
+  var pool = getPool();
+  var key = currentNeed + '_' + currentMode;
+  if (!usedVerses[key]) usedVerses[key] = [];
+  var available = pool.filter(function(v,i){ return usedVerses[key].indexOf(i) === -1; });
+  if (available.length === 0) { usedVerses[key] = []; available = pool; }
+  var idx = Math.floor(Math.random() * available.length);
+  var original = pool.indexOf(available[idx]);
+  usedVerses[key].push(original);
+  currentVerse = available[idx];
+
+  var moodMap = { hope:'🌅 HOPE', strength:'💪 STRENGTH', peace:'🕊️ PEACE', healing:'🌿 HEALING', gratitude:'🙏 GRATITUDE', guidance:'🧭 GUIDANCE', love:'❤️ LOVE', anxiety:'🌊 PEACE OVER ANXIETY', grief:'🤍 COMFORT IN GRIEF', purpose:'⭐ PURPOSE', parenting:'👨‍👩‍👧 PARENTING', morning:'☀️ MORNING', courage:'🦁 COURAGE', kindness:'🌸 KINDNESS', friendship:'🤝 FRIENDSHIP' };
+
+  var card = document.getElementById('verseCard');
+  card.className = 'verse-card mood-' + (currentNeed === 'anxiety' ? 'anxiety' : currentNeed);
+  document.getElementById('vcMood').textContent = moodMap[currentNeed] || currentNeed.toUpperCase();
+  document.getElementById('vcVerse').textContent = '"' + currentVerse.v.replace(/^"|"$/g,'') + '"';
+  document.getElementById('vcRef').textContent = currentVerse.r;
+  document.getElementById('vcVersion').textContent = currentMode === 'kids' ? '✨ Kids Version' : 'NIV / ESV';
+  document.getElementById('vcReflection').textContent = currentVerse.reflection;
+  document.getElementById('vcPrayer').textContent = currentVerse.prayer;
+  document.getElementById('heartIcon').textContent = '🤍';
+
+  card.className = 'verse-card mood-' + currentNeed + ' show';
+  document.getElementById('actionsRow').style.display = 'grid';
+  setTimeout(function(){ card.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+}
+
+function copyVerse() {
+  if (!currentVerse) return;
+  var text = '"' + currentVerse.v.replace(/^"|"$/g,'') + '"\n— ' + currentVerse.r;
+  copy(text, 'copyLabel', '✓ Copied!', 'Copy Verse');
+}
+
+function copyPrayer() {
+  if (!currentVerse) return;
+  copy(currentVerse.prayer, 'prayLabel', '✓ Copied!', 'Copy Prayer');
+}
+
+function copyShareMessage() {
+  if (!currentVerse) return;
+  var msg = '🙏 A verse that encouraged me today:\n\n"' + currentVerse.v.replace(/^"|"$/g,'') + '"\n— ' + currentVerse.r + '\n\nHope it blesses you too! 💛\n\nthatsthetool.com';
+  copy(msg, 'shareLabel', '✓ Copied!', 'Share Message');
+}
+
+function shareWhatsApp() {
+  if (!currentVerse) return;
+  var msg = encodeURIComponent('🙏 A verse that encouraged me today:\n\n"' + currentVerse.v.replace(/^"|"$/g,'') + '"\n— ' + currentVerse.r + '\n\nHope it blesses you! 💛\n\nthatsthetool.com');
+  window.open('https://wa.me/?text=' + msg, '_blank');
+}
+
+function heartVerse() {
+  if (!currentVerse) return;
+  var already = favourites.find(function(f){ return f.r === currentVerse.r; });
+  if (!already) {
+    favourites.unshift({ v: currentVerse.v, r: currentVerse.r });
+    document.getElementById('heartIcon').textContent = '❤️';
+    renderFavs();
+  }
+}
+
+function renderFavs() {
+  var sec = document.getElementById('favsSection');
+  if (favourites.length === 0) { sec.className='favs-section'; return; }
+  sec.className = 'favs-section show';
+  document.getElementById('favsList').innerHTML = favourites.map(function(f) {
+    return '<div class="fav-item"><div class="fav-verse">"' + f.v.replace(/^"|"$/g,'') + '"</div><div class="fav-ref">— ' + f.r + '</div></div>';
+  }).join('');
+}
+
+function clearFavs() { favourites=[]; renderFavs(); document.getElementById('heartIcon').textContent='🤍'; }
+
+function copy(text, labelId, success, original) {
+  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(text); }
+  else { var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta); }
+  var lbl = document.getElementById(labelId);
+  if (lbl) { lbl.textContent=success; setTimeout(function(){ lbl.textContent=original; },2500); }
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
