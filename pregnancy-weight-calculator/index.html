@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pregnancy Weight Gain Calculator – How Much Weight Should I Gain?</title>
+<meta name="description" content="Free pregnancy weight gain calculator. Find out how much weight you should gain during pregnancy based on your pre-pregnancy BMI. Includes trimester breakdown and weekly targets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fdf8f5;
+  --card: #ffffff;
+  --rose: #c4607a;
+  --rose-light: #fdf0f3;
+  --rose-mid: #e07a90;
+  --peach: #f0a880;
+  --peach-light: #fdf4ee;
+  --sage: #6a9a7a;
+  --sage-light: #eef6f0;
+  --border: rgba(196,96,122,0.15);
+  --ink: #2a1820;
+  --muted: #7a6068;
+  --warm: #f5ede8;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+.wrapper { max-width: 740px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--rose); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--rose); opacity:0.4; }
+h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 6vw, 48px); font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; margin-bottom: 14px; color: var(--ink); }
+h1 em { font-style: italic; color: var(--rose); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+/* Disclaimer */
+.disclaimer { background: var(--peach-light); border: 1px solid rgba(240,168,128,0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 28px; font-size: 12px; color: var(--muted); line-height: 1.6; display: flex; gap: 10px; align-items: flex-start; }
+.disclaimer-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: 0 2px 30px rgba(196,96,122,0.06); }
+@media(max-width:520px){ .card { padding: 22px 16px; } }
+
+.field-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+/* Unit toggle */
+.unit-toggle { display: flex; background: var(--warm); border-radius: 10px; padding: 3px; border: 1px solid var(--border); margin-bottom: 24px; }
+.unit-btn { flex: 1; padding: 9px; border: none; background: none; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.unit-btn.active { background: var(--card); color: var(--rose); box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+
+/* Inputs */
+.inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+@media(max-width:480px){ .inputs-grid { grid-template-columns: 1fr; } }
+.inputs-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+@media(max-width:480px){ .inputs-grid3 { grid-template-columns: 1fr 1fr; } }
+
+.input-wrap { display: flex; align-items: center; background: var(--warm); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+.input-wrap:focus-within { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(196,96,122,0.1); }
+.input-wrap input { flex: 1; padding: 13px 14px; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; color: var(--ink); outline: none; min-width: 0; }
+.input-wrap input::placeholder { color: #c0a8b0; }
+.input-unit { padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--rose); border-left: 1px solid var(--border); display: flex; align-items: center; min-height: 46px; white-space: nowrap; }
+
+/* Pregnancy info section */
+.pregnancy-section { margin-bottom: 24px; }
+.week-slider-wrap { margin-top: 10px; }
+.week-slider { width: 100%; accent-color: var(--rose); height: 6px; }
+.week-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 4px; }
+.week-display { text-align: center; font-size: 24px; font-weight: 700; color: var(--rose); margin: 8px 0 4px; letter-spacing: -0.02em; }
+.week-trimester { text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* Twins toggle */
+.twins-row { display: flex; gap: 10px; margin-bottom: 24px; }
+.twin-btn { flex: 1; padding: 11px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--warm); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.twin-btn.active { border-color: var(--rose); background: var(--rose-light); color: var(--rose); font-weight: 600; }
+
+/* Calc button */
+.calc-btn { width: 100%; padding: 16px; background: var(--rose); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.15s; }
+.calc-btn:hover { background: #a84e68; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(196,96,122,0.3); }
+.calc-btn:active { transform: none; }
+
+.error-msg { display: none; margin-top: 10px; padding: 10px 14px; background: rgba(196,96,122,0.07); border-radius: 8px; color: var(--rose); font-size: 13px; text-align: center; }
+.error-msg.show { display: block; }
+
+/* Results */
+.results { display: none; }
+.results.show { display: block; animation: fadeUp 0.5s ease both; }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(196,96,122,0.2), transparent); margin: 32px 0; }
+
+/* BMI badge */
+.bmi-badge { display: flex; align-items: center; gap: 14px; background: var(--warm); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; }
+.bmi-val { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -0.02em; }
+.bmi-info { }
+.bmi-cat { font-size: 14px; font-weight: 700; color: var(--rose); }
+.bmi-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Main recommendation */
+.rec-hero { text-align: center; padding: 32px 20px 24px; background: var(--rose-light); border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(196,96,122,0.12); }
+.rec-label { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rose); margin-bottom: 10px; }
+.rec-range { font-family: 'Playfair Display', serif; font-size: clamp(36px, 10vw, 60px); font-weight: 700; color: var(--ink); letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+.rec-unit { font-size: 14px; color: var(--muted); }
+.rec-sub { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+/* Trimester breakdown */
+.trimester-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+@media(max-width:460px){ .trimester-grid { grid-template-columns: 1fr; } }
+.tri-card { border-radius: 14px; padding: 18px 14px; text-align: center; border: 1px solid var(--border); }
+.tri-card.t1 { background: #fdf4ee; border-color: rgba(240,168,128,0.25); }
+.tri-card.t2 { background: var(--rose-light); border-color: rgba(196,96,122,0.15); }
+.tri-card.t3 { background: var(--sage-light); border-color: rgba(106,154,122,0.2); }
+.tri-name { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 8px; }
+.tri-card.t1 .tri-name { color: var(--peach); }
+.tri-card.t2 .tri-name { color: var(--rose); }
+.tri-card.t3 .tri-name { color: var(--sage); }
+.tri-weeks { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+.tri-gain { font-size: clamp(18px,4vw,24px); font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; margin-bottom: 4px; }
+.tri-per-week { font-size: 11px; color: var(--muted); }
+
+/* Current progress */
+.progress-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.progress-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.progress-bar-wrap { margin-bottom: 12px; }
+.progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.progress-bar-bg { height: 10px; background: var(--warm); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+.progress-bar-fill { height: 100%; border-radius: 999px; transition: width 0.8s cubic-bezier(0.34,1.2,0.64,1); background: linear-gradient(90deg, var(--rose-mid), var(--rose)); }
+.progress-note { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.5; }
+
+/* Info rows */
+.info-rows { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; border-bottom: 1px solid rgba(196,96,122,0.07); font-size: 13px; }
+.info-row:last-child { border-bottom: none; }
+.info-row:hover { background: var(--rose-light); }
+.info-key { color: var(--muted); }
+.info-val { font-weight: 600; color: var(--ink); }
+.info-val.rose { color: var(--rose); }
+
+/* Tips box */
+.tips-box { background: var(--sage-light); border: 1px solid rgba(106,154,122,0.2); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.tips-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--sage); margin-bottom: 10px; }
+.tip-item { display: flex; gap: 8px; font-size: 13px; color: var(--ink); line-height: 1.5; margin-bottom: 8px; }
+.tip-item:last-child { margin-bottom: 0; }
+.tip-dot { color: var(--sage); font-weight: 700; flex-shrink: 0; }
+
+/* Copy button */
+.copy-btn { width: 100%; padding: 13px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+.copy-btn:hover { border-color: var(--rose); color: var(--rose); background: var(--rose-light); }
+.copy-btn.copied { border-color: var(--sage); color: var(--sage); background: var(--sage-light); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #c0a8b0; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">✦ Free Online Tool ✦</div>
+    <h1>Pregnancy Weight Gain <em>Calculator</em></h1>
+    <p class="subtitle">Find out exactly how much weight you should gain during pregnancy based on your pre-pregnancy BMI and current week.</p>
+  </header>
+
+  <!-- Medical disclaimer -->
+  <div class="disclaimer">
+    <span class="disclaimer-icon">💗</span>
+    <span>This calculator uses guidelines from the Institute of Medicine (IOM). It is for informational purposes only and does not replace advice from your doctor or midwife. Always consult your healthcare provider about your individual weight gain goals.</span>
+  </div>
+
+  <div class="card">
+
+    <!-- Unit toggle -->
+    <div class="unit-toggle">
+      <button class="unit-btn active" id="btnMetric" onclick="setUnit('metric')">⚖ Metric (kg / cm)</button>
+      <button class="unit-btn" id="btnImperial" onclick="setUnit('imperial')">🇺🇸 Imperial (lbs / ft)</button>
+    </div>
+
+    <!-- Pre-pregnancy weight and height -->
+    <div class="inputs-grid" style="margin-bottom:16px;">
+      <div>
+        <span class="field-label">Pre-Pregnancy Weight</span>
+        <div class="input-wrap">
+          <input type="number" id="weightInput" placeholder="60" min="30" step="0.1">
+          <span class="input-unit" id="weightUnit">kg</span>
+        </div>
+      </div>
+      <div id="heightMetricWrap">
+        <span class="field-label">Height</span>
+        <div class="input-wrap">
+          <input type="number" id="heightCm" placeholder="165" min="100" max="220">
+          <span class="input-unit">cm</span>
+        </div>
+      </div>
+      <div id="heightImperialWrap" style="display:none;">
+        <span class="field-label">Height</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="input-wrap">
+            <input type="number" id="heightFt" placeholder="5" min="3" max="7">
+            <span class="input-unit">ft</span>
+          </div>
+          <div class="input-wrap">
+            <input type="number" id="heightIn" placeholder="5" min="0" max="11">
+            <span class="input-unit">in</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current week -->
+    <div class="pregnancy-section">
+      <span class="field-label">Current Week of Pregnancy</span>
+      <div class="week-slider-wrap">
+        <div class="week-display" id="weekDisplay">Week 20</div>
+        <div class="week-trimester" id="weekTrimester">Second Trimester</div>
+        <input type="range" class="week-slider" id="weekSlider" min="1" max="42" value="20" oninput="updateWeek()">
+        <div class="week-labels">
+          <span>Week 1</span>
+          <span>Week 14</span>
+          <span>Week 28</span>
+          <span>Week 42</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Twins -->
+    <div style="margin-bottom:24px;">
+      <span class="field-label">Are You Expecting Twins?</span>
+      <div class="twins-row">
+        <button class="twin-btn active" id="btnSingle" onclick="setTwins(false)">👶 Single Baby</button>
+        <button class="twin-btn" id="btnTwins" onclick="setTwins(true)">👶👶 Twins</button>
+      </div>
+    </div>
+
+    <!-- Current weight (optional) -->
+    <div style="margin-bottom:24px;">
+      <span class="field-label">Current Weight (Optional — for progress tracking)</span>
+      <div class="input-wrap" style="max-width:220px;">
+        <input type="number" id="currentWeight" placeholder="Leave blank if unknown" min="30" step="0.1">
+        <span class="input-unit" id="currentWeightUnit">kg</span>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">💗 Calculate My Weight Gain</button>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Results -->
+    <div class="results" id="results">
+      <div class="divider"></div>
+
+      <!-- BMI -->
+      <div class="bmi-badge">
+        <div class="bmi-val" id="bmiVal">—</div>
+        <div class="bmi-info">
+          <div class="bmi-cat" id="bmiCat">—</div>
+          <div class="bmi-label">Pre-pregnancy BMI</div>
+        </div>
+      </div>
+
+      <!-- Main recommendation -->
+      <div class="rec-hero">
+        <div class="rec-label">Recommended Total Weight Gain</div>
+        <div class="rec-range" id="recRange">—</div>
+        <div class="rec-unit" id="recUnit">kg during pregnancy</div>
+        <div class="rec-sub" id="recSub"></div>
+      </div>
+
+      <!-- Trimester breakdown -->
+      <div class="trimester-grid">
+        <div class="tri-card t1">
+          <div class="tri-name">1st Trimester</div>
+          <div class="tri-weeks">Weeks 1–13</div>
+          <div class="tri-gain" id="t1Gain">—</div>
+          <div class="tri-per-week" id="t1Week">—</div>
+        </div>
+        <div class="tri-card t2">
+          <div class="tri-name">2nd Trimester</div>
+          <div class="tri-weeks">Weeks 14–27</div>
+          <div class="tri-gain" id="t2Gain">—</div>
+          <div class="tri-per-week" id="t2Week">—</div>
+        </div>
+        <div class="tri-card t3">
+          <div class="tri-name">3rd Trimester</div>
+          <div class="tri-weeks">Weeks 28–40</div>
+          <div class="tri-gain" id="t3Gain">—</div>
+          <div class="tri-per-week" id="t3Week">—</div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-card" id="progressCard">
+        <div class="progress-title">Your Progress This Pregnancy</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-labels">
+            <span>Week 1</span>
+            <span id="progWeekLabel">Week 20</span>
+            <span>Week 40</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="progress-note" id="progressNote"></div>
+      </div>
+
+      <!-- Info rows -->
+      <div class="info-rows">
+        <div class="info-row"><span class="info-key">BMI category</span><span class="info-val rose" id="infoBMICat">—</span></div>
+        <div class="info-row"><span class="info-key">IOM recommended range</span><span class="info-val" id="infoRange">—</span></div>
+        <div class="info-row"><span class="info-key">Weight gain so far</span><span class="info-val" id="infoGainSoFar">—</span></div>
+        <div class="info-row"><span class="info-key">Expected gain at this week</span><span class="info-val" id="infoExpected">—</span></div>
+        <div class="info-row"><span class="info-key">Recommended rate (2nd & 3rd tri)</span><span class="info-val" id="infoRate">—</span></div>
+        <div class="info-row"><span class="info-key">Weeks remaining</span><span class="info-val" id="infoWeeksLeft">—</span></div>
+      </div>
+
+      <!-- Tips -->
+      <div class="tips-box">
+        <div class="tips-title">💚 Healthy Pregnancy Tips</div>
+        <div class="tip-item"><span class="tip-dot">✓</span><span>Eat nutrient-dense foods — focus on quality over quantity. You only need about 300 extra calories per day in the second and third trimester.</span></div>
+        <div class="tip-item"><span class="tip-dot">✓</span><span>Stay active with pregnancy-safe exercise like walking, swimming or prenatal yoga — always with your doctor's approval.</span></div>
+        <div class="tip-item"><span class="tip-dot">✓</span><span>Weigh yourself once a week at the same time of day for the most consistent tracking.</span></div>
+        <div class="tip-item"><span class="tip-dot">✓</span><span>Do not try to lose weight during pregnancy. Gaining too little weight can affect your baby's development.</span></div>
+        <div class="tip-item"><span class="tip-dot">✓</span><span>Talk to your midwife or OB if your weight gain is significantly above or below the recommended range.</span></div>
+      </div>
+
+      <button class="copy-btn" id="copyBtn" onclick="copyResults()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span id="copyLabel">Copy Results</span>
+      </button>
+    </div>
+
+  </div>
+  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere · Always consult your healthcare provider</p>
+</div>
+
+<script>
+var unit = 'metric';
+var twins = false;
+
+function setUnit(u) {
+  unit = u;
+  document.getElementById('btnMetric').className = u==='metric'?'unit-btn active':'unit-btn';
+  document.getElementById('btnImperial').className = u==='imperial'?'unit-btn active':'unit-btn';
+  document.getElementById('weightUnit').textContent = u==='metric'?'kg':'lbs';
+  document.getElementById('currentWeightUnit').textContent = u==='metric'?'kg':'lbs';
+  document.getElementById('weightInput').placeholder = u==='metric'?'60':'132';
+  document.getElementById('heightCm').placeholder = u==='metric'?'165':'';
+  document.getElementById('heightMetricWrap').style.display = u==='metric'?'':'none';
+  document.getElementById('heightImperialWrap').style.display = u==='imperial'?'':'none';
+  document.getElementById('results').className = 'results';
+}
+
+function setTwins(t) {
+  twins = t;
+  document.getElementById('btnSingle').className = 'twin-btn' + (!t?' active':'');
+  document.getElementById('btnTwins').className = 'twin-btn' + (t?' active':'');
+}
+
+function updateWeek() {
+  var w = parseInt(document.getElementById('weekSlider').value);
+  document.getElementById('weekDisplay').textContent = 'Week ' + w;
+  var tri = w <= 13 ? 'First Trimester' : w <= 27 ? 'Second Trimester' : 'Third Trimester';
+  document.getElementById('weekTrimester').textContent = tri;
+}
+
+function fmt(n, dec) {
+  return parseFloat(n.toFixed(dec !== undefined ? dec : 1));
+}
+
+function fmtRange(min, max, isMetric) {
+  if (isMetric) return min + ' – ' + max + ' kg';
+  return (min * 2.205).toFixed(0) + ' – ' + (max * 2.205).toFixed(0) + ' lbs';
+}
+
+// IOM guidelines (kg)
+function getGuidelines(bmi, isTwins) {
+  if (isTwins) {
+    if (bmi < 18.5) return { min: 22.7, max: 28.1, rate: 0.68, cat: 'Underweight (Twins)' };
+    if (bmi < 25)  return { min: 16.8, max: 24.5, rate: 0.57, cat: 'Normal Weight (Twins)' };
+    if (bmi < 30)  return { min: 14.1, max: 22.7, rate: 0.52, cat: 'Overweight (Twins)' };
+    return             { min: 11.3, max: 19.1, rate: 0.45, cat: 'Obese (Twins)' };
+  }
+  if (bmi < 18.5) return { min: 12.5, max: 18.0, rate: 0.51, t1: 1.0, cat: 'Underweight' };
+  if (bmi < 25)  return { min: 11.5, max: 16.0, rate: 0.42, t1: 1.0, cat: 'Normal Weight' };
+  if (bmi < 30)  return { min: 7.0,  max: 11.5, rate: 0.28, t1: 0.5, cat: 'Overweight' };
+  return             { min: 5.0,  max: 9.0,  rate: 0.22, t1: 0.5, cat: 'Obese' };
+}
+
+function getBMICatLabel(bmi) {
+  if (bmi < 18.5) return 'Underweight';
+  if (bmi < 25)   return 'Normal Weight';
+  if (bmi < 30)   return 'Overweight';
+  return 'Obese';
+}
+
+function getExpectedGainAtWeek(g, week) {
+  // Simple model: t1 flat, then linear
+  if (week <= 13) return g.t1 || 1.0;
+  return (g.t1 || 1.0) + g.rate * (week - 13);
+}
+
+function calculate() {
+  var errEl = document.getElementById('errorMsg');
+  var resEl = document.getElementById('results');
+  errEl.className = 'error-msg';
+
+  var weight = parseFloat(document.getElementById('weightInput').value);
+  var heightCm;
+  if (unit === 'metric') {
+    heightCm = parseFloat(document.getElementById('heightCm').value);
+  } else {
+    var ft = parseFloat(document.getElementById('heightFt').value)||0;
+    var inch = parseFloat(document.getElementById('heightIn').value)||0;
+    heightCm = (ft*12+inch)*2.54;
+    weight = weight * 0.453592;
+  }
+
+  var currentWeightRaw = parseFloat(document.getElementById('currentWeight').value);
+  var hasCurrent = !isNaN(currentWeightRaw) && currentWeightRaw > 0;
+  var currentWeightKg = hasCurrent ? (unit==='metric' ? currentWeightRaw : currentWeightRaw*0.453592) : null;
+
+  var week = parseInt(document.getElementById('weekSlider').value);
+
+  if (!weight || weight < 30) { showErr('Please enter your pre-pregnancy weight.'); return; }
+  if (!heightCm || heightCm < 100) { showErr('Please enter your height.'); return; }
+
+  var heightM = heightCm / 100;
+  var bmi = weight / (heightM * heightM);
+  var g = getGuidelines(bmi, twins);
+
+  var isMetric = unit === 'metric';
+  var convert = isMetric ? 1 : 2.205;
+
+  // Trimester gains (kg then convert)
+  var t1kg = g.t1 || 1.0;
+  var t2kg = g.rate * 14; // 14 weeks
+  var t3kg = g.rate * 13; // 13 weeks (28-40)
+  var midTotal = (g.min + g.max) / 2;
+
+  // Display values
+  document.getElementById('bmiVal').textContent = fmt(bmi, 1);
+  document.getElementById('bmiCat').textContent = getBMICatLabel(bmi);
+  document.getElementById('infoBMICat').textContent = getBMICatLabel(bmi);
+
+  var rangeStr = isMetric
+    ? g.min + ' – ' + g.max + ' kg'
+    : Math.round(g.min*2.205) + ' – ' + Math.round(g.max*2.205) + ' lbs';
+
+  document.getElementById('recRange').textContent = rangeStr;
+  document.getElementById('recUnit').textContent = twins ? 'kg total (twins)' : 'kg total recommended';
+  document.getElementById('recSub').textContent = 'Based on your pre-pregnancy BMI of ' + fmt(bmi,1) + ' (' + getBMICatLabel(bmi) + ') — IOM guidelines';
+  document.getElementById('infoRange').textContent = rangeStr;
+
+  // Trimester cards
+  var t1Disp = isMetric ? fmt(t1kg) + ' kg' : fmt(t1kg*2.205) + ' lbs';
+  var t2Disp = isMetric ? fmt(t2kg) + ' kg' : fmt(t2kg*2.205) + ' lbs';
+  var t3Disp = isMetric ? fmt(t3kg) + ' kg' : fmt(t3kg*2.205) + ' lbs';
+  var rateDisp = isMetric ? fmt(g.rate) + ' kg/week' : fmt(g.rate*2.205,2) + ' lbs/week';
+
+  document.getElementById('t1Gain').textContent = t1Disp;
+  document.getElementById('t1Week').textContent = 'Weeks 1–13';
+  document.getElementById('t2Gain').textContent = t2Disp;
+  document.getElementById('t2Week').textContent = fmt(g.rate) + ' kg/week';
+  document.getElementById('t3Gain').textContent = t3Disp;
+  document.getElementById('t3Week').textContent = fmt(g.rate) + ' kg/week';
+
+  // Progress bar
+  var progPct = Math.min(100, Math.round((week / 40) * 100));
+  document.getElementById('progressFill').style.width = progPct + '%';
+  document.getElementById('progWeekLabel').textContent = 'Week ' + week;
+
+  var expectedKg = getExpectedGainAtWeek(g, week);
+  var expectedDisp = isMetric ? fmt(expectedKg) + ' kg' : fmt(expectedKg*2.205) + ' lbs';
+  document.getElementById('infoExpected').textContent = expectedDisp;
+  document.getElementById('infoRate').textContent = rateDisp;
+  document.getElementById('infoWeeksLeft').textContent = Math.max(0, 40 - week) + ' weeks';
+
+  var progressNote = 'You are in week ' + week + ' — approximately ' + Math.round((week/40)*100) + '% through your pregnancy.';
+  if (hasCurrent) {
+    var gainedKg = currentWeightKg - weight;
+    var gainedDisp = isMetric ? fmt(gainedKg) + ' kg' : fmt(gainedKg*2.205) + ' lbs';
+    document.getElementById('infoGainSoFar').textContent = gainedDisp;
+    var diff = gainedKg - expectedKg;
+    var diffDisp = isMetric ? Math.abs(fmt(diff)) + ' kg' : Math.abs(fmt(diff*2.205)) + ' lbs';
+    if (Math.abs(diff) < 0.5) {
+      progressNote += ' Your weight gain is right on track! 🌟';
+    } else if (diff > 0) {
+      progressNote += ' You are ' + diffDisp + ' above the expected gain for this week. Talk to your doctor if you are concerned.';
+    } else {
+      progressNote += ' You are ' + diffDisp + ' below the expected gain for this week. Make sure you are eating enough nutritious food.';
+    }
+  } else {
+    document.getElementById('infoGainSoFar').textContent = 'Enter current weight above';
+  }
+  document.getElementById('progressNote').textContent = progressNote;
+
+  resEl.className = 'results show';
+  setTimeout(function(){ resEl.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 50);
+}
+
+function showErr(msg) {
+  var e = document.getElementById('errorMsg');
+  e.textContent = msg; e.className = 'error-msg show';
+}
+
+function copyResults() {
+  var lines = [
+    'PREGNANCY WEIGHT GAIN CALCULATOR',
+    '---------------------------------',
+    'Pre-pregnancy BMI: ' + document.getElementById('bmiVal').textContent + ' (' + document.getElementById('bmiCat').textContent + ')',
+    'Recommended total gain: ' + document.getElementById('recRange').textContent,
+    '',
+    '1st Trimester (Weeks 1-13): ' + document.getElementById('t1Gain').textContent,
+    '2nd Trimester (Weeks 14-27): ' + document.getElementById('t2Gain').textContent,
+    '3rd Trimester (Weeks 28-40): ' + document.getElementById('t3Gain').textContent,
+    '',
+    'Weekly rate (2nd & 3rd tri): ' + document.getElementById('infoRate').textContent,
+    'Expected gain at current week: ' + document.getElementById('infoExpected').textContent,
+    'Weight gained so far: ' + document.getElementById('infoGainSoFar').textContent,
+    'Weeks remaining: ' + document.getElementById('infoWeeksLeft').textContent,
+    '',
+    'Based on IOM guidelines. Always consult your healthcare provider.',
+    'Calculated at allthetools.com'
+  ].join('\n');
+
+  var btn = document.getElementById('copyBtn');
+  var lbl = document.getElementById('copyLabel');
+  function ok() { btn.className='copy-btn copied'; lbl.textContent='\u2713 Copied!'; setTimeout(function(){btn.className='copy-btn';lbl.textContent='Copy Results';},2500); }
+  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(lines).then(ok).catch(function(){fallback(lines,ok);}); } else { fallback(lines,ok); }
+}
+
+function fallback(t,cb){ var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');cb();}catch(e){}document.body.removeChild(ta); }
+
+document.addEventListener('keydown',function(e){ if(e.key==='Enter') calculate(); });
+</script>
+</body>
+</html>
