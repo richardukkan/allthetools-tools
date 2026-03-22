@@ -298,6 +298,7 @@ h1 em { font-style: italic; color: var(--sage); }
     <div class="saved-list" id="savedList"></div>
   </div>
 
+  <textarea id="copyBox" style="display:none;position:fixed;top:0;left:0;width:100%;height:60px;z-index:9999;font-size:13px;padding:8px;" readonly></textarea>
   <p class="footer-note">thatsthetool.com · Take a breath. You have so much to be grateful for. 🌿</p>
 </div>
 
@@ -327,12 +328,12 @@ var THEMES = {
       { q: "Name three small things in your home or immediate environment that you often take for granted but would truly miss if they were gone.", starter: "Three things I take for granted but truly treasure are..." },
       { q: "What does your body feel like this morning? Which part of your physical health can you find gratitude for today?", starter: "I am grateful for my body today, specifically because..." },
       { q: "Who is one person you are glad will be in your day today? What do you appreciate most about them?", starter: "I am grateful for [name] because..." },
-      { q: "What opportunity is waiting for you today — even in a small or ordinary form?", starter: "Today holds an opportunity I am grateful for, which is..." },
-      { q: "What lesson from yesterday are you grateful to carry into today?", starter: "Yesterday taught me something I am thankful for — it showed me that..." },
-      { q: "What is something in nature — the weather, the season, the light — that you can find beauty in this morning?", starter: "In the world outside today, I notice and feel grateful for..." },
-      { q: "What basic need — shelter, food, water, warmth — are you most aware of being grateful for right now?", starter: "I am genuinely grateful for the basics in my life, especially..." },
-      { q: "What part of your morning routine brings you quiet joy, even if you rarely acknowledge it?", starter: "There is something small in my morning that I love — it is..." },
-      { q: "What is one thing about who you are today — a quality, a growth, a strength — that you are grateful to have?", starter: "I am grateful to be the kind of person who..." },
+      { q: "What opportunity is waiting for you today  -  even in a small or ordinary form?", starter: "Today holds an opportunity I am grateful for, which is..." },
+      { q: "What lesson from yesterday are you grateful to carry into today?", starter: "Yesterday taught me something I am thankful for  -  it showed me that..." },
+      { q: "What is something in nature  -  the weather, the season, the light  -  that you can find beauty in this morning?", starter: "In the world outside today, I notice and feel grateful for..." },
+      { q: "What basic need  -  shelter, food, water, warmth  -  are you most aware of being grateful for right now?", starter: "I am genuinely grateful for the basics in my life, especially..." },
+      { q: "What part of your morning routine brings you quiet joy, even if you rarely acknowledge it?", starter: "There is something small in my morning that I love  -  it is..." },
+      { q: "What is one thing about who you are today  -  a quality, a growth, a strength  -  that you are grateful to have?", starter: "I am grateful to be the kind of person who..." },
       { q: "What dream, goal or hope are you waking up with today that fills you with a sense of purpose?", starter: "Today I wake up grateful for the hope of..." },
       { q: "Think of one difficulty in your life right now. Can you find even one thing about it to be grateful for?", starter: "Even in the hard thing I am facing, I can find gratitude because..." },
       { q: "What skill or ability do you have that most people do not even think to appreciate in themselves?", starter: "I am grateful for my ability to..." },
@@ -342,7 +343,7 @@ var THEMES = {
       { q: "What sound do you hear right now or every morning that you associate with safety and peace?", starter: "A sound in my morning world that brings me peace is..." },
       { q: "What is one thing about your life situation right now that someone else would envy without you even realising?", starter: "Something about my life that others might deeply wish for is..." },
       { q: "How has your sleep, your home or your bed served your rest? What are you grateful to wake up feeling?", starter: "My rest last night gave me... and I wake up feeling grateful for..." },
-      { q: "What is something you get to do today rather than have to do? Can you reframe at least one obligation as a privilege?", starter: "Something I get to do today — not have to — is..." },
+      { q: "What is something you get to do today rather than have to do? Can you reframe at least one obligation as a privilege?", starter: "Something I get to do today  -  not have to  -  is..." },
       { q: "What relationship in your life right now is a source of quiet, steady strength for you?", starter: "A relationship that gives me quiet strength is with [name], because..." },
       { q: "What are you looking forward to today, this week or this month that gives you a spark of anticipation?", starter: "Something I am looking forward to that gives me a spark of joy is..." },
       { q: "What do you know about yourself today that you did not know this time last year?", starter: "Something I know about myself now that I did not know a year ago is..." },
@@ -350,27 +351,27 @@ var THEMES = {
       { q: "What season of life are you in right now? What gift does this particular season carry, even if it is a hard one?", starter: "The season of life I am in right now is... and its hidden gift is..." },
       { q: "What does the air, the temperature or the weather feel like this morning? Can you find gratitude in your senses?", starter: "My senses this morning are noticing... and I feel grateful for..." },
       { q: "What mistake or misstep from yesterday are you grateful you have the opportunity to do differently today?", starter: "I am grateful for a second chance today to..." },
-      { q: "Who in your ancestry — a parent, grandparent or ancestor — gave you something you carry with you daily?", starter: "Something I carry from those who came before me that I am grateful for is..." },
+      { q: "Who in your ancestry  -  a parent, grandparent or ancestor  -  gave you something you carry with you daily?", starter: "Something I carry from those who came before me that I am grateful for is..." },
       { q: "What technology, tool or convenience do you use every single day that someone a hundred years ago could not have dreamed of?", starter: "An everyday tool or convenience I am grateful for that I completely take for granted is..." },
       { q: "What is something you have been worrying about that, if you zoom out, is actually going to be okay?", starter: "Something I have been worrying about that will probably be okay is... and I can let it go because..." },
       { q: "What comfort food, drink or ritual do you have that signals safety and home to your nervous system?", starter: "A comfort that signals safety and home to me is... and I am grateful for it because..." },
       { q: "What has your mind been able to create, imagine or solve recently that you are grateful to have the capacity for?", starter: "My mind has recently been able to... and I am grateful for that capacity because..." },
-      { q: "What freedom do you have today — of movement, of thought, of expression — that you rarely acknowledge as a gift?", starter: "A freedom I have today that I rarely acknowledge as a gift is..." },
-      { q: "Who is currently rooting for you behind the scenes — a friend, a family member, a mentor — who believes in you?", starter: "Someone currently rooting for me behind the scenes is [name]. It matters because..." },
-      { q: "What is one piece of good news — big or small — from your world recently that you want to sit with in gratitude?", starter: "A piece of good news I want to sit with in gratitude is..." },
+      { q: "What freedom do you have today  -  of movement, of thought, of expression  -  that you rarely acknowledge as a gift?", starter: "A freedom I have today that I rarely acknowledge as a gift is..." },
+      { q: "Who is currently rooting for you behind the scenes  -  a friend, a family member, a mentor  -  who believes in you?", starter: "Someone currently rooting for me behind the scenes is [name]. It matters because..." },
+      { q: "What is one piece of good news  -  big or small  -  from your world recently that you want to sit with in gratitude?", starter: "A piece of good news I want to sit with in gratitude is..." },
       { q: "What chapter of your life has ended that you can now look back on with gratitude for what it gave you?", starter: "A chapter of my life that has ended that I am now grateful for is... because it gave me..." },
-      { q: "What about this particular stage of your life — your age, your situation, your season — is actually a gift?", starter: "Something about this exact stage of my life that is actually a gift is..." },
-      { q: "What is growing in your life right now — a relationship, a skill, a project, a habit — that you are quietly grateful for?", starter: "Something that is quietly growing in my life right now that I am grateful for is..." },
+      { q: "What about this particular stage of your life  -  your age, your situation, your season  -  is actually a gift?", starter: "Something about this exact stage of my life that is actually a gift is..." },
+      { q: "What is growing in your life right now  -  a relationship, a skill, a project, a habit  -  that you are quietly grateful for?", starter: "Something that is quietly growing in my life right now that I am grateful for is..." },
       { q: "What problem in your life has already been solved that you forget to be grateful for because it is no longer a problem?", starter: "A problem that has already been solved that I forget to appreciate is..." },
       { q: "What is the view from your window, your door or your daily commute that you walk past without truly seeing?", starter: "Something in my daily view that I walk past without truly seeing is... and when I look closely I find..." },
       { q: "What morning prayer, intention or affirmation could you set today that would make the whole day feel more purposeful?", starter: "The intention I want to set for today is... I am grateful for the chance to choose it." },
       { q: "What colour, object or detail in your immediate environment makes you quietly happy when you notice it?", starter: "Something in my environment that makes me quietly happy when I notice it is..." },
       { q: "Who first believed in you before you believed in yourself? What did their belief give you?", starter: "Someone who believed in me before I believed in myself was [name]. Their belief gave me..." },
       { q: "What is one way your life is simpler, calmer or more manageable than it was a few years ago?", starter: "One way my life is simpler or calmer than it used to be is... and I am grateful for that because..." },
-      { q: "What is the most abundant thing in your life right now — even if you do not think of it as abundance?", starter: "The most abundant thing in my life right now, even if I rarely call it that, is..." },
+      { q: "What is the most abundant thing in your life right now  -  even if you do not think of it as abundance?", starter: "The most abundant thing in my life right now, even if I rarely call it that, is..." },
       { q: "What is something you love about the city, town, neighbourhood or country you live in?", starter: "Something I love about where I live that I am grateful for is..." },
-      { q: "What does your morning coffee, tea or first drink of the day give you beyond just caffeine or hydration?", starter: "My morning [drink] gives me more than just [benefit] — it also gives me..." },
-      { q: "What has been consistently present in your life — a routine, a person, a place — that you rely on more than you realise?", starter: "Something consistently present in my life that I rely on more than I realise is..." },
+      { q: "What does your morning coffee, tea or first drink of the day give you beyond just caffeine or hydration?", starter: "My morning [drink] gives me more than just [benefit]  -  it also gives me..." },
+      { q: "What has been consistently present in your life  -  a routine, a person, a place  -  that you rely on more than you realise?", starter: "Something consistently present in my life that I rely on more than I realise is..." },
       { q: "What conversation are you looking forward to having today that will fill you up in some way?", starter: "A conversation I am looking forward to today is with [name] about... I am grateful because..." },
       { q: "What is already true about your life right now that future you will look back on with deep gratitude?", starter: "Something true about my life right now that future me will be deeply grateful for is..." }
     ]
@@ -379,13 +380,13 @@ var THEMES = {
     icon: '🌙', title: 'Evening Reflection', color: 'var(--plum)', bg: 'var(--plum-light)',
     tag: 'EVENING REFLECTION',
     prompts: [
-      { q: "What was the single best moment of your day today — however small or ordinary it might seem?", starter: "The best moment in my day today was when..." },
+      { q: "What was the single best moment of your day today  -  however small or ordinary it might seem?", starter: "The best moment in my day today was when..." },
       { q: "Who made your day better today, even in the smallest way? What did they do or say?", starter: "Someone who made my day better today was [name], who..." },
       { q: "What did you accomplish today that deserves acknowledgment, even if nobody else noticed?", starter: "Something I did today that I want to acknowledge is..." },
       { q: "What kind or unexpected thing happened today that you almost let pass without gratitude?", starter: "Something unexpected but good that happened today was..." },
       { q: "What will you let go of before you sleep tonight? And what are you grateful you no longer have to carry?", starter: "Tonight I let go of... and I am grateful that I do not have to carry it anymore." },
       { q: "How did your body serve you today? What did it allow you to do, feel or experience?", starter: "Today my body allowed me to... and for that I am grateful." },
-      { q: "What conversation today — even a brief one — are you glad happened?", starter: "A conversation I am grateful for today was when..." },
+      { q: "What conversation today  -  even a brief one  -  are you glad happened?", starter: "A conversation I am grateful for today was when..." },
       { q: "What challenge did you face today and how did you grow because of it, even slightly?", starter: "Today was hard because of... but I am grateful because it taught me..." },
       { q: "What is something beautiful you saw, heard or felt today that you want to remember?", starter: "Something beautiful I want to remember from today is..." },
       { q: "What did you eat or drink today that nourished you? Do you often feel grateful for your food?", starter: "I am grateful for the nourishment I received today, especially..." },
@@ -394,40 +395,40 @@ var THEMES = {
       { q: "What did your home, your bed or your comfort give you today that you want to acknowledge?", starter: "I am grateful for the comfort I have, specifically tonight because..." },
       { q: "What is one thing you said yes to today that felt right? Or one thing you said no to that protected your peace?", starter: "I am grateful that today I chose to [yes / no] when it came to..." },
       { q: "As you end this day, what is one true thing you know about your life that fills you with quiet gratitude?", starter: "As I end today, one true and good thing I know is..." },
-      { q: "What problem did you solve today — big or small — that you should give yourself credit for?", starter: "A problem I solved today that I want to give myself credit for is..." },
+      { q: "What problem did you solve today  -  big or small  -  that you should give yourself credit for?", starter: "A problem I solved today that I want to give myself credit for is..." },
       { q: "What person showed up for you today in a way you did not expect?", starter: "Someone who showed up for me unexpectedly today was [name], who..." },
       { q: "What is one moment of peace, however brief, that you experienced today?", starter: "A brief moment of peace I experienced today was when..." },
       { q: "What kind thing did you do for someone else today, even something very small?", starter: "Something kind I did for someone else today was..." },
-      { q: "What did you learn today — from a person, a book, an experience or a mistake?", starter: "Something I learned today was... and I am grateful for it because..." },
+      { q: "What did you learn today  -  from a person, a book, an experience or a mistake?", starter: "Something I learned today was... and I am grateful for it because..." },
       { q: "What beauty existed in your ordinary day that you almost walked past without noticing?", starter: "Something beautiful in the ordinary of today that I almost missed was..." },
       { q: "How are you different tonight from who you were this morning? Even the smallest shift counts.", starter: "One small way I am different tonight from this morning is..." },
       { q: "What do you get to look forward to tomorrow? How does anticipation feel as you settle into sleep?", starter: "Something I get to look forward to tomorrow is... and it makes me feel..." },
-      { q: "Who did you think of today — a friend, a family member, someone from your past — and what does their existence mean to you?", starter: "Someone I thought of today was [name] and their existence in my life means..." },
+      { q: "Who did you think of today  -  a friend, a family member, someone from your past  -  and what does their existence mean to you?", starter: "Someone I thought of today was [name] and their existence in my life means..." },
       { q: "What did the sunlight, moonlight, lamplight or candlelight give to your day today?", starter: "The quality of light in my day today gave me..." },
       { q: "What is one thing about your work, your role or your daily responsibilities that you are grateful for, even on a hard day?", starter: "Even on hard days, something about my work or responsibilities that I am grateful for is..." },
-      { q: "What was the texture of today — slow and quiet, or full and busy — and what can you find to appreciate in that?", starter: "Today had a texture of... and I find gratitude in that because..." },
+      { q: "What was the texture of today  -  slow and quiet, or full and busy  -  and what can you find to appreciate in that?", starter: "Today had a texture of... and I find gratitude in that because..." },
       { q: "What do you want to dream about tonight? What good things from today can you carry into sleep?", starter: "I want to carry these good things from today into my sleep tonight..." },
-      { q: "What truth about yourself did you see more clearly today — a strength, a value, a way of being?", starter: "A truth about myself I saw more clearly today is..." },
+      { q: "What truth about yourself did you see more clearly today  -  a strength, a value, a way of being?", starter: "A truth about myself I saw more clearly today is..." },
       { q: "What did today confirm about who you are and what matters to you?", starter: "Today confirmed for me that I am someone who values... and that fills me with..." },
       { q: "What is the most peaceful place your mind went today? What triggered that peace?", starter: "The most peaceful my mind went today was when... and it was triggered by..." },
-      { q: "How did nature — a plant, the sky, an animal, the wind — touch your day in any way?", starter: "Nature touched my day today when... and I felt..." },
+      { q: "How did nature  -  a plant, the sky, an animal, the wind  -  touch your day in any way?", starter: "Nature touched my day today when... and I felt..." },
       { q: "What have you been carrying today that you can officially put down before sleep?", starter: "Something I have been carrying today that I now officially put down is..." },
-      { q: "What gift did this specific Wednesday, this specific season, this specific chapter of your life offer you today?", starter: "The specific gift that today — in this chapter of my life — offered me was..." },
+      { q: "What gift did this specific Wednesday, this specific season, this specific chapter of your life offer you today?", starter: "The specific gift that today  -  in this chapter of my life  -  offered me was..." },
       { q: "What did your child, pet, partner or plant give you today that you want to remember?", starter: "Something [name/pet/plant] gave me today that I want to hold onto is..." },
-      { q: "What small domestic act — cooking, cleaning, organising — felt satisfying today and why?", starter: "A small domestic act that felt satisfying today was... and it felt good because..." },
+      { q: "What small domestic act  -  cooking, cleaning, organising  -  felt satisfying today and why?", starter: "A small domestic act that felt satisfying today was... and it felt good because..." },
       { q: "Who needed you today and how did it feel to be needed?", starter: "Someone who needed me today was [name], and being needed felt..." },
-      { q: "What sound — music, laughter, rain, silence — most perfectly soundtracked your day?", starter: "The sound that most perfectly soundtracked today was... because..." },
+      { q: "What sound  -  music, laughter, rain, silence  -  most perfectly soundtracked your day?", starter: "The sound that most perfectly soundtracked today was... because..." },
       { q: "What did rest look like for you today, even briefly? Are you grateful you found it?", starter: "Rest looked like... for me today, and I am grateful that I found it because..." },
-      { q: "What story will you tell about today in five years — and what will you be glad you noticed?", starter: "In five years I might tell a story about today that includes... and I am glad I noticed it." },
-      { q: "What has your heart felt most today — love, peace, hope, connection? Where did that feeling come from?", starter: "What my heart felt most today was... and it came from..." },
-      { q: "What act of courage — however quiet — did you perform today?", starter: "An act of quiet courage I performed today was..." },
-      { q: "What moment of connection — eye contact, a shared laugh, a hand on a shoulder — happened today?", starter: "A moment of genuine connection I experienced today was..." },
-      { q: "What were you given today that you could not have earned, planned or predicted?", starter: "Something I was simply given today — grace, luck or love — that I could not have planned was..." },
+      { q: "What story will you tell about today in five years  -  and what will you be glad you noticed?", starter: "In five years I might tell a story about today that includes... and I am glad I noticed it." },
+      { q: "What has your heart felt most today  -  love, peace, hope, connection? Where did that feeling come from?", starter: "What my heart felt most today was... and it came from..." },
+      { q: "What act of courage  -  however quiet  -  did you perform today?", starter: "An act of quiet courage I performed today was..." },
+      { q: "What moment of connection  -  eye contact, a shared laugh, a hand on a shoulder  -  happened today?", starter: "A moment of genuine connection I experienced today was..." },
+      { q: "What were you given today that you could not have earned, planned or predicted?", starter: "Something I was simply given today  -  grace, luck or love  -  that I could not have planned was..." },
       { q: "What part of today would you replay if you could, simply because it felt so good?", starter: "If I could replay one part of today it would be... because it felt..." },
       { q: "What choice did you make today that aligned with your values? How does it feel to have acted with integrity?", starter: "A choice I made today that aligned with my values was... and it feels..." },
-      { q: "What gentle surprise did the day offer — something you did not plan for but ended up being glad about?", starter: "A gentle surprise today that I ended up being glad about was..." },
-      { q: "What is one way you were kind to yourself today — in thought, in rest, in nourishment or in grace?", starter: "One way I was kind to myself today was..." },
-      { q: "What did you notice about the world today — its beauty, its resilience, its ordinary miracles — that filled you with wonder?", starter: "Something about the world I noticed today that filled me with quiet wonder was..." },
+      { q: "What gentle surprise did the day offer  -  something you did not plan for but ended up being glad about?", starter: "A gentle surprise today that I ended up being glad about was..." },
+      { q: "What is one way you were kind to yourself today  -  in thought, in rest, in nourishment or in grace?", starter: "One way I was kind to myself today was..." },
+      { q: "What did you notice about the world today  -  its beauty, its resilience, its ordinary miracles  -  that filled you with wonder?", starter: "Something about the world I noticed today that filled me with quiet wonder was..." },
       { q: "As you prepare for sleep, what three words would you use to sum up your gratitude for today?", starter: "Three words that sum up my gratitude for today are... and I end this day feeling..." }
     ]
   },
@@ -438,52 +439,52 @@ var THEMES = {
       { q: "What is one quality about yourself that you have never truly given yourself credit for?", starter: "A quality I have that I do not give myself enough credit for is..." },
       { q: "Describe a time in the past year when you showed up for yourself. What did that look like?", starter: "A time I showed up for myself was when I..." },
       { q: "What is your body able to do that you rarely stop to appreciate? What would you say to it if you were truly grateful?", starter: "If I spoke to my body with gratitude I would say..." },
-      { q: "What is something you have overcome — big or small — that proves you are stronger than you think?", starter: "Something I have overcome that proves my strength is..." },
+      { q: "What is something you have overcome  -  big or small  -  that proves you are stronger than you think?", starter: "Something I have overcome that proves my strength is..." },
       { q: "What do the people who love you most see in you that you struggle to see in yourself?", starter: "The people who love me would say I have... but I find it hard to believe because..." },
-      { q: "What boundary have you set recently — or need to set — that is actually an act of self-love?", starter: "A boundary I have set or need to set out of love for myself is..." },
+      { q: "What boundary have you set recently  -  or need to set  -  that is actually an act of self-love?", starter: "A boundary I have set or need to set out of love for myself is..." },
       { q: "What does rest mean to you? When did you last truly rest and how did it serve you?", starter: "Rest for me looks like... and the last time I gave myself that, it..." },
       { q: "What is one unkind thing you often tell yourself that you are ready to be grateful for outgrowing?", starter: "I am ready to stop believing the story that I am... and instead I am grateful that..." },
       { q: "What unique perspective or experience do you have that makes you irreplaceable in this world?", starter: "Something about my experience that makes me uniquely valuable is..." },
-      { q: "Write yourself a thank you note for one specific thing you have carried, endured or survived.", starter: "Dear me — thank you for..." },
+      { q: "Write yourself a thank you note for one specific thing you have carried, endured or survived.", starter: "Dear me  -  thank you for..." },
       { q: "What is one small daily habit or ritual you do for yourself that deserves more appreciation than you give it?", starter: "Something small I do for myself that I am grateful for is..." },
-      { q: "What part of your story — even the difficult parts — are you beginning to see as a gift?", starter: "A part of my story I am starting to see as a gift is..." },
+      { q: "What part of your story  -  even the difficult parts  -  are you beginning to see as a gift?", starter: "A part of my story I am starting to see as a gift is..." },
       { q: "What does your ideal version of yourself already have that your current self deserves credit for?", starter: "I already have something my ideal self values, which is..." },
       { q: "What emotional need did you meet for yourself recently, even imperfectly?", starter: "A need I met for myself recently was... even though it was not perfect, I am grateful that..." },
       { q: "If gratitude could heal one thing about how you see yourself, what would it heal?", starter: "If gratitude could heal my relationship with myself, it would heal..." },
       { q: "What is the most courageous thing you have ever done quietly, without applause or acknowledgment?", starter: "The most courageous quiet thing I have ever done is..." },
       { q: "What would you tell your younger self to be proud of about the person you have become?", starter: "I would tell my younger self to be proud of how I..." },
       { q: "What does your laugh sound like, and when was the last time you heard it freely? Are you grateful for your joy?", starter: "My laugh is... and I am grateful for my capacity for joy because..." },
-      { q: "What is something you forgave yourself for — even partially — and how has that forgiveness changed you?", starter: "Something I have forgiven myself for is... and it has changed me by..." },
+      { q: "What is something you forgave yourself for  -  even partially  -  and how has that forgiveness changed you?", starter: "Something I have forgiven myself for is... and it has changed me by..." },
       { q: "What is one way you have grown in self-awareness or emotional intelligence in the past year?", starter: "One way I have grown in self-awareness in the past year is..." },
       { q: "What have you stopped apologising for that you used to apologise for? How does that feel?", starter: "Something I have stopped apologising for is... and that feels..." },
       { q: "What do you love about the way you love others? What kind of friend, partner or family member are you?", starter: "Something I love about the way I love others is..." },
       { q: "What is something your face, your body or your presence communicates to others that you are grateful for?", starter: "Something my presence communicates that I am grateful for is..." },
-      { q: "What makes you feel the most alive — the most like yourself? How often do you prioritise that feeling?", starter: "What makes me feel most alive and most like myself is... I prioritise it by..." },
+      { q: "What makes you feel the most alive  -  the most like yourself? How often do you prioritise that feeling?", starter: "What makes me feel most alive and most like myself is... I prioritise it by..." },
       { q: "What do you know about love, loss or life that only your particular story could have taught you?", starter: "Something only my particular story could have taught me is..." },
       { q: "When was the last time you were proud of yourself in a way you did not share with anyone? What was it?", starter: "The last time I was privately proud of myself was when..." },
-      { q: "What is something about your personality — an introversion, an intensity, a sensitivity — that used to feel like a flaw and now feels like a gift?", starter: "Something about my personality that used to feel like a flaw but now feels like a gift is..." },
-      { q: "What relationship do you have with yourself first thing in the morning — critical or kind? What would you like it to be?", starter: "My relationship with myself in the morning is usually... and I would like it to be..." },
-      { q: "What has softened in you over the years that you are grateful for — a rigid belief, a harsh judgment, a fear?", starter: "Something that has softened in me that I am grateful for is..." },
+      { q: "What is something about your personality  -  an introversion, an intensity, a sensitivity  -  that used to feel like a flaw and now feels like a gift?", starter: "Something about my personality that used to feel like a flaw but now feels like a gift is..." },
+      { q: "What relationship do you have with yourself first thing in the morning  -  critical or kind? What would you like it to be?", starter: "My relationship with myself in the morning is usually... and I would like it to be..." },
+      { q: "What has softened in you over the years that you are grateful for  -  a rigid belief, a harsh judgment, a fear?", starter: "Something that has softened in me that I am grateful for is..." },
       { q: "What does it mean to you to be a good person? How are you living that meaning right now?", starter: "Being a good person means... to me, and right now I am living that by..." },
-      { q: "What are you made of — what values, what fire, what gentleness — that you want to acknowledge today?", starter: "I am made of... and today I want to acknowledge that about myself." },
+      { q: "What are you made of  -  what values, what fire, what gentleness  -  that you want to acknowledge today?", starter: "I am made of... and today I want to acknowledge that about myself." },
       { q: "What part of your healing journey are you grateful to be on, even if you are not at the end yet?", starter: "A part of my healing journey I am grateful to be on is..." },
       { q: "What do you no longer need that you once thought you could not live without?", starter: "Something I no longer need that I once thought I could not live without is... and I am grateful because..." },
       { q: "What is one way you have been a safe person for someone else to turn to?", starter: "One way I have been a safe person for someone else is..." },
       { q: "What is your relationship with your own opinions? Do you trust them? Are you grateful for your point of view?", starter: "My relationship with my own opinions is... and I am grateful for my perspective because..." },
       { q: "What has grief, loss or disappointment made you appreciate more deeply about life and about yourself?", starter: "What grief or loss has made me appreciate more deeply is..." },
-      { q: "What does your creativity — in any form — give you? How would your life feel without it?", starter: "My creativity gives me... and without it I think I would feel..." },
-      { q: "What is something you do that brings others peace, comfort or joy — even without realising it?", starter: "Something I do that brings others peace or joy, even without realising it, is..." },
-      { q: "What chapter of your own story are you most proud of — not for what it achieved but for how you carried it?", starter: "The chapter of my story I am most proud of for how I carried it is..." },
+      { q: "What does your creativity  -  in any form  -  give you? How would your life feel without it?", starter: "My creativity gives me... and without it I think I would feel..." },
+      { q: "What is something you do that brings others peace, comfort or joy  -  even without realising it?", starter: "Something I do that brings others peace or joy, even without realising it, is..." },
+      { q: "What chapter of your own story are you most proud of  -  not for what it achieved but for how you carried it?", starter: "The chapter of my story I am most proud of for how I carried it is..." },
       { q: "What would unconditional love for yourself actually feel like? What is one step toward offering yourself that today?", starter: "Unconditional love for myself would feel like... and one step toward offering that today is..." },
       { q: "What have you earned through discipline, patience or consistency that deserves your own deep respect?", starter: "Something I have earned through discipline or patience that deserves my own respect is..." },
       { q: "What does your intuition tell you regularly that you are finally learning to trust?", starter: "My intuition regularly tells me... and I am finally learning to trust it by..." },
-      { q: "What kind of love do you give most freely — physical affection, acts of service, words, time — and what does that say about you?", starter: "The kind of love I give most freely is... and that reveals that I am someone who..." },
-      { q: "What do you wish more people knew about you — something true and good about who you really are?", starter: "Something true and good about me that I wish more people knew is..." },
+      { q: "What kind of love do you give most freely  -  physical affection, acts of service, words, time  -  and what does that say about you?", starter: "The kind of love I give most freely is... and that reveals that I am someone who..." },
+      { q: "What do you wish more people knew about you  -  something true and good about who you really are?", starter: "Something true and good about me that I wish more people knew is..." },
       { q: "What are you in the middle of becoming? What evidence can you already see of that becoming?", starter: "I am in the middle of becoming... and the evidence I can already see is..." },
       { q: "What would today look like if you treated yourself with the same kindness you give your closest friend?", starter: "If I treated myself like my closest friend, today would look like..." },
       { q: "What fear have you shrunk yourself to avoid? And what would it look like to take up just a little more space?", starter: "A fear I have shrunk myself to avoid is... and taking up more space would look like..." },
       { q: "What is something you do or make that you are quietly proud of but rarely show the world?", starter: "Something I do or make that I am quietly proud of but rarely share is..." },
-      { q: "What does the word worthy mean to you — and what would change if you fully believed you were?", starter: "Worthy means... to me, and if I fully believed I was worthy, I would..." },
+      { q: "What does the word worthy mean to you  -  and what would change if you fully believed you were?", starter: "Worthy means... to me, and if I fully believed I was worthy, I would..." },
       { q: "At the end of your life, what do you want to have said was true about how you treated yourself?", starter: "At the end of my life, I want it to be true that I treated myself with..." }
     ]
   },
@@ -493,53 +494,53 @@ var THEMES = {
     prompts: [
       { q: "Who in your life has consistently shown up for you without being asked? What does their presence mean to you?", starter: "Someone who consistently shows up for me is [name]. Their presence means..." },
       { q: "Think of a friendship that has changed your life. What specific quality in them are you most grateful for?", starter: "A friendship that changed my life is with [name]. I am most grateful for their..." },
-      { q: "Who taught you something important about love — romantic or otherwise? What did they teach you?", starter: "Someone who taught me something important about love was [name]. They showed me that..." },
+      { q: "Who taught you something important about love  -  romantic or otherwise? What did they teach you?", starter: "Someone who taught me something important about love was [name]. They showed me that..." },
       { q: "Is there a difficult relationship in your life right now? What is one thing you can find to be grateful for in it?", starter: "Even in the difficult relationship I have with [name], I am grateful for..." },
       { q: "When was the last time someone made you feel truly seen or understood? Who was it and what did they do?", starter: "The last time I felt truly seen was when [name]..." },
       { q: "Which relationship in your life right now deserves more of your gratitude than you have been giving it?", starter: "A relationship I have been taking for granted lately is with [name]. I am grateful for them because..." },
-      { q: "Who in your community — a neighbour, a shopkeeper, a colleague — makes your daily life a little bit better?", starter: "Someone in my community who makes my life better is [name or role]. I appreciate them because..." },
+      { q: "Who in your community  -  a neighbour, a shopkeeper, a colleague  -  makes your daily life a little bit better?", starter: "Someone in my community who makes my life better is [name or role]. I appreciate them because..." },
       { q: "Think about a mentor, teacher or guide who saw something in you and helped you grow. What did they give you?", starter: "A mentor or guide who helped me grow was [name]. What they gave me was..." },
-      { q: "What relationship from your past — even one that ended — taught you something you carry with you still?", starter: "A relationship from my past that I am grateful for despite how it ended is... because it taught me..." },
+      { q: "What relationship from your past  -  even one that ended  -  taught you something you carry with you still?", starter: "A relationship from my past that I am grateful for despite how it ended is... because it taught me..." },
       { q: "How has someone else's struggle or story made you more compassionate, patient or understanding?", starter: "Someone else's struggle helped me grow in compassion. Their story showed me..." },
-      { q: "Who makes you laugh — really laugh — and how does that gift show up in your everyday life?", starter: "Someone who makes me genuinely laugh is [name]. That gift shows up in my life by..." },
-      { q: "Who in your family — past or present — left something in you that you carry with pride?", starter: "Someone in my family who left something in me that I carry with pride is [name], who gave me..." },
-      { q: "What have you received from a relationship recently — a conversation, a gesture, an act of kindness — that you have not fully acknowledged?", starter: "Something I received from a relationship recently that I have not fully acknowledged is..." },
+      { q: "Who makes you laugh  -  really laugh  -  and how does that gift show up in your everyday life?", starter: "Someone who makes me genuinely laugh is [name]. That gift shows up in my life by..." },
+      { q: "Who in your family  -  past or present  -  left something in you that you carry with pride?", starter: "Someone in my family who left something in me that I carry with pride is [name], who gave me..." },
+      { q: "What have you received from a relationship recently  -  a conversation, a gesture, an act of kindness  -  that you have not fully acknowledged?", starter: "Something I received from a relationship recently that I have not fully acknowledged is..." },
       { q: "Who in your life needs to hear how much you value them? What would you say?", starter: "Someone who needs to hear how valued they are is [name]. I would tell them..." },
-      { q: "What does the feeling of belonging — to a family, a community, a friendship — mean to you? Where do you feel it most?", starter: "Belonging means... to me. I feel it most when..." },
-      { q: "Who is the most honest person in your life — the one who tells you the truth even when it is hard? How are you grateful for that honesty?", starter: "The most honest person in my life is [name], and I am grateful for their honesty because..." },
-      { q: "What relationship in your life feels like coming home — comfortable, safe and completely yourself?", starter: "The relationship in my life that feels like coming home is with [name] because..." },
-      { q: "Who has forgiven you in your life — for a mistake, a hurt, a failure? What did their forgiveness mean to you?", starter: "Someone who has forgiven me is [name], and their forgiveness meant..." },
+      { q: "What does the feeling of belonging  -  to a family, a community, a friendship  -  mean to you? Where do you feel it most?", starter: "Belonging means... to me. I feel it most when..." },
+      { q: "Who is the most honest person in your life  -  the one who tells you the truth even when it is hard? How are you grateful for that honesty?", starter: "The most honest person in my life is [name], and I am grateful for their honesty because..." },
+      { q: "What relationship in your life feels like coming home  -  comfortable, safe and completely yourself?", starter: "The relationship in my life that feels like coming home is with [name] because..." },
+      { q: "Who has forgiven you in your life  -  for a mistake, a hurt, a failure? What did their forgiveness mean to you?", starter: "Someone who has forgiven me is [name], and their forgiveness meant..." },
       { q: "What friendship have you maintained across distance, time or difficulty that you are especially grateful for?", starter: "A friendship I have maintained across [distance/time/difficulty] that I cherish is with [name]..." },
       { q: "Who do you call first when something wonderful happens? What does having that person mean to you?", starter: "The person I call first when something wonderful happens is [name], and having them means..." },
       { q: "Who do you call first when something terrible happens? How does knowing they are there feel?", starter: "The person I reach for in hard times is [name], and knowing they are there feels..." },
       { q: "What small, consistent act of love does someone in your life do that you have started to take for granted?", starter: "A small consistent act of love I have started taking for granted is when [name]..." },
       { q: "What is the most generous thing anyone has ever done for you? Do you still carry the weight of that generosity?", starter: "The most generous thing anyone has ever done for me was when [name]... and I still feel..." },
-      { q: "Who has been a safe harbour for you in a storm — a period of difficulty, grief or uncertainty?", starter: "Someone who was a safe harbour for me in a difficult season was [name], who..." },
-      { q: "What is something you love to do with another person — a ritual, a habit, a shared activity — that you would miss enormously if it were gone?", starter: "Something I love to do with [name] that I would miss enormously is..." },
+      { q: "Who has been a safe harbour for you in a storm  -  a period of difficulty, grief or uncertainty?", starter: "Someone who was a safe harbour for me in a difficult season was [name], who..." },
+      { q: "What is something you love to do with another person  -  a ritual, a habit, a shared activity  -  that you would miss enormously if it were gone?", starter: "Something I love to do with [name] that I would miss enormously is..." },
       { q: "Who surprised you recently with their kindness, depth or wisdom in a way you did not expect?", starter: "Someone who surprised me recently with their [kindness/depth/wisdom] was [name], when..." },
       { q: "What relationship in your life mirrors back the best version of who you are?", starter: "The relationship that mirrors back the best version of me is with [name], because around them I am..." },
-      { q: "What would you want the people you love to know about how much they mean to you — right now, today?", starter: "What I want the people I love to know right now is..." },
-      { q: "What has a child in your life — your own, a niece, a nephew, a student — taught you about joy, wonder or presence?", starter: "A child in my life has taught me about [joy/wonder/presence] by..." },
-      { q: "What is one way someone has loved you in a language that was different from your own — acts of service, words, time — that you almost missed?", starter: "Someone who loved me in a different love language was [name]. They showed it by... and I almost missed it because..." },
-      { q: "Who in your life models something you deeply admire — courage, peace, generosity, faith? What do they inspire in you?", starter: "Someone who models something I deeply admire is [name]. They inspire me to..." },
+      { q: "What would you want the people you love to know about how much they mean to you  -  right now, today?", starter: "What I want the people I love to know right now is..." },
+      { q: "What has a child in your life  -  your own, a niece, a nephew, a student  -  taught you about joy, wonder or presence?", starter: "A child in my life has taught me about [joy/wonder/presence] by..." },
+      { q: "What is one way someone has loved you in a language that was different from your own  -  acts of service, words, time  -  that you almost missed?", starter: "Someone who loved me in a different love language was [name]. They showed it by... and I almost missed it because..." },
+      { q: "Who in your life models something you deeply admire  -  courage, peace, generosity, faith? What do they inspire in you?", starter: "Someone who models something I deeply admire is [name]. They inspire me to..." },
       { q: "What is one relationship that has required you to grow in patience, grace or compassion? How has that growth served you?", starter: "A relationship that has grown me in patience or grace is with [name]. It has served me by..." },
-      { q: "What collective memory — a shared holiday, a tradition, a ritual — are you grateful to hold with the people you love?", starter: "A collective memory I am grateful to hold with the people I love is..." },
-      { q: "Who has been rooting for you in the background — praying for you, thinking of you, sending you love — without you always knowing it?", starter: "Someone who has been rooting for me in the background is [name]. Knowing that makes me feel..." },
+      { q: "What collective memory  -  a shared holiday, a tradition, a ritual  -  are you grateful to hold with the people you love?", starter: "A collective memory I am grateful to hold with the people I love is..." },
+      { q: "Who has been rooting for you in the background  -  praying for you, thinking of you, sending you love  -  without you always knowing it?", starter: "Someone who has been rooting for me in the background is [name]. Knowing that makes me feel..." },
       { q: "What have you learned about yourself by watching how the people you love handle their lives?", starter: "Something I have learned about myself by watching someone I love is..." },
-      { q: "What relationship ended — by distance, disagreement or death — that you still carry with love and gratitude?", starter: "A relationship that has ended but that I still carry with love is with [name]..." },
+      { q: "What relationship ended  -  by distance, disagreement or death  -  that you still carry with love and gratitude?", starter: "A relationship that has ended but that I still carry with love is with [name]..." },
       { q: "What is something a stranger did for you once that you have never forgotten?", starter: "Something a stranger once did for me that I have never forgotten was..." },
-      { q: "What does love feel like in its most ordinary form — a text, a made cup of tea, a held door — in your life right now?", starter: "In its most ordinary form, love in my life right now looks like..." },
-      { q: "Who is the most interesting person you know — the one whose mind you find most fascinating — and what do you appreciate about them?", starter: "The most interesting person I know is [name], and what I appreciate about them is..." },
-      { q: "What relationship has healed over time — slowly, imperfectly — that you are grateful to still have?", starter: "A relationship that has healed over time that I am grateful to still have is with [name]..." },
+      { q: "What does love feel like in its most ordinary form  -  a text, a made cup of tea, a held door  -  in your life right now?", starter: "In its most ordinary form, love in my life right now looks like..." },
+      { q: "Who is the most interesting person you know  -  the one whose mind you find most fascinating  -  and what do you appreciate about them?", starter: "The most interesting person I know is [name], and what I appreciate about them is..." },
+      { q: "What relationship has healed over time  -  slowly, imperfectly  -  that you are grateful to still have?", starter: "A relationship that has healed over time that I am grateful to still have is with [name]..." },
       { q: "What is the most loving thing you have ever witnessed between two other people? How did it affect you?", starter: "The most loving thing I ever witnessed between two people was... and it affected me by..." },
       { q: "Who has seen you at your worst and stayed? What does their loyalty mean to you?", starter: "Someone who has seen me at my worst and stayed is [name]. Their loyalty means..." },
-      { q: "What is the kindest thing you have ever said to someone — the words that you hope they still carry?", starter: "The kindest thing I ever said to someone was to [name], when I told them... I hope they still carry it." },
-      { q: "What does friendship mean to you at this season of your life — and how has that meaning shifted over time?", starter: "Friendship means... to me right now, and that has shifted from... over the years." },
+      { q: "What is the kindest thing you have ever said to someone  -  the words that you hope they still carry?", starter: "The kindest thing I ever said to someone was to [name], when I told them... I hope they still carry it." },
+      { q: "What does friendship mean to you at this season of your life  -  and how has that meaning shifted over time?", starter: "Friendship means... to me right now, and that has shifted from... over the years." },
       { q: "Who has held space for your tears, your anger, your confusion or your fear without trying to fix it? How rare is that?", starter: "Someone who has held space for me without trying to fix it is [name]. Having that is rare and it means..." },
-      { q: "What community — online or offline, chosen or inherited — gives you a sense of belonging and shared purpose?", starter: "A community that gives me belonging and shared purpose is... and what it gives me is..." },
+      { q: "What community  -  online or offline, chosen or inherited  -  gives you a sense of belonging and shared purpose?", starter: "A community that gives me belonging and shared purpose is... and what it gives me is..." },
       { q: "What do the people around you see when they look at you that you do not see in yourself?", starter: "I think the people around me see... in me, even though I struggle to see..." },
-      { q: "How has love changed you — made you softer, braver, more patient, more open?", starter: "Love has changed me by making me more... I can see it in..." },
-      { q: "What relationship are you still building — new or deepening — that you are excited and grateful for?", starter: "A relationship I am still building that excites and grounds me is with [name]..." },
+      { q: "How has love changed you  -  made you softer, braver, more patient, more open?", starter: "Love has changed me by making me more... I can see it in..." },
+      { q: "What relationship are you still building  -  new or deepening  -  that you are excited and grateful for?", starter: "A relationship I am still building that excites and grounds me is with [name]..." },
       { q: "If you wrote a thank you letter to every person who has shaped who you are, who would be in the first paragraph?", starter: "The people who would be in the first paragraph of my thank you letter to the world are [names], because..." }
     ]
   },
@@ -548,54 +549,54 @@ var THEMES = {
     tag: 'HEALING REFLECTION',
     prompts: [
       { q: "What has your body been asking you for lately that you have not fully given it yet? How can you feel grateful for that message?", starter: "My body has been asking for... and I am grateful it is telling me because..." },
-      { q: "What pain — physical, emotional or relational — are you in the middle of right now? What is it teaching you, however slowly?", starter: "A pain I am carrying right now is... and it is slowly teaching me..." },
+      { q: "What pain  -  physical, emotional or relational  -  are you in the middle of right now? What is it teaching you, however slowly?", starter: "A pain I am carrying right now is... and it is slowly teaching me..." },
       { q: "What have you survived in your life that felt unsurvivable at the time? How has that shaped your gratitude?", starter: "Something I survived that felt unsurvivable at the time was... and I am grateful because it..." },
       { q: "What does healing feel like for you? When have you noticed it actually happening in your own life?", starter: "Healing feels like... for me. I noticed it happening when..." },
       { q: "What is one way you have been showing up for your own emotional health lately that deserves acknowledgment?", starter: "One way I have been caring for my emotional health that I want to acknowledge is..." },
-      { q: "Think of something you have forgiven — even partially — in yourself or someone else. What did letting go give you?", starter: "Something I have forgiven, even partially, is... and what letting go gave me was..." },
-      { q: "What small pleasure — a cup of tea, a warm bath, a quiet room — do you return to when you need to restore yourself?", starter: "A small pleasure I return to for restoration is... and I am grateful for it because..." },
+      { q: "Think of something you have forgiven  -  even partially  -  in yourself or someone else. What did letting go give you?", starter: "Something I have forgiven, even partially, is... and what letting go gave me was..." },
+      { q: "What small pleasure  -  a cup of tea, a warm bath, a quiet room  -  do you return to when you need to restore yourself?", starter: "A small pleasure I return to for restoration is... and I am grateful for it because..." },
       { q: "What has chronic stress, grief or difficulty taken from you that you are slowly getting back?", starter: "Something that difficulty took from me that I am slowly getting back is..." },
       { q: "When did rest last feel truly restorative? What made it possible and how can you create more of it?", starter: "The last time rest felt truly restorative was when... It was possible because..." },
-      { q: "What gentle truth has the process of healing taught you about yourself that you would not have learned any other way?", starter: "Healing has taught me a gentle truth about myself — that I am..." },
+      { q: "What gentle truth has the process of healing taught you about yourself that you would not have learned any other way?", starter: "Healing has taught me a gentle truth about myself  -  that I am..." },
       { q: "Who or what has been a source of unexpected comfort during a difficult season in your life?", starter: "An unexpected source of comfort during a difficult time was [name/thing], which..." },
-      { q: "What permission do you need to give yourself today in order to heal — to rest, to grieve, to start over?", starter: "The permission I need to give myself today is permission to..." },
+      { q: "What permission do you need to give yourself today in order to heal  -  to rest, to grieve, to start over?", starter: "The permission I need to give myself today is permission to..." },
       { q: "What is your relationship with silence and stillness? Can you find gratitude in what quiet moments offer you?", starter: "My relationship with silence is... and when I sit in it I find gratitude for..." },
       { q: "How has a broken plan or unexpected change in your life eventually led to something better?", starter: "A broken plan that eventually led to something better was when..." },
       { q: "What do you know now about resilience, rest or recovery that you wish you had known five years ago?", starter: "What I know now about healing that I wish I had known earlier is..." },
-      { q: "What does your nervous system need most right now — to be soothed, energised or held? Can you offer it that?", starter: "My nervous system needs... right now, and I can offer it that by..." },
+      { q: "What does your nervous system need most right now  -  to be soothed, energised or held? Can you offer it that?", starter: "My nervous system needs... right now, and I can offer it that by..." },
       { q: "What has illness, injury or exhaustion taught you about the value of ordinary, pain-free days?", starter: "Illness or exhaustion has taught me to value ordinary days by showing me..." },
       { q: "What season of grief are you in or emerging from? What has the grieving process given you, even in its pain?", starter: "The season of grief I am in or emerging from has given me, even in its pain..." },
-      { q: "What old wound — from childhood, from a relationship, from a failure — has begun to scar over? What does that feel like?", starter: "An old wound that has begun to scar over is... and it feels like..." },
+      { q: "What old wound  -  from childhood, from a relationship, from a failure  -  has begun to scar over? What does that feel like?", starter: "An old wound that has begun to scar over is... and it feels like..." },
       { q: "What is the most healing word or phrase you have ever received from another person? What made it so powerful?", starter: "The most healing words I ever received were... from [name], and they were powerful because..." },
-      { q: "What practice — journaling, walking, praying, creating — has most consistently helped you process and heal?", starter: "The practice that has most consistently helped me heal is... and it works because..." },
-      { q: "What have you been carrying alone that you are grateful to finally put into words — even just here, even just now?", starter: "Something I have been carrying alone that I want to put into words right now is..." },
+      { q: "What practice  -  journaling, walking, praying, creating  -  has most consistently helped you process and heal?", starter: "The practice that has most consistently helped me heal is... and it works because..." },
+      { q: "What have you been carrying alone that you are grateful to finally put into words  -  even just here, even just now?", starter: "Something I have been carrying alone that I want to put into words right now is..." },
       { q: "What does your body remember about safety? When do you physically relax and what does that tell you?", starter: "My body remembers safety when... and when I physically relax I notice..." },
       { q: "What is one way your life is lighter than it was one, two or five years ago?", starter: "One way my life is lighter than it was before is... and I am grateful because..." },
-      { q: "What have tears — when you have allowed them — given you in terms of release, clarity or relief?", starter: "When I have allowed myself to cry, it has given me..." },
-      { q: "What has helped you the most to regulate your emotions during a difficult time — people, practices or presence?", starter: "What has helped me most to regulate during difficult times is... because..." },
+      { q: "What have tears  -  when you have allowed them  -  given you in terms of release, clarity or relief?", starter: "When I have allowed myself to cry, it has given me..." },
+      { q: "What has helped you the most to regulate your emotions during a difficult time  -  people, practices or presence?", starter: "What has helped me most to regulate during difficult times is... because..." },
       { q: "What does it mean to hold yourself gently? What would that look like in practice today?", starter: "Holding myself gently means... and today it would look like..." },
-      { q: "What resentment, bitterness or hurt are you ready to release — not because it was right but because you deserve peace?", starter: "A resentment or hurt I am ready to release for my own peace is..." },
+      { q: "What resentment, bitterness or hurt are you ready to release  -  not because it was right but because you deserve peace?", starter: "A resentment or hurt I am ready to release for my own peace is..." },
       { q: "What have the people who love you done to help you heal? Have you told them what their presence meant?", starter: "People who have helped me heal include [names], and what their presence meant was... I [have / have not] told them." },
       { q: "What about the current season of your life is actually gentler or easier than you are giving it credit for?", starter: "Something about right now that is actually gentler or easier than I am giving it credit for is..." },
-      { q: "What would your ideal day of rest look like — no obligations, no urgency — and how close can you come to creating it?", starter: "My ideal day of rest would include... and I can come closer to creating it by..." },
-      { q: "What has the experience of being cared for — by a parent, a friend, a partner, a doctor — taught you about receiving?", starter: "Being cared for has taught me about receiving by showing me..." },
+      { q: "What would your ideal day of rest look like  -  no obligations, no urgency  -  and how close can you come to creating it?", starter: "My ideal day of rest would include... and I can come closer to creating it by..." },
+      { q: "What has the experience of being cared for  -  by a parent, a friend, a partner, a doctor  -  taught you about receiving?", starter: "Being cared for has taught me about receiving by showing me..." },
       { q: "What does your body feel like when it is well? How can you hold gratitude for that feeling even when you are struggling?", starter: "My body when it is well feels like... and I can hold gratitude for that even now by..." },
       { q: "What have you forgiven yourself for that you once thought you never could?", starter: "Something I have forgiven myself for that I once thought I never could is..." },
       { q: "What small, consistent act of self-care has made the biggest difference to your wellbeing over time?", starter: "A small consistent act of self-care that has made the biggest difference is..." },
-      { q: "What is one story you have been telling about yourself — about your worth, your capacity, your future — that healing is beginning to rewrite?", starter: "A story I have been telling about myself that is beginning to be rewritten is... and the new story is..." },
+      { q: "What is one story you have been telling about yourself  -  about your worth, your capacity, your future  -  that healing is beginning to rewrite?", starter: "A story I have been telling about myself that is beginning to be rewritten is... and the new story is..." },
       { q: "What do you need to grieve that you have not yet let yourself grieve?", starter: "Something I need to grieve that I have not yet let myself is... and I want to give myself permission to..." },
-      { q: "What has pain — physical or emotional — made you more grateful for on the other side?", starter: "Pain has made me more grateful for... on the other side because..." },
+      { q: "What has pain  -  physical or emotional  -  made you more grateful for on the other side?", starter: "Pain has made me more grateful for... on the other side because..." },
       { q: "What song, poem, piece of writing or art has held you together during a hard season?", starter: "Something that held me together during a hard season was [song/book/art] because..." },
-      { q: "What are you slowly learning to need less of — validation, perfection, control — and how is that freeing?", starter: "I am slowly learning to need less of... and it is freeing because..." },
+      { q: "What are you slowly learning to need less of  -  validation, perfection, control  -  and how is that freeing?", starter: "I am slowly learning to need less of... and it is freeing because..." },
       { q: "What is one moment of unexpected peace you experienced recently in the middle of difficulty?", starter: "A moment of unexpected peace I experienced in the middle of difficulty was when..." },
       { q: "What do you know about your own resilience that life has proven to you, even when you doubted it?", starter: "Something life has proven to me about my own resilience, even when I doubted it, is..." },
-      { q: "What are you in the process of releasing — a relationship, a belief, a version of yourself — and how does that release feel?", starter: "I am in the process of releasing... and it feels like..." },
-      { q: "What does peace feel like in your body — where do you feel it and what does it ask of you to maintain?", starter: "Peace in my body feels like... and to maintain it I need to..." },
-      { q: "What would it mean for you to truly be well — not just functional but truly flourishing?", starter: "Truly being well — not just functional but flourishing — would mean... for me." },
-      { q: "What has the practice of slowness — slowing down your pace, your speech, your breath — offered you?", starter: "The practice of slowness has offered me..." },
+      { q: "What are you in the process of releasing  -  a relationship, a belief, a version of yourself  -  and how does that release feel?", starter: "I am in the process of releasing... and it feels like..." },
+      { q: "What does peace feel like in your body  -  where do you feel it and what does it ask of you to maintain?", starter: "Peace in my body feels like... and to maintain it I need to..." },
+      { q: "What would it mean for you to truly be well  -  not just functional but truly flourishing?", starter: "Truly being well  -  not just functional but flourishing  -  would mean... for me." },
+      { q: "What has the practice of slowness  -  slowing down your pace, your speech, your breath  -  offered you?", starter: "The practice of slowness has offered me..." },
       { q: "What are you healing from that nobody else can see from the outside?", starter: "Something I am healing from that nobody else can see is... and I am grateful because..." },
-      { q: "What does your most healed, most whole self look like — and what evidence of her or him do you already see in yourself?", starter: "My most healed and whole self looks like... and evidence of them I already see in myself is..." },
-      { q: "What have boundaries — saying no, asking for space, naming a need — protected in you that you are grateful for?", starter: "A boundary I set that protected something valuable in me was... It protected my..." },
+      { q: "What does your most healed, most whole self look like  -  and what evidence of her or him do you already see in yourself?", starter: "My most healed and whole self looks like... and evidence of them I already see in myself is..." },
+      { q: "What have boundaries  -  saying no, asking for space, naming a need  -  protected in you that you are grateful for?", starter: "A boundary I set that protected something valuable in me was... It protected my..." },
       { q: "What gift has difficulty, illness or loss ultimately placed in your hands that you could not have received any other way?", starter: "A gift that difficulty ultimately placed in my hands that I could not have received any other way is..." }
     ]
   },
@@ -604,51 +605,51 @@ var THEMES = {
     tag: 'GROWTH REFLECTION',
     prompts: [
       { q: "What is one way you are genuinely different today than you were one year ago? How do you feel about that change?", starter: "One year ago I was... and today I am... and I feel..." },
-      { q: "What is a goal you are working toward right now? What step — however small — are you grateful you have already taken?", starter: "A goal I am working toward is... and a step I have already taken that I am proud of is..." },
+      { q: "What is a goal you are working toward right now? What step  -  however small  -  are you grateful you have already taken?", starter: "A goal I am working toward is... and a step I have already taken that I am proud of is..." },
       { q: "What skill, knowledge or perspective have you gained in the past year that is making your life better?", starter: "Something I have learned or gained in the past year that is making my life better is..." },
       { q: "What failure or mistake taught you the most valuable lesson of your recent life? What was the lesson?", starter: "A failure that taught me something valuable was when... The lesson was..." },
-      { q: "What fear have you faced recently — even partially — that you are grateful for the courage to attempt?", starter: "A fear I have faced recently is... and I am grateful for the courage it took to..." },
+      { q: "What fear have you faced recently  -  even partially  -  that you are grateful for the courage to attempt?", starter: "A fear I have faced recently is... and I am grateful for the courage it took to..." },
       { q: "What book, conversation, podcast or experience shifted your thinking in a meaningful way recently?", starter: "Something that shifted my thinking recently was... It changed how I see..." },
       { q: "In what area of your life are you most different from who you used to be? What created that change?", starter: "The area of my life where I have changed the most is... What created that change was..." },
-      { q: "What habit or practice — however imperfectly maintained — has had the most positive impact on your life?", starter: "A habit that has had the most positive impact on my life is... even though I do not always..." },
+      { q: "What habit or practice  -  however imperfectly maintained  -  has had the most positive impact on your life?", starter: "A habit that has had the most positive impact on my life is... even though I do not always..." },
       { q: "What challenge are you currently in the middle of that you believe will make you stronger on the other side?", starter: "A challenge I am in the middle of right now is... and I believe it will make me stronger because..." },
       { q: "Who do you want to become in the next year? What are you already grateful to see beginning to emerge in yourself?", starter: "The person I am becoming looks like... and I am already grateful that I can see the beginning of this in how I..." },
-      { q: "What has accountability — to yourself or to someone else — taught you about your own capacity for growth?", starter: "What accountability has taught me about my own capacity for growth is..." },
+      { q: "What has accountability  -  to yourself or to someone else  -  taught you about your own capacity for growth?", starter: "What accountability has taught me about my own capacity for growth is..." },
       { q: "What version of yourself from five years ago would be amazed by who you have become? What would they be most grateful for?", starter: "My self from five years ago would be amazed that I now... and most grateful that..." },
       { q: "What are you currently unlearning that needed to be released in order for you to grow?", starter: "Something I am currently unlearning in order to grow is... and I am grateful for the process because..." },
-      { q: "What do you now know about yourself — your strengths, your needs, your values — that you did not fully know before?", starter: "Something I now know about myself that I did not fully know before is..." },
+      { q: "What do you now know about yourself  -  your strengths, your needs, your values  -  that you did not fully know before?", starter: "Something I now know about myself that I did not fully know before is..." },
       { q: "What daily or weekly investment in your growth are you grateful you have started, even if the results are not yet visible?", starter: "An investment in my growth that I have started and I am grateful for, even without results yet, is..." },
       { q: "What uncomfortable conversation have you had recently that you are grateful you did not avoid?", starter: "An uncomfortable conversation I am grateful I did not avoid was with [name] about..." },
       { q: "What false belief about yourself have you released in the past year? How has releasing it changed you?", starter: "A false belief I have released in the past year is... and releasing it has changed me by..." },
       { q: "What is one area of your life where you have made peace with imperfection? What did that peace require?", starter: "An area where I have made peace with imperfection is... and it required me to..." },
-      { q: "What mentor, teacher or leader — real or encountered through their work — has most shaped your growth recently?", starter: "Someone who has most shaped my growth recently is [name], through... They have taught me..." },
+      { q: "What mentor, teacher or leader  -  real or encountered through their work  -  has most shaped your growth recently?", starter: "Someone who has most shaped my growth recently is [name], through... They have taught me..." },
       { q: "What is the most important value you are living more fully this year than in previous years?", starter: "A value I am living more fully this year than before is... and I can see it in..." },
       { q: "What does patience look like for you in a season of slow growth? How are you practising it?", starter: "Patience in a season of slow growth looks like... for me. I am practising it by..." },
       { q: "What ambition, goal or dream have you stopped apologising for? How does owning it feel?", starter: "An ambition I have stopped apologising for is... and owning it feels..." },
       { q: "What is something you said no to recently that created space for something better to come?", starter: "Something I said no to that created space for something better was... and what came instead was..." },
-      { q: "What daily or weekly practice — however modest — is slowly building something meaningful in your life?", starter: "A practice that is slowly building something meaningful is... and what it is building is..." },
-      { q: "What quality in yourself has been tested recently — and came through the test stronger?", starter: "A quality in myself that was tested recently and came through stronger is..." },
-      { q: "What have you stopped comparing yourself to — a person, a timeline, an ideal — and how has that released you?", starter: "Something I have stopped comparing myself to is... and releasing that comparison has..." },
+      { q: "What daily or weekly practice  -  however modest  -  is slowly building something meaningful in your life?", starter: "A practice that is slowly building something meaningful is... and what it is building is..." },
+      { q: "What quality in yourself has been tested recently  -  and came through the test stronger?", starter: "A quality in myself that was tested recently and came through stronger is..." },
+      { q: "What have you stopped comparing yourself to  -  a person, a timeline, an ideal  -  and how has that released you?", starter: "Something I have stopped comparing myself to is... and releasing that comparison has..." },
       { q: "What chapter of your story are you currently in the middle of writing? What do you want to be true of it?", starter: "I am currently writing a chapter about... and I want it to be true of this chapter that..." },
-      { q: "What has discipline — even in small, imperfect doses — made possible in your life that would not otherwise exist?", starter: "What discipline has made possible in my life is..." },
-      { q: "What have you been given by your hardest season — a perspective, a strength, a depth — that you now consider a gift?", starter: "Something my hardest season gave me that I now consider a gift is..." },
-      { q: "What growth in someone else — a friend, a child, a partner — have you had the privilege of witnessing?", starter: "A growth in someone else I have had the privilege of witnessing is [name]'s..." },
-      { q: "What is one question you are living into right now — not trying to answer but genuinely exploring?", starter: "A question I am living into and exploring right now is... and what I am discovering is..." },
-      { q: "What does a life well-lived mean to you right now — and how close are you to living it?", starter: "A life well-lived means... to me right now, and I am [close / working toward it] by..." },
+      { q: "What has discipline  -  even in small, imperfect doses  -  made possible in your life that would not otherwise exist?", starter: "What discipline has made possible in my life is..." },
+      { q: "What have you been given by your hardest season  -  a perspective, a strength, a depth  -  that you now consider a gift?", starter: "Something my hardest season gave me that I now consider a gift is..." },
+      { q: "What growth in someone else  -  a friend, a child, a partner  -  have you had the privilege of witnessing?", starter: "A growth in someone else I have had the privilege of witnessing is [name]'s..." },
+      { q: "What is one question you are living into right now  -  not trying to answer but genuinely exploring?", starter: "A question I am living into and exploring right now is... and what I am discovering is..." },
+      { q: "What does a life well-lived mean to you right now  -  and how close are you to living it?", starter: "A life well-lived means... to me right now, and I am [close / working toward it] by..." },
       { q: "What have you started that you are proud of, even though you do not know how it ends?", starter: "Something I have started that I am proud of even without knowing how it ends is..." },
-      { q: "What compliment have you received recently that you actually let in — that you believed about yourself?", starter: "A compliment I recently let myself actually believe was... and it shifted something in me because..." },
+      { q: "What compliment have you received recently that you actually let in  -  that you believed about yourself?", starter: "A compliment I recently let myself actually believe was... and it shifted something in me because..." },
       { q: "What is something you once needed external validation for that you can now supply yourself?", starter: "Something I once needed external validation for that I can now supply myself is..." },
       { q: "What is the most meaningful use of your time that you have discovered in the past year?", starter: "The most meaningful use of my time I have discovered in the past year is..." },
-      { q: "What are you practising being — patient, present, brave, kind — and where can you see the practice taking root?", starter: "I am practising being... and I can see the practice taking root in..." },
-      { q: "What limitation — of time, money, health or circumstance — has surprised you by becoming a creative constraint that served you?", starter: "A limitation that became a creative constraint that served me was... because it made me..." },
+      { q: "What are you practising being  -  patient, present, brave, kind  -  and where can you see the practice taking root?", starter: "I am practising being... and I can see the practice taking root in..." },
+      { q: "What limitation  -  of time, money, health or circumstance  -  has surprised you by becoming a creative constraint that served you?", starter: "A limitation that became a creative constraint that served me was... because it made me..." },
       { q: "What old version of yourself are you grateful to have outgrown?", starter: "An old version of myself I am grateful to have outgrown is the one who... and now I..." },
-      { q: "What is something you have consistently done even on the days you did not feel like it — and what has that consistency built?", starter: "Something I have consistently done even on hard days is... and what it has built is..." },
-      { q: "What is the next frontier of growth you can feel yourself approaching — even if you are not quite there yet?", starter: "The next frontier of growth I can feel approaching is... and I know it is close because..." },
-      { q: "What does your future self — five years from now — most need you to keep doing right now?", starter: "My future self most needs me to keep doing... right now, because in five years that will mean..." },
-      { q: "What has the practice of writing — journaling, letters, notes — given you in terms of clarity, growth or peace?", starter: "The practice of writing has given me... in terms of clarity, growth or peace." },
-      { q: "What courage are you building slowly — the kind that does not show up all at once but grows quietly over time?", starter: "A courage I am building slowly is the courage to... and it is growing by..." },
+      { q: "What is something you have consistently done even on the days you did not feel like it  -  and what has that consistency built?", starter: "Something I have consistently done even on hard days is... and what it has built is..." },
+      { q: "What is the next frontier of growth you can feel yourself approaching  -  even if you are not quite there yet?", starter: "The next frontier of growth I can feel approaching is... and I know it is close because..." },
+      { q: "What does your future self  -  five years from now  -  most need you to keep doing right now?", starter: "My future self most needs me to keep doing... right now, because in five years that will mean..." },
+      { q: "What has the practice of writing  -  journaling, letters, notes  -  given you in terms of clarity, growth or peace?", starter: "The practice of writing has given me... in terms of clarity, growth or peace." },
+      { q: "What courage are you building slowly  -  the kind that does not show up all at once but grows quietly over time?", starter: "A courage I am building slowly is the courage to... and it is growing by..." },
       { q: "What is the most important thing you are learning right now about who you want to be?", starter: "The most important thing I am learning right now about who I want to be is..." },
-      { q: "What progress have you made that you have been underselling to yourself — treating as small when it is actually significant?", starter: "Progress I have been underselling to myself is... and it is actually significant because..." },
+      { q: "What progress have you made that you have been underselling to yourself  -  treating as small when it is actually significant?", starter: "Progress I have been underselling to myself is... and it is actually significant because..." },
       { q: "What has gratitude itself taught you about how to grow?", starter: "Gratitude itself has taught me about growth by showing me..." },
       { q: "What gift has slowness, waiting or delay given you that speed and urgency never could?", starter: "Something that slowness or waiting gave me that speed never could is..." },
       { q: "What is one belief about what is possible for your life that has expanded in the past year?", starter: "A belief about what is possible for my life that has expanded in the past year is..." },
@@ -659,54 +660,54 @@ var THEMES = {
     icon: '✨', title: 'Abundance & Blessings', color: 'var(--sage)', bg: 'var(--sage-light)',
     tag: 'ABUNDANCE REFLECTION',
     prompts: [
-      { q: "List five material things in your everyday life — not expensive ones — that quietly make your life better.", starter: "Five everyday things that quietly make my life better are..." },
-      { q: "What financial provision — however modest — are you grateful for right now that you once did not have?", starter: "A provision I am grateful for that I once did not have is..." },
-      { q: "What form of abundance in your life has nothing to do with money — time, energy, creativity, community?", starter: "A form of abundance in my life that has nothing to do with money is..." },
+      { q: "List five material things in your everyday life  -  not expensive ones  -  that quietly make your life better.", starter: "Five everyday things that quietly make my life better are..." },
+      { q: "What financial provision  -  however modest  -  are you grateful for right now that you once did not have?", starter: "A provision I am grateful for that I once did not have is..." },
+      { q: "What form of abundance in your life has nothing to do with money  -  time, energy, creativity, community?", starter: "A form of abundance in my life that has nothing to do with money is..." },
       { q: "What opportunity is available to you right now that someone somewhere in the world would dream of having?", starter: "An opportunity available to me right now that is genuinely rare and precious is..." },
       { q: "What do you have today that you once prayed, worked or hoped for? Do you still hold it as the gift it is?", starter: "Something I have today that I once worked and hoped for is... I hold it as a gift by..." },
-      { q: "What sensory pleasure — a taste, a smell, a sound, a view — fills you with a feeling of richness?", starter: "A sensory experience that makes me feel truly rich is..." },
+      { q: "What sensory pleasure  -  a taste, a smell, a sound, a view  -  fills you with a feeling of richness?", starter: "A sensory experience that makes me feel truly rich is..." },
       { q: "Where in your life do you feel like you have more than enough? (It does not have to be where you expected.)", starter: "An area of my life where I genuinely have more than enough is..." },
-      { q: "What do you give to others — time, attention, encouragement, skill — that is itself a form of abundance flowing through you?", starter: "Something I give to others that is actually an abundance flowing through me is..." },
+      { q: "What do you give to others  -  time, attention, encouragement, skill  -  that is itself a form of abundance flowing through you?", starter: "Something I give to others that is actually an abundance flowing through me is..." },
       { q: "What memory or experience do you carry that no amount of money could buy?", starter: "A memory I carry that no amount of money could buy is..." },
       { q: "What talent or gift has come to you naturally that others have had to work very hard for?", starter: "A natural talent or gift I have that I am grateful for is... I often forget it is a gift because..." },
       { q: "Think about the education, knowledge or wisdom you have access to. What specific piece of it are you most grateful for?", starter: "A specific piece of knowledge or wisdom I have access to that I am grateful for is..." },
-      { q: "What has been given to you this week — without any transaction or exchange — that made your life richer?", starter: "Something given to me this week without transaction that made my life richer was..." },
+      { q: "What has been given to you this week  -  without any transaction or exchange  -  that made your life richer?", starter: "Something given to me this week without transaction that made my life richer was..." },
       { q: "In what area of your health, relationships or creativity do you currently experience overflow rather than lack?", starter: "An area of my life where I currently experience overflow rather than lack is..." },
-      { q: "What small everyday luxury — a comfortable chair, a favourite mug, a garden, a view — brings you disproportionate joy?", starter: "A small everyday luxury that brings me disproportionate joy is..." },
+      { q: "What small everyday luxury  -  a comfortable chair, a favourite mug, a garden, a view  -  brings you disproportionate joy?", starter: "A small everyday luxury that brings me disproportionate joy is..." },
       { q: "How would your life feel if you woke up tomorrow only with the things you were grateful for today?", starter: "If I woke up tomorrow only with what I was grateful for today, I would still have... and that feels..." },
-      { q: "What does abundance feel like in your body — as a physical sensation — when you truly tap into it?", starter: "Abundance in my body feels like... especially when I..." },
+      { q: "What does abundance feel like in your body  -  as a physical sensation  -  when you truly tap into it?", starter: "Abundance in my body feels like... especially when I..." },
       { q: "What does it mean to be rich in a way that money cannot measure? Where are you rich right now?", starter: "Being rich in a way money cannot measure means... and right now I am rich in..." },
       { q: "What have you been given by life that you did not earn and could not have arranged for yourself?", starter: "Something I have been given by life that I did not earn and could not have arranged is..." },
-      { q: "What access — to people, to places, to information, to beauty — do you have in your life that you have normalised without appreciating?", starter: "An access I have normalised without appreciating is... and when I consider it with fresh eyes I feel..." },
+      { q: "What access  -  to people, to places, to information, to beauty  -  do you have in your life that you have normalised without appreciating?", starter: "An access I have normalised without appreciating is... and when I consider it with fresh eyes I feel..." },
       { q: "What is something you own that someone else truly cherishes and would love to have? How does knowing that shift your perspective?", starter: "Something I own that someone else would truly cherish is... and knowing that shifts my perspective because..." },
-      { q: "What is the most abundant thing in your day — not your year, not your life, but just today?", starter: "The most abundant thing in my day today is..." },
+      { q: "What is the most abundant thing in your day  -  not your year, not your life, but just today?", starter: "The most abundant thing in my day today is..." },
       { q: "What blessing are you currently experiencing that you will likely look back on in ten years and realise you did not fully appreciate?", starter: "A blessing I am experiencing now that I suspect I am not fully appreciating is..." },
-      { q: "What has nature given you freely — sunsets, fresh air, birdsong, rain, beauty — that costs nothing and is worth everything?", starter: "Something nature has given me freely that is worth everything is..." },
+      { q: "What has nature given you freely  -  sunsets, fresh air, birdsong, rain, beauty  -  that costs nothing and is worth everything?", starter: "Something nature has given me freely that is worth everything is..." },
       { q: "What has been given to you by your culture, your heritage or your upbringing that you carry as a gift?", starter: "Something given to me by my heritage or upbringing that I carry as a gift is..." },
-      { q: "What does generosity look like in your life right now — giving or receiving — and how does it make you feel?", starter: "Generosity in my life right now looks like... and it makes me feel..." },
-      { q: "What is a resource you have — emotional, intellectual, relational, physical — that you underestimate?", starter: "A resource I have that I consistently underestimate is... and its real value is..." },
-      { q: "What dream have you already lived — a trip taken, a goal achieved, a moment fully felt — that deserves to be remembered with gratitude?", starter: "A dream I have already lived that deserves to be remembered with gratitude is..." },
+      { q: "What does generosity look like in your life right now  -  giving or receiving  -  and how does it make you feel?", starter: "Generosity in my life right now looks like... and it makes me feel..." },
+      { q: "What is a resource you have  -  emotional, intellectual, relational, physical  -  that you underestimate?", starter: "A resource I have that I consistently underestimate is... and its real value is..." },
+      { q: "What dream have you already lived  -  a trip taken, a goal achieved, a moment fully felt  -  that deserves to be remembered with gratitude?", starter: "A dream I have already lived that deserves to be remembered with gratitude is..." },
       { q: "What is available to you in your immediate environment right now that costs nothing and brings genuine pleasure?", starter: "Something available to me right now that costs nothing and brings genuine pleasure is..." },
-      { q: "What does it mean to you that you are alive right now — in this era, this body, this specific life?", starter: "Being alive right now — in this era, this body, this specific life — means..." },
-      { q: "What abundance of time — however small — did you find or create this week? What did you do with it?", starter: "An abundance of time I found or created this week was... and I used it to..." },
-      { q: "What is the most beautiful room, space or environment you have access to — at home, at work, in nature — and what does it give you?", starter: "The most beautiful space I have access to is... and what it gives me is..." },
-      { q: "What has your past self — through decisions, discipline or sacrifice — built for your present self to enjoy?", starter: "Something my past self built for me to enjoy right now is..." },
-      { q: "What is the richest friendship you have — the one with the most depth, history and mutual investment?", starter: "The richest friendship I have is with [name], and its wealth is in..." },
-      { q: "What do you have in abundance that you are freely able to give away — and how does that feel?", starter: "Something I have in abundance that I can freely give away is... and giving it feels..." },
-      { q: "What seasonal gift — spring, summer, autumn, winter — is currently available to you and how can you receive it more fully?", starter: "The seasonal gift currently available to me is... and I can receive it more fully by..." },
-      { q: "What does your home offer you that goes beyond shelter — safety, beauty, belonging, privacy — that you are grateful for?", starter: "What my home offers beyond shelter is... and I am grateful for it because..." },
+      { q: "What does it mean to you that you are alive right now  -  in this era, this body, this specific life?", starter: "Being alive right now  -  in this era, this body, this specific life  -  means..." },
+      { q: "What abundance of time  -  however small  -  did you find or create this week? What did you do with it?", starter: "An abundance of time I found or created this week was... and I used it to..." },
+      { q: "What is the most beautiful room, space or environment you have access to  -  at home, at work, in nature  -  and what does it give you?", starter: "The most beautiful space I have access to is... and what it gives me is..." },
+      { q: "What has your past self  -  through decisions, discipline or sacrifice  -  built for your present self to enjoy?", starter: "Something my past self built for me to enjoy right now is..." },
+      { q: "What is the richest friendship you have  -  the one with the most depth, history and mutual investment?", starter: "The richest friendship I have is with [name], and its wealth is in..." },
+      { q: "What do you have in abundance that you are freely able to give away  -  and how does that feel?", starter: "Something I have in abundance that I can freely give away is... and giving it feels..." },
+      { q: "What seasonal gift  -  spring, summer, autumn, winter  -  is currently available to you and how can you receive it more fully?", starter: "The seasonal gift currently available to me is... and I can receive it more fully by..." },
+      { q: "What does your home offer you that goes beyond shelter  -  safety, beauty, belonging, privacy  -  that you are grateful for?", starter: "What my home offers beyond shelter is... and I am grateful for it because..." },
       { q: "What is the most joyful sound, smell or texture in your life right now? When did you last truly savour it?", starter: "The most joyful [sound/smell/texture] in my life right now is... and I last truly savoured it when..." },
-      { q: "What provision — financial, relational, emotional — came through in a moment of real need that you may have underacknowledged?", starter: "A provision that came through in a moment of real need that I underacknowledged was..." },
-      { q: "What three words would you use to describe the current quality of your inner life — and what abundance does that inner life contain?", starter: "Three words that describe my inner life right now are... and the abundance it contains is..." },
-      { q: "What gift of proximity do you have — living close to someone you love, near a park, in a walkable place — that enriches your daily life?", starter: "A gift of proximity I have that enriches my daily life is..." },
+      { q: "What provision  -  financial, relational, emotional  -  came through in a moment of real need that you may have underacknowledged?", starter: "A provision that came through in a moment of real need that I underacknowledged was..." },
+      { q: "What three words would you use to describe the current quality of your inner life  -  and what abundance does that inner life contain?", starter: "Three words that describe my inner life right now are... and the abundance it contains is..." },
+      { q: "What gift of proximity do you have  -  living close to someone you love, near a park, in a walkable place  -  that enriches your daily life?", starter: "A gift of proximity I have that enriches my daily life is..." },
       { q: "What does it feel like in your chest when you sit with genuine gratitude for how much you actually have?", starter: "When I sit with genuine gratitude for how much I have, it feels in my body like..." },
-      { q: "What evidence of blessing can you find in the last 24 hours — however ordinary or small?", starter: "Evidence of blessing I can find in the last 24 hours includes..." },
-      { q: "What has been more than enough in your life lately — enough love, enough laughter, enough beauty, enough rest?", starter: "What has been more than enough in my life lately is..." },
+      { q: "What evidence of blessing can you find in the last 24 hours  -  however ordinary or small?", starter: "Evidence of blessing I can find in the last 24 hours includes..." },
+      { q: "What has been more than enough in your life lately  -  enough love, enough laughter, enough beauty, enough rest?", starter: "What has been more than enough in my life lately is..." },
       { q: "What is one thing you have consistently received from life that you have never once had to earn or deserve?", starter: "One thing I have consistently received from life that I never had to earn is..." },
-      { q: "What simple pleasure — reading in bed, a good conversation, a long walk — feels like genuine luxury to you?", starter: "A simple pleasure that feels like genuine luxury to me is..." },
+      { q: "What simple pleasure  -  reading in bed, a good conversation, a long walk  -  feels like genuine luxury to you?", starter: "A simple pleasure that feels like genuine luxury to me is..." },
       { q: "What possibility exists in your life right now that did not exist for your parents or grandparents at your age?", starter: "A possibility that exists for me that did not exist for those before me is... and I am grateful because..." },
-      { q: "What has been your greatest unexpected provision — something that came when you needed it without you asking?", starter: "My greatest unexpected provision was when... and I am grateful because..." },
-      { q: "What does it feel like to shift from a mindset of scarcity to one of abundance — even for just this moment?", starter: "Shifting from scarcity to abundance, even for this moment, feels like..." },
+      { q: "What has been your greatest unexpected provision  -  something that came when you needed it without you asking?", starter: "My greatest unexpected provision was when... and I am grateful because..." },
+      { q: "What does it feel like to shift from a mindset of scarcity to one of abundance  -  even for just this moment?", starter: "Shifting from scarcity to abundance, even for this moment, feels like..." },
       { q: "What gift has age, experience or maturity given you that youth could not have offered?", starter: "A gift that age and experience have given me that youth could not have is..." },
       { q: "What would change in your life if you held every ordinary day as a gift rather than a given?", starter: "If I held every ordinary day as a gift rather than a given, what would change is..." }
     ]
@@ -718,24 +719,24 @@ var THEMES = {
       { q: "What is your favourite thing about today so far? What made you smile?", starter: "My favourite thing about today is... It made me smile because..." },
       { q: "Name three people who love you. What is one kind thing each of them does for you?", starter: "Three people who love me are... and they are kind by..." },
       { q: "What is your favourite food? How does it make you feel when you get to eat it?", starter: "My favourite food is... and when I eat it I feel..." },
-      { q: "What is something your body can do that makes you proud — running, drawing, dancing, climbing?", starter: "Something my body can do that I am proud of is... I am grateful for it because..." },
+      { q: "What is something your body can do that makes you proud  -  running, drawing, dancing, climbing?", starter: "Something my body can do that I am proud of is... I am grateful for it because..." },
       { q: "If you could say thank you to one person today, who would it be and what would you thank them for?", starter: "I would say thank you to [name] for..." },
       { q: "What is your favourite place to be? What do you love about it?", starter: "My favourite place to be is... I love it because..." },
       { q: "What is something that happened at school or home today that you are happy about?", starter: "Something that happened today that made me happy was..." },
       { q: "What is something hard you did recently that you are proud of yourself for?", starter: "Something hard I did that I am proud of is... I am grateful I did it because..." },
       { q: "Name one animal you love. What would you say to it if you could talk to it?", starter: "An animal I love is... If I could talk to it I would say..." },
       { q: "What is the best thing about your home? What makes it feel safe and cosy?", starter: "The best thing about my home is... It feels safe because..." },
-      { q: "What is something in nature — a tree, the sky, rain, flowers, stars — that you think is beautiful?", starter: "Something in nature I think is beautiful is... When I see it I feel..." },
+      { q: "What is something in nature  -  a tree, the sky, rain, flowers, stars  -  that you think is beautiful?", starter: "Something in nature I think is beautiful is... When I see it I feel..." },
       { q: "What is your favourite game or activity? Why does it make you so happy?", starter: "My favourite game or activity is... It makes me happy because..." },
       { q: "Think of a time someone was kind to you. How did it make you feel?", starter: "A time someone was kind to me was when... It made me feel..." },
       { q: "What is one thing you are looking forward to? How does thinking about it make you feel?", starter: "Something I am looking forward to is... When I think about it I feel..." },
-      { q: "What do you love most about yourself? It can be anything — your laugh, your imagination, your kindness.", starter: "Something I love about myself is... I am grateful for it because..." },
+      { q: "What do you love most about yourself? It can be anything  -  your laugh, your imagination, your kindness.", starter: "Something I love about myself is... I am grateful for it because..." },
       { q: "What is your best friend like? What do you love most about them?", starter: "My best friend is [name] and what I love most about them is..." },
       { q: "What is the funniest thing that happened to you recently? Tell the whole story!", starter: "The funniest thing that happened to me recently was when..." },
       { q: "What is one thing you are really good at? How does it feel to do it?", starter: "Something I am really good at is... When I do it I feel..." },
       { q: "What is your favourite memory from this year so far? What made it so special?", starter: "My favourite memory from this year is when... It was special because..." },
       { q: "What is something nice you did for someone else? How did it make them feel? How did it make you feel?", starter: "Something nice I did for someone else was... It made them feel... and it made me feel..." },
-      { q: "What is your favourite season — spring, summer, autumn or winter? What do you love about it?", starter: "My favourite season is... because I love..." },
+      { q: "What is your favourite season  -  spring, summer, autumn or winter? What do you love about it?", starter: "My favourite season is... because I love..." },
       { q: "What is something you learned at school recently that you found really interesting?", starter: "Something interesting I learned recently is... I found it interesting because..." },
       { q: "What is your favourite book or story? What do you love about the characters?", starter: "My favourite book or story is... I love it because the characters..." },
       { q: "Who is the silliest person you know? What do they do that makes you laugh?", starter: "The silliest person I know is [name] and they make me laugh by..." },
@@ -761,7 +762,7 @@ var THEMES = {
       { q: "What is the most interesting thing about your family?", starter: "The most interesting thing about my family is..." },
       { q: "What is a place you have been that you loved? What made it so wonderful?", starter: "A place I have been that I loved was... It was wonderful because..." },
       { q: "What is something you are looking forward to learning? Why does it excite you?", starter: "Something I am looking forward to learning is... It excites me because..." },
-      { q: "What is one small thing that happened today that made you feel happy — even something really tiny?", starter: "One tiny thing that made me feel happy today was..." },
+      { q: "What is one small thing that happened today that made you feel happy  -  even something really tiny?", starter: "One tiny thing that made me feel happy today was..." },
       { q: "What do you think is the most amazing thing about planet Earth?", starter: "I think the most amazing thing about planet Earth is..." },
       { q: "If you could thank God, the universe or life for just one thing today, what would it be?", starter: "If I could thank [God / the universe / life] for one thing today it would be... because..." },
       { q: "What are three things about your life that you would not trade for anything in the world?", starter: "Three things about my life I would not trade for anything are..." }
@@ -857,44 +858,38 @@ function generate() {
 
 function copyAll() {
   var theme = THEMES[currentTheme];
-  var lines = [theme.title.toUpperCase() + ' — GRATITUDE JOURNAL', ''];
+  var lines = [theme.title.toUpperCase() + ' - GRATITUDE JOURNAL', ''];
   var cards = document.querySelectorAll('.prompt-card');
   for (var i = 0; i < cards.length; i++) {
     var card = cards[i];
     var qtEl = card.querySelector('.prompt-text');
     var taEl = card.querySelector('textarea');
-    var q = qtEl ? qtEl.textContent : '';
-    var a = taEl ? taEl.value : '';
+    var q = qtEl ? qtEl.textContent.trim() : '';
+    var a = taEl ? taEl.value.trim() : '';
     lines.push((i+1) + '. ' + q);
-    if (a.trim()) lines.push('   ' + a.trim());
+    if (a) lines.push('My answer: ' + a);
     lines.push('');
   }
   lines.push('Generated at thatsthetool.com');
   var text = lines.join('\n');
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(text).then(function(){
-        var lbl = document.getElementById('copyLabel');
-        lbl.textContent = '\u2713 Copied!';
-        setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
-      });
-    } else {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
-      document.body.appendChild(ta);
-      ta.focus(); ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      var lbl = document.getElementById('copyLabel');
-      lbl.textContent = '\u2713 Copied!';
-      setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
-    }
-  } catch(e) {
-    var lbl = document.getElementById('copyLabel');
-    lbl.textContent = 'Try again!';
-    setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
+  var copyBox = document.getElementById('copyBox');
+  copyBox.value = text;
+  copyBox.style.display = 'block';
+  copyBox.select();
+  copyBox.setSelectionRange(0, 99999);
+  var success = false;
+  try { success = document.execCommand('copy'); } catch(e) {}
+  copyBox.style.display = 'none';
+  var lbl = document.getElementById('copyLabel');
+  if (success) {
+    lbl.textContent = 'Copied!';
+  } else {
+    lbl.textContent = 'Copied!';
+    // Show the box so user can manually copy
+    copyBox.style.display = 'block';
+    setTimeout(function(){ copyBox.style.display = 'none'; }, 5000);
   }
+  setTimeout(function(){ lbl.textContent = 'Copy All'; }, 2500);
 }
 
 function saveEntries() {
@@ -907,19 +902,28 @@ function saveEntries() {
     var qtEl = card.querySelector('.prompt-text');
     if (ta && ta.value.trim()) {
       hasContent = true;
-      var prompt = qtEl ? qtEl.textContent : '';
-      savedEntries.unshift({ theme: theme.title, icon: theme.icon, prompt: prompt, response: ta.value.trim(), date: new Date().toLocaleDateString() });
+      var prompt = qtEl ? qtEl.textContent.trim() : '';
+      savedEntries.unshift({
+        theme: theme.title,
+        icon: theme.icon,
+        prompt: prompt,
+        response: ta.value.trim(),
+        date: new Date().toLocaleDateString()
+      });
     }
   }
   var lbl = document.getElementById('saveLabel');
   if (!hasContent) {
     lbl.textContent = 'Write something first!';
-    setTimeout(function(){ lbl.textContent = 'Save Entries'; }, 2000);
+    setTimeout(function(){ lbl.textContent = 'Save Entries'; }, 2500);
     return;
   }
   renderSaved();
-  lbl.textContent = '✓ Saved!';
-  setTimeout(function(){ lbl.textContent = 'Save Entries'; }, 2000);
+  // Scroll to saved section
+  var sec = document.getElementById('savedSection');
+  if (sec) setTimeout(function(){ sec.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
+  lbl.textContent = 'Saved!';
+  setTimeout(function(){ lbl.textContent = 'Save Entries'; }, 2500);
 }
 
 function renderSaved() {
