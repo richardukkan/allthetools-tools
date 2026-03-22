@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>401k Calculator – How Much Will My 401k Grow?</title>
+<meta name="description" content="Free 401k calculator. See how much your 401k will grow by retirement. Includes employer match, annual raises, contribution limits and year-by-year breakdown.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --warm: #eef0f8;
+  --navy: #1a2540;
+  --navy-mid: #243055;
+  --blue: #2563eb;
+  --blue-light: #eff6ff;
+  --gold: #d97706;
+  --gold-light: #fef3c7;
+  --border: rgba(37,99,235,0.14);
+  --ink: #0f172a;
+  --muted: #5a6888;
+  --green: #059669;
+  --green-light: #ecfdf5;
+  --red: #dc2626;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+.wrapper { max-width: 820px; margin: 0 auto; padding: 44px 20px 80px; }
+
+header { text-align: center; margin-bottom: 44px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content:''; width:36px; height:1px; background:var(--blue); opacity:0.4; }
+h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(30px, 6vw, 52px); font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 14px; }
+h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--blue); font-weight: 700; }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+.disclaimer { background: var(--gold-light); border: 1px solid rgba(217,119,6,0.25); border-radius: 12px; padding: 12px 16px; margin-bottom: 28px; font-size: 12px; color: #92400e; display: flex; gap: 10px; align-items: flex-start; line-height: 1.6; }
+.disc-icon { flex-shrink: 0; font-size: 14px; }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; box-shadow: 0 2px 30px rgba(0,0,0,0.05); margin-bottom: 16px; }
+@media(max-width:520px){ .card { padding: 22px 16px; } }
+
+.section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+.field-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+
+.inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+@media(max-width:480px){ .inputs-grid { grid-template-columns: 1fr; } }
+
+.input-wrap { display: flex; align-items: center; background: var(--warm); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+.input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.input-wrap input { flex: 1; padding: 12px 14px; background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--ink); outline: none; min-width: 0; }
+.input-wrap input::placeholder { color: #b0bcd0; font-weight: 400; }
+.input-unit { padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--blue); border-left: 1px solid var(--border); display: flex; align-items: center; min-height: 44px; white-space: nowrap; }
+.input-prefix { padding: 0 12px; font-size: 14px; font-weight: 700; color: var(--blue); border-right: 1px solid var(--border); display: flex; align-items: center; min-height: 44px; }
+
+/* Slider */
+.slider-field { margin-bottom: 20px; }
+.slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.slider-val { font-size: 18px; font-weight: 700; color: var(--blue); }
+input[type=range] { width: 100%; accent-color: var(--blue); height: 5px; }
+
+/* Calc button */
+.calc-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #1d4ed8, #2563eb); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.02em; transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 18px rgba(37,99,235,0.3); }
+.calc-btn:hover { opacity: 0.93; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+.calc-btn:active { transform: none; }
+
+/* Results */
+.results { display: none; }
+.results.show { display: block; animation: fadeUp 0.5s ease both; }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(37,99,235,0.2), transparent); margin: 32px 0; }
+
+/* Hero result — dark navy */
+.result-hero { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); border-radius: 20px; padding: 40px 32px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
+.result-hero::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 70% 20%, rgba(37,99,235,0.15), transparent 60%); pointer-events:none; }
+.rh-label { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(148,163,184,0.9); margin-bottom: 10px; }
+.rh-value { font-family: 'DM Sans', sans-serif; font-size: clamp(48px, 12vw, 80px); font-weight: 800; color: #fff; letter-spacing: -0.04em; line-height: 1; margin-bottom: 8px; }
+.rh-sub { font-size: 14px; color: rgba(148,163,184,0.8); }
+
+/* 3 stat cards */
+.stat-trio { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+@media(max-width:480px){ .stat-trio { grid-template-columns: 1fr; } }
+.stat-card { border-radius: 14px; padding: 18px 14px; text-align: center; border: 1px solid var(--border); }
+.stat-card.contributions { background: var(--blue-light); border-color: rgba(37,99,235,0.2); }
+.stat-card.employer { background: var(--gold-light); border-color: rgba(217,119,6,0.2); }
+.stat-card.growth { background: var(--green-light); border-color: rgba(5,150,105,0.2); }
+.sc-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px; }
+.contributions .sc-label { color: var(--blue); }
+.employer .sc-label { color: var(--gold); }
+.growth .sc-label { color: var(--green); }
+.sc-value { font-size: clamp(18px,4vw,26px); font-weight: 800; color: var(--ink); letter-spacing: -0.02em; line-height: 1; margin-bottom: 4px; }
+.sc-pct { font-size: 11px; color: var(--muted); }
+
+/* Info rows */
+.info-rows { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid rgba(37,99,235,0.07); font-size: 13px; }
+.info-row:last-child { border-bottom: none; }
+.info-row:hover { background: var(--blue-light); }
+.info-key { color: var(--muted); }
+.info-val { font-weight: 700; color: var(--ink); }
+.info-val.green { color: var(--green); }
+.info-val.gold { color: var(--gold); }
+.info-val.blue { color: var(--blue); }
+
+/* Chart */
+.chart-section { margin-bottom: 20px; }
+.chart-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.chart-wrap { position: relative; height: 200px; background: var(--warm); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.chart-bars { display: flex; align-items: flex-end; height: 100%; padding: 12px 8px 0; gap: 3px; }
+.chart-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 0; cursor: pointer; }
+.bar-contributions { background: var(--blue); border-radius: 3px 3px 0 0; width: 100%; transition: opacity 0.2s; }
+.bar-employer { background: var(--gold); width: 100%; }
+.bar-growth { background: var(--green); border-radius: 3px 3px 0 0; width: 100%; }
+.chart-bar-group:hover .bar-contributions,
+.chart-bar-group:hover .bar-employer,
+.chart-bar-group:hover .bar-growth { opacity: 0.8; }
+.chart-label { font-size: 9px; color: var(--muted); text-align: center; padding: 4px 0 6px; font-weight: 600; }
+
+/* Legend */
+.chart-legend { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); font-weight: 600; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* Year table */
+.table-section { }
+.table-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: var(--navy); color: rgba(255,255,255,0.8); padding: 10px 12px; text-align: right; font-weight: 600; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+th:first-child { text-align: left; }
+td { padding: 9px 12px; text-align: right; border-bottom: 1px solid rgba(37,99,235,0.06); color: var(--ink); font-weight: 500; white-space: nowrap; }
+td:first-child { text-align: left; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--blue-light); }
+tr.milestone td { background: var(--gold-light); font-weight: 700; }
+tr.milestone td:first-child { color: var(--gold); }
+
+.copy-btn { width: 100%; padding: 13px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; margin-top: 16px; }
+.copy-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+.copy-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-light); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #a0aec0; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">🇺🇸 US Retirement Tool</div>
+    <h1>401k <em>Calculator</em></h1>
+    <p class="subtitle">See exactly how much your 401k will be worth at retirement — with employer match, annual raises and compound growth.</p>
+  </header>
+
+  <div class="disclaimer">
+    <span class="disc-icon">⚠️</span>
+    <span>This calculator provides estimates for educational purposes only. Results assume consistent contributions and returns which may vary. Consult a certified financial advisor for personalised retirement planning advice.</span>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Your Details</div>
+    <div class="inputs-grid">
+      <div>
+        <span class="field-label">Current Age</span>
+        <div class="input-wrap"><input type="number" id="currentAge" value="30" min="18" max="70"><span class="input-unit">yrs</span></div>
+      </div>
+      <div>
+        <span class="field-label">Retirement Age</span>
+        <div class="input-wrap"><input type="number" id="retireAge" value="65" min="40" max="80"><span class="input-unit">yrs</span></div>
+      </div>
+      <div>
+        <span class="field-label">Current 401k Balance</span>
+        <div class="input-wrap"><span class="input-prefix">$</span><input type="number" id="currentBalance" value="0" min="0" placeholder="0"></div>
+      </div>
+      <div>
+        <span class="field-label">Annual Salary</span>
+        <div class="input-wrap"><span class="input-prefix">$</span><input type="number" id="salary" value="60000" min="1000" placeholder="60000"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Contribution Settings</div>
+    <div class="inputs-grid">
+      <div>
+        <span class="field-label">Your Contribution</span>
+        <div class="input-wrap"><input type="number" id="contribution" value="6" min="0" max="100" step="0.5"><span class="input-unit">% of salary</span></div>
+      </div>
+      <div>
+        <span class="field-label">Employer Match</span>
+        <div class="input-wrap"><input type="number" id="employerMatch" value="3" min="0" max="100" step="0.5"><span class="input-unit">% of salary</span></div>
+      </div>
+      <div>
+        <span class="field-label">Annual Salary Raise</span>
+        <div class="input-wrap"><input type="number" id="salaryRaise" value="3" min="0" max="20" step="0.5"><span class="input-unit">% per year</span></div>
+      </div>
+      <div>
+        <span class="field-label">Annual Return Rate</span>
+        <div class="input-wrap"><input type="number" id="returnRate" value="7" min="1" max="20" step="0.5"><span class="input-unit">% per year</span></div>
+      </div>
+    </div>
+
+    <!-- Inflation slider -->
+    <div class="slider-field">
+      <div class="slider-header">
+        <span class="field-label" style="margin-bottom:0;">Inflation Rate (for today's dollar comparison)</span>
+        <span class="slider-val" id="inflationVal">2.5%</span>
+      </div>
+      <input type="range" id="inflationSlider" min="0" max="6" step="0.5" value="2.5" oninput="document.getElementById('inflationVal').textContent=this.value+'%'">
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">📈 Calculate My 401k Growth</button>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+
+    <!-- Hero -->
+    <div class="result-hero">
+      <div class="rh-label">Estimated 401k Balance at Retirement</div>
+      <div class="rh-value" id="heroValue">$0</div>
+      <div class="rh-sub" id="heroSub">at age 65</div>
+    </div>
+
+    <!-- 3 cards -->
+    <div class="stat-trio">
+      <div class="stat-card contributions">
+        <div class="sc-label">Your Contributions</div>
+        <div class="sc-value" id="totalContrib">$0</div>
+        <div class="sc-pct" id="contribPct">0% of total</div>
+      </div>
+      <div class="stat-card employer">
+        <div class="sc-label">Employer Match</div>
+        <div class="sc-value" id="totalEmployer">$0</div>
+        <div class="sc-pct" id="employerPct">0% of total</div>
+      </div>
+      <div class="stat-card growth">
+        <div class="sc-label">Investment Growth</div>
+        <div class="sc-value" id="totalGrowth">$0</div>
+        <div class="sc-pct" id="growthPct">0% of total</div>
+      </div>
+    </div>
+
+    <!-- Info rows -->
+    <div class="info-rows">
+      <div class="info-row"><span class="info-key">Years until retirement</span><span class="info-val blue" id="infoYears">—</span></div>
+      <div class="info-row"><span class="info-key">Total you contribute</span><span class="info-val" id="infoContrib">—</span></div>
+      <div class="info-row"><span class="info-key">Total employer contributes</span><span class="info-val gold" id="infoEmployer">—</span></div>
+      <div class="info-row"><span class="info-key">Investment growth (compound)</span><span class="info-val green" id="infoGrowth">—</span></div>
+      <div class="info-row"><span class="info-key">Value in today's dollars</span><span class="info-val" id="infoToday">—</span></div>
+      <div class="info-row"><span class="info-key">Monthly income at 4% withdrawal</span><span class="info-val green" id="infoMonthly">—</span></div>
+      <div class="info-row"><span class="info-key">2025 IRS contribution limit</span><span class="info-val" id="infoLimit">$23,500 / year</span></div>
+      <div class="info-row"><span class="info-key">Are you within the limit?</span><span class="info-val" id="infoWithinLimit">—</span></div>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="card chart-section">
+      <div class="chart-title">Balance Growth Over Time</div>
+      <div class="chart-wrap">
+        <div class="chart-bars" id="chartBars"></div>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Investment Growth</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Employer Match</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Your Contributions</div>
+      </div>
+    </div>
+
+    <!-- Year by year table -->
+    <div class="card table-section">
+      <div class="table-title">Year-by-Year Breakdown</div>
+      <div class="table-wrap">
+        <table id="yearTable">
+          <thead>
+            <tr>
+              <th>Age</th>
+              <th>Your Contrib.</th>
+              <th>Employer</th>
+              <th>Year Growth</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <button class="copy-btn" id="copyBtn" onclick="copyResults()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      <span id="copyLabel">Copy Summary</span>
+    </button>
+  </div>
+
+  <p class="footer-note">allthetools.com · For educational purposes only · Always consult a financial advisor</p>
+</div>
+
+<script>
+var IRS_LIMIT_2025 = 23500;
+
+function fmt(n){ return '$' + Math.round(n).toLocaleString(); }
+function fmtK(n){ if(n>=1000000) return '$'+(n/1000000).toFixed(2)+'M'; if(n>=1000) return '$'+(n/1000).toFixed(1)+'K'; return fmt(n); }
+
+function calculate() {
+  var currentAge  = parseInt(document.getElementById('currentAge').value)||30;
+  var retireAge   = parseInt(document.getElementById('retireAge').value)||65;
+  var balance     = parseFloat(document.getElementById('currentBalance').value)||0;
+  var salary      = parseFloat(document.getElementById('salary').value)||60000;
+  var contribPct  = parseFloat(document.getElementById('contribution').value)||6;
+  var matchPct    = parseFloat(document.getElementById('employerMatch').value)||3;
+  var raisePct    = parseFloat(document.getElementById('salaryRaise').value)||3;
+  var returnPct   = parseFloat(document.getElementById('returnRate').value)||7;
+  var inflationPct= parseFloat(document.getElementById('inflationSlider').value)||2.5;
+
+  if(retireAge <= currentAge) { alert('Retirement age must be greater than current age.'); return; }
+
+  var years = retireAge - currentAge;
+  var r = returnPct / 100;
+  var raise = raisePct / 100;
+  var inf = inflationPct / 100;
+
+  var totalContrib = 0, totalEmployer = 0, totalGrowth = 0;
+  var currentSalary = salary;
+  var bal = balance;
+  var yearData = [];
+
+  for (var i = 1; i <= years; i++) {
+    var yourContrib = currentSalary * (contribPct / 100);
+    var empContrib  = currentSalary * (matchPct / 100);
+    var startBal    = bal;
+    // Contributions assumed mid-year for simplicity
+    bal = (bal + yourContrib + empContrib) * (1 + r);
+    var yearGrowth = bal - startBal - yourContrib - empContrib;
+    totalContrib  += yourContrib;
+    totalEmployer += empContrib;
+    totalGrowth   += yearGrowth;
+    yearData.push({ age: currentAge + i, yourContrib: yourContrib, empContrib: empContrib, yearGrowth: yearGrowth, balance: bal });
+    currentSalary *= (1 + raise);
+  }
+
+  var finalBalance = bal;
+  var todayDollars = finalBalance / Math.pow(1 + inf, years);
+  var monthlyIncome = (finalBalance * 0.04) / 12;
+  var annualContrib = salary * (contribPct / 100);
+  var withinLimit = annualContrib <= IRS_LIMIT_2025;
+
+  var total = totalContrib + totalEmployer + totalGrowth + balance;
+
+  // Update hero
+  document.getElementById('heroValue').textContent = fmtK(finalBalance);
+  document.getElementById('heroSub').textContent = 'at age ' + retireAge + ' — based on ' + returnPct + '% annual return';
+
+  // Trio cards
+  document.getElementById('totalContrib').textContent = fmtK(totalContrib);
+  document.getElementById('contribPct').textContent = Math.round(totalContrib/total*100) + '% of total';
+  document.getElementById('totalEmployer').textContent = fmtK(totalEmployer);
+  document.getElementById('employerPct').textContent = Math.round(totalEmployer/total*100) + '% of total';
+  document.getElementById('totalGrowth').textContent = fmtK(totalGrowth);
+  document.getElementById('growthPct').textContent = Math.round(totalGrowth/total*100) + '% of total';
+
+  // Info rows
+  document.getElementById('infoYears').textContent = years + ' years';
+  document.getElementById('infoContrib').textContent = fmt(totalContrib);
+  document.getElementById('infoEmployer').textContent = fmt(totalEmployer);
+  document.getElementById('infoGrowth').textContent = fmt(totalGrowth);
+  document.getElementById('infoToday').textContent = fmt(todayDollars) + " (today's purchasing power)";
+  document.getElementById('infoMonthly').textContent = fmt(monthlyIncome) + ' / month';
+  document.getElementById('infoWithinLimit').textContent = withinLimit
+    ? '✅ Yes — ' + fmt(annualContrib) + ' / yr'
+    : '⚠️ Exceeds limit — you contribute ' + fmt(annualContrib) + ' / yr';
+
+  // Chart
+  buildChart(yearData, finalBalance);
+
+  // Table
+  buildTable(yearData);
+
+  document.getElementById('results').className = 'results show';
+  setTimeout(function(){ document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'}); }, 50);
+}
+
+function buildChart(data, maxBal) {
+  var container = document.getElementById('chartBars');
+  container.innerHTML = '';
+  // Show every N years to avoid crowding
+  var step = Math.max(1, Math.floor(data.length / 15));
+  var shown = data.filter(function(d,i){ return i===0 || (i+1)%step===0 || i===data.length-1; });
+  shown.forEach(function(d) {
+    var cumContrib = 0, cumEmployer = 0, cumGrowth = 0;
+    data.slice(0, data.findIndex(function(x){ return x.age===d.age; })+1).forEach(function(row){
+      cumContrib += row.yourContrib;
+      cumEmployer += row.empContrib;
+      cumGrowth += row.yearGrowth;
+    });
+    var totalH = 170;
+    var contribH = Math.round((cumContrib/maxBal)*totalH);
+    var employerH = Math.round((cumEmployer/maxBal)*totalH);
+    var growthH = Math.round((cumGrowth/maxBal)*totalH);
+
+    var group = document.createElement('div');
+    group.className = 'chart-bar-group';
+    group.title = 'Age ' + d.age + ': ' + fmtK(d.balance);
+    group.innerHTML =
+      '<div class="bar-growth" style="height:'+growthH+'px"></div>'+
+      '<div class="bar-employer" style="height:'+employerH+'px"></div>'+
+      '<div class="bar-contributions" style="height:'+contribH+'px"></div>'+
+      '<div class="chart-label">'+d.age+'</div>';
+    container.appendChild(group);
+  });
+}
+
+function buildTable(data) {
+  var tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  // Show every year but highlight milestones
+  data.forEach(function(d) {
+    var tr = document.createElement('tr');
+    var isMilestone = d.age % 10 === 0;
+    if (isMilestone) tr.className = 'milestone';
+    tr.innerHTML =
+      '<td>Age '+d.age+'</td>'+
+      '<td>'+fmt(d.yourContrib)+'</td>'+
+      '<td>'+fmt(d.empContrib)+'</td>'+
+      '<td>'+fmt(d.yearGrowth)+'</td>'+
+      '<td style="font-weight:700;color:var(--ink)">'+fmt(d.balance)+'</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function copyResults() {
+  var lines = [
+    '401K CALCULATOR RESULTS',
+    '-----------------------',
+    'Retirement Balance: ' + document.getElementById('heroValue').textContent,
+    'At: ' + document.getElementById('heroSub').textContent,
+    '',
+    'Your Contributions: ' + document.getElementById('totalContrib').textContent,
+    'Employer Match: ' + document.getElementById('totalEmployer').textContent,
+    'Investment Growth: ' + document.getElementById('totalGrowth').textContent,
+    '',
+    'Years until retirement: ' + document.getElementById('infoYears').textContent,
+    "Value in today's dollars: " + document.getElementById('infoToday').textContent,
+    'Monthly income (4% rule): ' + document.getElementById('infoMonthly').textContent,
+    '',
+    'Calculated at allthetools.com',
+    'For educational purposes only. Consult a financial advisor.'
+  ].join('\n');
+
+  var btn=document.getElementById('copyBtn');
+  var lbl=document.getElementById('copyLabel');
+  function ok(){ btn.className='copy-btn copied'; lbl.textContent='\u2713 Copied!'; setTimeout(function(){btn.className='copy-btn';lbl.textContent='Copy Summary';},2500); }
+  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(lines).then(ok).catch(function(){fallback(lines,ok);}); } else { fallback(lines,ok); }
+}
+
+function fallback(t,cb){ var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');cb();}catch(e){}document.body.removeChild(ta); }
+
+document.addEventListener('keydown',function(e){ if(e.key==='Enter') calculate(); });
+</script>
+</body>
+</html>
