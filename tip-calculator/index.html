@@ -224,7 +224,7 @@ h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(-
     </button>
 
   </div>
-  <p class="footer-note">allthetools.com · Free tools for everyone, everywhere</p>
+  <p class="footer-note">thatsthetool.com · Free tools for everyone, everywhere</p>
 </div>
 
 <script>
@@ -293,7 +293,7 @@ function calculate() {
 function copyResults() {
   var bill=parseFloat(document.getElementById('billInput').value)||0;
   var pct=isCustom?(parseFloat(document.getElementById('customPct').value)||0):tipPct;
-  var lines=['TIP CALCULATOR RESULTS','----------------------','Bill Amount: '+fmt(bill),'Tip Percentage: '+pct+'%','Tip Amount: '+document.getElementById('tipAmount').textContent,'Total Bill: '+document.getElementById('totalBill').textContent,'Number of People: '+people,'Per Person: '+document.getElementById('perPerson').textContent,'Tip Per Person: '+document.getElementById('tipPerPerson').textContent,'','Calculated at allthetools.com'].join('\n');
+  var lines=['TIP CALCULATOR RESULTS','----------------------','Bill Amount: '+fmt(bill),'Tip Percentage: '+pct+'%','Tip Amount: '+document.getElementById('tipAmount').textContent,'Total Bill: '+document.getElementById('totalBill').textContent,'Number of People: '+people,'Per Person: '+document.getElementById('perPerson').textContent,'Tip Per Person: '+document.getElementById('tipPerPerson').textContent,'','Calculated at thatsthetool.com'].join('\n');
   var btn=document.getElementById('copyBtn'),lbl=document.getElementById('copyLabel');
   function ok(){ btn.className='copy-btn copied';lbl.textContent='\u2713 Copied!';setTimeout(function(){btn.className='copy-btn';lbl.textContent='Copy Results';},2500); }
   if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(lines).then(ok).catch(function(){fallback(lines,ok);}); } else { fallback(lines,ok); }
