@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sleep Calculator – Best Times to Sleep and Wake Up</title>
+<meta name="description" content="Free sleep calculator. Find the best bedtime or wake-up time based on 90-minute sleep cycles. Wake up feeling refreshed, not groggy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080d1a;
+  --navy: #0d1528;
+  --card: #111827;
+  --card2: #1a2236;
+  --border: rgba(148,163,217,0.12);
+  --ink: #e8eeff;
+  --muted: #7a8ab0;
+  --star: #c8d4ff;
+  --gold: #f0c060;
+  --gold-light: rgba(240,192,96,0.12);
+  --teal: #4fd1c5;
+  --teal-light: rgba(79,209,197,0.1);
+  --rose: #f87171;
+  --rose-light: rgba(248,113,113,0.1);
+  --cycle: 90;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Sora', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Star field background */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,100,200,0.15), transparent 70%),
+    radial-gradient(ellipse 40% 40% at 10% 60%, rgba(79,209,197,0.05), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 80%, rgba(240,192,96,0.05), transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* Stars */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 32% 8%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 15%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 72% 5%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 25%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 45%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 42% 35%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 78% 42%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 55%, rgba(200,212,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 62% 48%, rgba(200,212,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 92% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 18% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 48% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 82% 68%, rgba(200,212,255,0.5) 0%, transparent 100%);
+  pointer-events: none; z-index: 0;
+}
+
+.wrapper { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 48px 20px 60px; }
+
+/* Header */
+header { text-align: center; margin-bottom: 40px; }
+.moon { font-size: 40px; margin-bottom: 16px; display: block; filter: drop-shadow(0 0 12px rgba(240,192,96,0.5)); }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--teal); margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.eyebrow::before, .eyebrow::after { content: ''; width: 32px; height: 1px; background: var(--teal); opacity: 0.5; }
+h1 { font-family: 'DM Serif Display', serif; font-size: clamp(34px, 7vw, 54px); font-weight: 400; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 12px; }
+h1 em { font-style: italic; color: var(--gold); }
+.subtitle { font-size: 14px; font-weight: 300; color: var(--muted); line-height: 1.7; }
+
+/* Science note */
+.science-note { background: var(--card2); border: 1px solid var(--border); border-left: 3px solid var(--teal); border-radius: 12px; padding: 14px 18px; margin-bottom: 28px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.science-note strong { color: var(--teal); }
+
+/* Mode toggle */
+.mode-row { display: flex; gap: 0; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 4px; margin-bottom: 28px; }
+.mode-btn { flex: 1; padding: 12px 10px; border: none; background: none; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-radius: 10px; transition: all 0.2s; text-align: center; }
+.mode-btn.active { background: var(--card2); color: var(--gold); box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+
+/* Input section */
+.input-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; margin-bottom: 24px; }
+.input-label { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: block; }
+.time-input-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
+.time-part { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.time-arrow { width: 48px; height: 48px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--card2); color: var(--muted); font-size: 18px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+.time-arrow:hover { border-color: var(--gold); color: var(--gold); }
+.time-display { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 10vw, 72px); font-weight: 400; color: var(--ink); letter-spacing: 0.02em; min-width: 80px; text-align: center; line-height: 1; }
+.time-sep { font-family: 'DM Serif Display', serif; font-size: clamp(40px, 8vw, 60px); color: var(--muted); line-height: 1; padding-bottom: 6px; }
+.ampm-toggle { display: flex; flex-direction: column; gap: 6px; margin-left: 8px; }
+.ampm-btn { padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--card2); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.ampm-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
+/* Fall asleep offset */
+.offset-row { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border); }
+.offset-label { font-size: 13px; color: var(--muted); }
+.offset-btns { display: flex; gap: 6px; }
+.off-btn { padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--card2); font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.off-btn.active { background: var(--teal); color: #000; border-color: var(--teal); }
+
+/* Calculate button */
+.calc-btn { width: 100%; padding: 17px; background: linear-gradient(135deg, #1a3a5c, #1e4a7a); color: var(--ink); border: 1px solid rgba(79,209,197,0.3); border-radius: 14px; font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; text-transform: uppercase; box-shadow: 0 4px 24px rgba(0,0,0,0.4); transition: all 0.2s; margin-bottom: 24px; }
+.calc-btn:hover { background: linear-gradient(135deg, #1e4a7a, #235e98); box-shadow: 0 6px 30px rgba(79,209,197,0.2); border-color: rgba(79,209,197,0.5); transform: translateY(-1px); }
+
+/* Results */
+.results { display: none; animation: fadeUp 0.4s ease both; }
+.results.show { display: block; }
+
+.results-header { text-align: center; margin-bottom: 20px; }
+.results-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--star); margin-bottom: 4px; }
+.results-sub { font-size: 13px; color: var(--muted); }
+
+.cycles-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+.cycle-card { border: 1px solid var(--border); border-radius: 16px; padding: 18px 22px; display: flex; align-items: center; gap: 16px; transition: all 0.2s; cursor: default; }
+.cycle-card.best { border-color: var(--gold); background: var(--gold-light); box-shadow: 0 4px 24px rgba(240,192,96,0.12); }
+.cycle-card.good { border-color: var(--teal); background: var(--teal-light); }
+.cycle-card.ok { background: var(--card); }
+.cycle-card.poor { background: var(--card); opacity: 0.6; }
+
+.cycle-icon { font-size: 24px; flex-shrink: 0; }
+.cycle-info { flex: 1; }
+.cycle-time { font-family: 'DM Serif Display', serif; font-size: clamp(22px, 5vw, 30px); font-weight: 400; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.cycle-card.best .cycle-time { color: var(--gold); }
+.cycle-card.good .cycle-time { color: var(--teal); }
+.cycle-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+.cycle-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; flex-shrink: 0; }
+.best .cycle-badge { background: var(--gold); color: #000; }
+.good .cycle-badge { background: var(--teal); color: #000; }
+.ok .cycle-badge { background: var(--card2); color: var(--muted); }
+.poor .cycle-badge { background: var(--card2); color: var(--muted); }
+
+/* Sleep cycle visual */
+.cycle-visual { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 24px; }
+.cv-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.cycle-bar { display: flex; height: 28px; border-radius: 8px; overflow: hidden; gap: 2px; margin-bottom: 10px; }
+.cb-seg { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.seg-light { background: rgba(79,209,197,0.3); color: var(--teal); }
+.seg-deep { background: rgba(79,100,200,0.5); color: #a0b0ff; }
+.seg-rem { background: rgba(240,192,96,0.35); color: var(--gold); }
+.cycle-legend { display: flex; gap: 16px; flex-wrap: wrap; }
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+.leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* Tips */
+.tips-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px; }
+.tips-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.tip-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.tip-item:last-child { border-bottom: none; padding-bottom: 0; }
+.tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.tip-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.tip-text strong { color: var(--star); font-weight: 600; }
+
+/* New calc button */
+.new-btn { width: 100%; padding: 13px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.new-btn:hover { border-color: var(--teal); color: var(--teal); }
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #2a3555; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <span class="moon">🌙</span>
+    <div class="eyebrow">Sleep Science</div>
+    <h1>Sleep <em>Calculator</em></h1>
+    <p class="subtitle">Wake up refreshed, not groggy. Find your perfect bedtime or wake-up time based on natural 90-minute sleep cycles.</p>
+  </header>
+
+  <div class="science-note">
+    <strong>How it works:</strong> Sleep happens in 90-minute cycles of Light Sleep, Deep Sleep and REM. Waking at the end of a cycle — not in the middle — means you feel alert and refreshed. This calculator times your sleep to hit cycle ends perfectly.
+  </div>
+
+  <!-- Mode toggle -->
+  <div class="mode-row">
+    <button class="mode-btn active" id="mode-wakeup" onclick="setMode('wakeup')">⏰ I want to wake up at...</button>
+    <button class="mode-btn" id="mode-bedtime" onclick="setMode('bedtime')">🛌 I want to sleep at...</button>
+  </div>
+
+  <!-- Input -->
+  <div class="input-card">
+    <span class="input-label" id="inputLabel">What time do you want to wake up?</span>
+
+    <div class="time-input-wrap">
+      <div class="time-part">
+        <button class="time-arrow" onclick="changeHour(1)">▲</button>
+        <div class="time-display" id="hourDisplay">06</div>
+        <button class="time-arrow" onclick="changeHour(-1)">▼</button>
+      </div>
+      <div class="time-sep">:</div>
+      <div class="time-part">
+        <button class="time-arrow" onclick="changeMin(1)">▲</button>
+        <div class="time-display" id="minDisplay">30</div>
+        <button class="time-arrow" onclick="changeMin(-1)">▼</button>
+      </div>
+      <div class="ampm-toggle">
+        <button class="ampm-btn active" id="btn-am" onclick="setAMPM('AM')">AM</button>
+        <button class="ampm-btn" id="btn-pm" onclick="setAMPM('PM')">PM</button>
+      </div>
+    </div>
+
+    <div class="offset-row">
+      <span class="offset-label">⏱ Time to fall asleep:</span>
+      <div class="offset-btns">
+        <button class="off-btn" id="off-0" onclick="setOffset(0)">Instantly</button>
+        <button class="off-btn" id="off-15" onclick="setOffset(15)">15 min</button>
+        <button class="off-btn active" id="off-30" onclick="setOffset(30)">30 min</button>
+        <button class="off-btn" id="off-custom" onclick="setOffset('custom')">Custom</button>
+      </div>
+      <div id="customOffsetWrap" style="display:none;margin-top:10px;display:none;">
+        <input type="number" id="customOffsetInput" min="1" max="120" placeholder="Minutes..." style="width:100%;padding:9px 14px;background:var(--card2);border:1.5px solid var(--border);border-radius:8px;font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--ink);outline:none;" oninput="setCustomOffset(this.value)">
+      </div>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">✦ Calculate My Sleep Times</button>
+
+  <!-- Results -->
+  <div class="results" id="results">
+
+    <div class="results-header">
+      <div class="results-title" id="resultsTitle">Recommended Sleep Times</div>
+      <div class="results-sub" id="resultsSub">Based on 90-minute sleep cycles</div>
+    </div>
+
+    <div class="cycles-grid" id="cyclesGrid"></div>
+
+    <!-- Sleep cycle visual -->
+    <div class="cycle-visual">
+      <div class="cv-title">✦ One 90-Minute Sleep Cycle</div>
+      <div class="cycle-bar">
+        <div class="cb-seg seg-light" style="flex:2">Light</div>
+        <div class="cb-seg seg-deep" style="flex:3">Deep</div>
+        <div class="cb-seg seg-rem" style="flex:4">REM</div>
+      </div>
+      <div class="cycle-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:rgba(79,209,197,0.5)"></div>Light Sleep (20 min)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:rgba(79,100,200,0.6)"></div>Deep Sleep (30 min)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:rgba(240,192,96,0.5)"></div>REM Sleep (40 min)</div>
+      </div>
+    </div>
+
+    <!-- Sleep tips -->
+    <div class="tips-card">
+      <div class="tips-title">✦ Sleep Better Tonight</div>
+      <div class="tip-item"><div class="tip-icon">📵</div><div class="tip-text"><strong>Stop screens 30–60 minutes before bed.</strong> Blue light suppresses melatonin production and delays the onset of sleep by up to an hour.</div></div>
+      <div class="tip-item"><div class="tip-icon">🌡️</div><div class="tip-text"><strong>Keep your room cool.</strong> Core body temperature naturally drops as you fall asleep. A cool room accelerates this.</div></div>
+      <div class="tip-item"><div class="tip-icon">☀️</div><div class="tip-text"><strong>Get natural light in the morning.</strong> Morning sunlight resets your circadian clock and makes it easier to fall asleep at the right time that night.</div></div>
+      <div class="tip-item"><div class="tip-icon">☕</div><div class="tip-text"><strong>Avoid caffeine after 2pm.</strong> Caffeine has a half-life of 5–6 hours. A 3pm coffee can still be half-strength in your system at 8pm.</div></div>
+      <div class="tip-item"><div class="tip-icon">🔁</div><div class="tip-text"><strong>Keep a consistent sleep schedule.</strong> Going to bed and waking at the same time every day — including weekends — is the single most powerful sleep habit.</div></div>
+      <div class="tip-item"><div class="tip-icon">🧘</div><div class="tip-text"><strong>Wind down intentionally.</strong> Create a 20-minute pre-sleep ritual — dimmed lights, gentle stretching or reading — to signal to your brain that sleep is coming.</div></div>
+    </div>
+
+    <button class="new-btn" onclick="resetCalc()">← Calculate Again</button>
+  </div>
+
+  <p class="footer-note">allthetools.com · Sweet dreams 🌙</p>
+</div>
+
+<script>
+var mode = 'wakeup';
+var hour = 6;
+var minute = 30;
+var ampm = 'AM';
+var offset = 30;
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('mode-wakeup').className = 'mode-btn' + (m==='wakeup'?' active':'');
+  document.getElementById('mode-bedtime').className = 'mode-btn' + (m==='bedtime'?' active':'');
+  document.getElementById('inputLabel').textContent = m==='wakeup' ? 'What time do you want to wake up?' : 'What time do you want to go to bed?';
+  document.getElementById('results').className = 'results';
+}
+
+function changeHour(d) {
+  hour = ((hour - 1 + d + 12) % 12) + 1;
+  document.getElementById('hourDisplay').textContent = hour < 10 ? '0'+hour : hour;
+}
+
+function changeMin(d) {
+  minute = (minute + d * 5 + 60) % 60;
+  document.getElementById('minDisplay').textContent = minute < 10 ? '0'+minute : minute;
+}
+
+function setAMPM(a) {
+  ampm = a;
+  document.getElementById('btn-am').className = 'ampm-btn' + (a==='AM'?' active':'');
+  document.getElementById('btn-pm').className = 'ampm-btn' + (a==='PM'?' active':'');
+}
+
+function setOffset(o) {
+  if (o === 'custom') {
+    offset = 0;
+    ['0','15','30'].forEach(function(v){ document.getElementById('off-'+v).className = 'off-btn'; });
+    document.getElementById('off-custom').className = 'off-btn active';
+    document.getElementById('customOffsetWrap').style.display = 'block';
+    document.getElementById('customOffsetInput').focus();
+    return;
+  }
+  offset = o;
+  document.getElementById('customOffsetWrap').style.display = 'none';
+  ['0','15','30'].forEach(function(v){ document.getElementById('off-'+v).className = 'off-btn' + (parseInt(v)===o?' active':''); });
+  document.getElementById('off-custom').className = 'off-btn';
+}
+
+function setCustomOffset(val) {
+  var v = parseInt(val);
+  if (!isNaN(v) && v >= 0) offset = v;
+}
+
+function toMinutes(h, m, ap) {
+  var h24 = h % 12 + (ap === 'PM' ? 12 : 0);
+  return h24 * 60 + m;
+}
+
+function fromMinutes(totalMin) {
+  totalMin = ((totalMin % 1440) + 1440) % 1440;
+  var h24 = Math.floor(totalMin / 60);
+  var m = totalMin % 60;
+  var ap = h24 >= 12 ? 'PM' : 'AM';
+  var h12 = h24 % 12 || 12;
+  return { h: h12, m: m, ap: ap, str: (h12 < 10 ? '0'+h12 : h12) + ':' + (m < 10 ? '0'+m : m) + ' ' + ap };
+}
+
+function calculate() {
+  var baseMin = toMinutes(hour, minute, ampm);
+  var grid = document.getElementById('cyclesGrid');
+  grid.innerHTML = '';
+
+  var cycles, classes, badges, icons;
+
+  if (mode === 'wakeup') {
+    // Given wake time, calculate bedtimes going backwards
+    document.getElementById('resultsTitle').textContent = 'Best Times to Go to Bed';
+    document.getElementById('resultsSub').textContent = 'To wake up at ' + (hour < 10 ? '0'+hour : hour) + ':' + (minute < 10 ? '0'+minute : minute) + ' ' + ampm + ' feeling refreshed';
+
+    // 6 cycles back (most to least sleep)
+    cycles = [6, 5, 4, 3];
+    classes = ['best', 'good', 'ok', 'poor'];
+    badges = ['★ Ideal', 'Great', 'Okay', 'Short'];
+    icons = ['🌟', '✨', '🌙', '⚠️'];
+
+    cycles.forEach(function(c, i) {
+      var sleepMin = baseMin - offset - (c * 90);
+      var t = fromMinutes(sleepMin);
+      var hours = (c * 90) / 60;
+      var hoursStr = Number.isInteger(hours) ? hours + ' hours' : hours.toFixed(1) + ' hours';
+      addCycleCard(grid, t.str, c + ' cycles · ' + hoursStr + ' of sleep', classes[i], badges[i], icons[i]);
+    });
+
+  } else {
+    // Given bedtime, calculate wake times going forwards
+    document.getElementById('resultsTitle').textContent = 'Best Times to Wake Up';
+    document.getElementById('resultsSub').textContent = 'If you fall asleep at ' + (hour < 10 ? '0'+hour : hour) + ':' + (minute < 10 ? '0'+minute : minute) + ' ' + ampm;
+
+    cycles = [3, 4, 5, 6];
+    classes = ['poor', 'ok', 'good', 'best'];
+    badges = ['Short', 'Okay', 'Great', '★ Ideal'];
+    icons = ['⚠️', '🌙', '✨', '🌟'];
+
+    cycles.forEach(function(c, i) {
+      var wakeMin = baseMin + offset + (c * 90);
+      var t = fromMinutes(wakeMin);
+      var hours = (c * 90) / 60;
+      var hoursStr = Number.isInteger(hours) ? hours + ' hours' : hours.toFixed(1) + ' hours';
+      addCycleCard(grid, t.str, c + ' cycles · ' + hoursStr + ' of sleep', classes[i], badges[i], icons[i]);
+    });
+  }
+
+  document.getElementById('results').className = 'results show';
+  setTimeout(function(){ document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'}); }, 50);
+}
+
+function addCycleCard(grid, time, label, cls, badge, icon) {
+  var div = document.createElement('div');
+  div.className = 'cycle-card ' + cls;
+  div.innerHTML =
+    '<div class="cycle-icon">' + icon + '</div>' +
+    '<div class="cycle-info">' +
+      '<div class="cycle-time">' + time + '</div>' +
+      '<div class="cycle-label">' + label + '</div>' +
+    '</div>' +
+    '<div class="cycle-badge">' + badge + '</div>';
+  grid.appendChild(div);
+}
+
+function resetCalc() {
+  document.getElementById('results').className = 'results';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// Set default time to now + 30 min
+var now = new Date();
+var defaultHour = now.getHours();
+var defaultMin = Math.round(now.getMinutes() / 5) * 5;
+if (defaultMin >= 60) { defaultMin = 0; defaultHour++; }
+hour = defaultHour % 12 || 12;
+minute = defaultMin;
+ampm = defaultHour >= 12 ? 'PM' : 'AM';
+document.getElementById('hourDisplay').textContent = hour < 10 ? '0'+hour : hour;
+document.getElementById('minDisplay').textContent = minute < 10 ? '0'+minute : minute;
+setAMPM(ampm);
+</script>
+</body>
+</html>
