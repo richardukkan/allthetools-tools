@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Word Search Generator for Kids – Printable Puzzles | Krystle Art Publications</title>
+<meta name="description" content="Free word search generator for kids. Choose from 42 topics or enter your own words. Print the puzzle or play on screen. Perfect for teachers, parents and families. No sign up needed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lexend:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f9f7f4;
+  --card: #ffffff;
+  --warm: #f2ede6;
+  --ink: #1c1814;
+  --muted: #7a706a;
+  --border: rgba(28,24,20,0.1);
+  --accent: #e84545;
+  --accent-light: #fef0f0;
+  --teal: #0d9488;
+  --teal-light: #f0fdfb;
+  --yellow: #f59e0b;
+  --yellow-light: #fffbeb;
+  --purple: #7c3aed;
+  --purple-light: #f5f3ff;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+
+  /* Highlight colours for found words */
+  --h0: #fbbf24; --h1: #34d399; --h2: #60a5fa;
+  --h3: #f472b6; --h4: #a78bfa; --h5: #fb923c;
+  --h6: #4ade80; --h7: #38bdf8; --h8: #e879f9;
+  --h9: #f87171; --h10: #fde68a; --h11: #6ee7b7;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'Lexend', sans-serif; min-height: 100vh; }
+
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 50% 40% at 95% 5%, rgba(232,69,69,0.06), transparent 60%),
+    radial-gradient(ellipse 40% 30% at 5% 90%, rgba(13,148,136,0.05), transparent 60%);
+}
+
+.wrapper { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 16px 60px; }
+
+/* Header */
+header { margin-bottom: 32px; }
+.top-label { font-size: 10px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.top-label::after { content: ''; flex: 1; max-width: 60px; height: 2px; background: var(--accent); }
+h1 { font-size: clamp(34px, 7vw, 56px); font-weight: 900; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 10px; }
+h1 .accent { color: var(--accent); }
+.subtitle { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.6; max-width: 500px; }
+
+/* Two-col layout */
+.main-grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+@media(max-width:700px){ .main-grid { grid-template-columns: 1fr; } }
+
+/* Setup panel */
+.setup-panel { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 22px; position: sticky; top: 20px; }
+.panel-section { margin-bottom: 20px; }
+.panel-section:last-child { margin-bottom: 0; }
+.sec-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block; }
+
+/* Topic presets */
+.topic-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.topic-pill { padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 999px; background: var(--warm); font-family: 'Lexend', sans-serif; font-size: 11px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.topic-pill:hover { border-color: var(--accent); color: var(--accent); }
+.topic-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Word input */
+.word-input { width: 100%; padding: 10px 14px; background: var(--warm); border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Lexend', sans-serif; font-size: 13px; font-weight: 400; color: var(--ink); outline: none; transition: border-color 0.2s; }
+.word-input:focus { border-color: var(--accent); background: #fff; }
+.word-input::placeholder { color: rgba(122,112,106,0.5); }
+
+/* Word tags */
+.word-tags { display: flex; flex-wrap: wrap; gap: 6px; min-height: 32px; margin-top: 8px; }
+.word-tag { display: flex; align-items: center; gap: 5px; padding: 4px 10px; background: var(--teal-light); border: 1px solid rgba(13,148,136,0.2); border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--teal); }
+.word-tag .remove { cursor: pointer; font-size: 14px; line-height: 1; opacity: 0.6; }
+.word-tag .remove:hover { opacity: 1; }
+.word-count { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* Options */
+.opts-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.opt-btn { padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--warm); font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.opt-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Generate button */
+.gen-btn { width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-family: 'Lexend', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 0.04em; transition: all 0.2s; margin-top: 4px; }
+.gen-btn:hover { background: #d63030; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,69,69,0.3); }
+
+/* Puzzle area */
+.puzzle-area { display: flex; flex-direction: column; gap: 16px; }
+
+/* Puzzle card */
+.puzzle-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 22px; }
+.puzzle-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.puzzle-title-text { font-size: 14px; font-weight: 700; color: var(--ink); }
+.puzzle-meta { font-size: 11px; color: var(--muted); }
+
+/* Grid */
+.grid-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.grid-table { border-collapse: collapse; margin: 0 auto; user-select: none; }
+.grid-cell { width: 32px; height: 32px; text-align: center; vertical-align: middle; font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; border-radius: 6px; transition: background 0.1s; position: relative; }
+.grid-cell:hover { background: var(--warm); }
+.grid-cell.selecting { background: rgba(232,69,69,0.15); }
+.grid-cell.found { color: var(--ink); font-weight: 700; }
+
+@media(max-width:480px){
+  .grid-cell { width: 26px; height: 26px; font-size: 12px; }
+}
+@media(max-width:360px){
+  .grid-cell { width: 22px; height: 22px; font-size: 10px; }
+}
+
+/* Highlight colours applied via inline style */
+.grid-cell.found-0  { background: var(--h0);  }
+.grid-cell.found-1  { background: var(--h1);  }
+.grid-cell.found-2  { background: var(--h2);  }
+.grid-cell.found-3  { background: var(--h3);  }
+.grid-cell.found-4  { background: var(--h4);  }
+.grid-cell.found-5  { background: var(--h5);  }
+.grid-cell.found-6  { background: var(--h6);  }
+.grid-cell.found-7  { background: var(--h7);  }
+.grid-cell.found-8  { background: var(--h8);  }
+.grid-cell.found-9  { background: var(--h9);  }
+.grid-cell.found-10 { background: var(--h10); }
+.grid-cell.found-11 { background: var(--h11); }
+
+/* Word list */
+.word-list-wrap { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.wl-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.word-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.wl-word { font-size: 12px; font-weight: 600; padding: 4px 12px; background: var(--warm); border: 1.5px solid var(--border); border-radius: 999px; color: var(--ink); transition: all 0.2s; }
+.wl-word.found { text-decoration: line-through; color: var(--muted); border-color: transparent; }
+
+/* Progress */
+.progress-bar { height: 6px; background: var(--warm); border-radius: 999px; margin-top: 12px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--accent)); border-radius: 999px; transition: width 0.5s ease; }
+
+/* Win banner */
+.win-banner { display: none; background: linear-gradient(135deg, var(--teal), #059669); border-radius: 14px; padding: 18px 22px; text-align: center; margin-top: 14px; }
+.win-banner.show { display: block; animation: popIn 0.4s cubic-bezier(0.34,1.3,0.64,1) both; }
+.win-emoji { font-size: 32px; margin-bottom: 6px; }
+.win-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.win-sub { font-size: 13px; color: rgba(255,255,255,0.8); }
+
+/* Action buttons */
+.action-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.act-btn { flex: 1; min-width: 100px; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--warm); font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.18s; text-align: center; }
+.act-btn:hover { border-color: var(--ink); color: var(--ink); }
+.act-btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+.act-btn.primary:hover { background: #333; }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+.empty-text { font-size: 15px; font-weight: 500; }
+.empty-hint { font-size: 13px; margin-top: 6px; opacity: 0.7; }
+
+/* Print styles */
+@media print {
+  body { background: white; }
+  .setup-panel, .action-row, .win-banner, .progress-bar, header { display: none !important; }
+  .main-grid { grid-template-columns: 1fr; }
+  .puzzle-card { box-shadow: none; border: 1px solid #ccc; page-break-after: always; }
+  .grid-cell { width: 28px; height: 28px; }
+  .grid-cell.found-0,.grid-cell.found-1,.grid-cell.found-2,.grid-cell.found-3,
+  .grid-cell.found-4,.grid-cell.found-5,.grid-cell.found-6,.grid-cell.found-7,
+  .grid-cell.found-8,.grid-cell.found-9,.grid-cell.found-10,.grid-cell.found-11 { background: #eee !important; }
+}
+
+.footer-note { text-align: center; margin-top: 36px; font-size: 12px; color: #b0a898; }
+
+@keyframes popIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.fade-in { animation: fadeUp 0.4s ease both; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<header>
+  <div class="top-label">Free Tool</div>
+  <h1>Word Search <span class="accent">Generator</span></h1>
+  <p class="subtitle">Enter your own words or choose a topic. Play on screen or print it out. Perfect for kids, classrooms and families.</p>
+</header>
+
+<div class="main-grid">
+
+  <!-- Setup panel -->
+  <div class="setup-panel">
+
+    <div class="panel-section">
+      <span class="sec-label">🎯 Quick topics</span>
+      <div class="topic-pills" id="topicPills"></div>
+    </div>
+
+    <div class="panel-section">
+      <span class="sec-label">✏️ Your words</span>
+      <input class="word-input" id="wordInput" type="text" placeholder="Type a word and press Enter..." maxlength="18">
+      <div class="word-tags" id="wordTags"></div>
+      <div class="word-count" id="wordCount">0 words added · min 3, max 20</div>
+    </div>
+
+    <div class="panel-section">
+      <span class="sec-label">📐 Grid size</span>
+      <div class="opts-row">
+        <button class="opt-btn" id="size-10" onclick="setSize(10)">10×10</button>
+        <button class="opt-btn active" id="size-15" onclick="setSize(15)">15×15</button>
+        <button class="opt-btn" id="size-20" onclick="setSize(20)">20×20</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <span class="sec-label">↔️ Word directions</span>
+      <div class="opts-row">
+        <button class="opt-btn active" id="dir-normal" onclick="setDir('normal')">Normal</button>
+        <button class="opt-btn" id="dir-hard" onclick="setDir('hard')">+ Diagonal</button>
+        <button class="opt-btn" id="dir-expert" onclick="setDir('expert')">+ Backwards</button>
+      </div>
+    </div>
+
+    <button class="gen-btn" onclick="generate()">⬛ Generate Word Search</button>
+  </div>
+
+  <!-- Puzzle area -->
+  <div class="puzzle-area" id="puzzleArea">
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-text">Your word search will appear here</div>
+      <div class="empty-hint">Add words or pick a topic, then click Generate</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="footer-note">krystleartpublications.com · Find them all! 🔍</p>
+</div>
+
+<script>
+var words = [];
+var gridSize = 15;
+var dirMode = 'normal';
+var currentGrid = [];
+var currentPlacements = [];
+var foundWords = [];
+var selecting = false;
+var selectStart = null;
+var selectCells = [];
+var puzzleTitle = 'Word Search';
+
+var TOPICS = {
+  '🐾 Animals':      ['CAT','DOG','LION','TIGER','BEAR','WOLF','DEER','FROG','DUCK','FISH','BIRD','HORSE','SNAKE','EAGLE','SHARK'],
+  '🚀 Space':        ['STAR','MOON','MARS','VENUS','COMET','ORBIT','EARTH','SOLAR','PLUTO','SATURN','JUPITER','METEOR','GALAXY','ROCKET','ECLIPSE'],
+  '🌿 Nature':       ['TREE','LEAF','RAIN','WIND','SNOW','CLOUD','RIVER','OCEAN','GRASS','BEACH','FLOWER','FOREST','MOUNTAIN','RAINBOW','THUNDER'],
+  '⚽ Sports':       ['RUN','SWIM','KICK','JUMP','RACE','GOAL','TEAM','BALL','SCORE','TRACK','COURT','MATCH','SPORT','TENNIS','CRICKET'],
+  '🍕 Food':         ['RICE','CAKE','SOUP','MILK','BREAD','APPLE','PIZZA','PASTA','CHIPS','SALAD','FRUIT','LEMON','HONEY','TOAST','CHEESE'],
+  '🏫 School':       ['PEN','BOOK','DESK','READ','WRITE','CLASS','LEARN','STUDY','MATHS','PAINT','RULER','PENCIL','SCHOOL','LESSON','TEACHER'],
+  '🎄 Christmas':    ['STAR','SNOW','GIFT','BELL','CAROL','HOLLY','FEAST','ANGEL','SANTA','SLEIGH','TINSEL','CANDLE','REINDEER','STOCKING','CHRISTMAS'],
+  '🌍 Geography':    ['MAP','LAKE','HILL','POLE','RIVER','OCEAN','COAST','ISLAND','DESERT','VALLEY','JUNGLE','GLACIER','VOLCANO','MOUNTAIN','CONTINENT'],
+  '🎨 Colours':      ['RED','BLUE','GOLD','PINK','TEAL','GREY','GREEN','BLACK','WHITE','BROWN','AMBER','CORAL','IVORY','VIOLET','YELLOW'],
+  '🦁 Safari':       ['LION','ZEBRA','RHINO','HIPPO','CHEETAH','GIRAFFE','GORILLA','LEOPARD','ELEPHANT','CROCODILE','FLAMINGO','WILDEBEEST'],
+  '🔬 Science':      ['ATOM','CELL','HEAT','ACID','LIGHT','FORCE','SOLID','LIQUID','ENERGY','MAGNET','GRAVITY','CIRCUIT','ELEMENT','MOLECULE','REACTION'],
+  '🎭 Emotions':     ['JOY','FEAR','LOVE','CALM','ANGER','HAPPY','PROUD','BRAVE','CARING','EXCITED','HOPEFUL','GRATEFUL','PEACEFUL','SURPRISED'],
+  '🐶 Pets':         ['CAT','DOG','FISH','BIRD','RABBIT','HAMSTER','PARROT','TURTLE','GUINEA','GERBIL','LIZARD','KITTEN','PUPPY','GOLDFISH','BUDGIE'],
+  '🌊 Ocean':        ['WAVE','TIDE','REEF','KELP','SHARK','WHALE','CORAL','SQUID','OTTER','PRAWN','DOLPHIN','SEAHORSE','OCTOPUS','STARFISH','JELLYFISH'],
+  '🦋 Insects':      ['ANT','BEE','FLY','MOTH','WASP','FLEA','GNAT','BEETLE','CRICKET','FIREFLY','LADYBUG','TERMITE','DRAGONFLY','BUTTERFLY','GRASSHOPPER'],
+  '🏰 History':      ['KING','QUEEN','ARMY','ROME','EGYPT','CASTLE','KNIGHT','EMPIRE','BATTLE','PHARAOH','PYRAMID','MEDIEVAL','CONQUEST','REVOLUTION','CIVILISATION'],
+  '🎵 Music':        ['BEAT','SONG','DRUM','BASS','TUNE','CHOIR','PIANO','FLUTE','TEMPO','GUITAR','VIOLIN','MELODY','RHYTHM','CONCERT','ORCHESTRA'],
+  '🍦 Desserts':     ['PIE','CAKE','TART','FUDGE','CREAM','JELLY','DONUT','MUFFIN','COOKIE','WAFFLE','BROWNIE','CUSTARD','PUDDING','ICECREAM','CHEESECAKE'],
+  '🚗 Transport':    ['BUS','CAR','VAN','BIKE','BOAT','TRAM','TAXI','TRAIN','PLANE','TRUCK','FERRY','YACHT','ROCKET','SCOOTER','HELICOPTER'],
+  '🏡 Home':         ['BED','SOFA','DOOR','LAMP','SINK','BATH','OVEN','SHELF','TABLE','CHAIR','FRIDGE','MIRROR','CARPET','GARDEN','KITCHEN'],
+  '👗 Clothes':      ['HAT','COAT','SOCK','BOOT','SKIRT','SCARF','GLOVE','JEANS','SHIRT','DRESS','JACKET','JUMPER','BLOUSE','SANDALS','TROUSERS'],
+  '🌴 Tropical':     ['PALM','SURF','REEF','MANGO','GECKO','PARROT','TOUCAN','BAMBOO','PAPAYA','LAGOON','MONSOON','COCONUT','HAMMOCK','RAINFOREST','PINEAPPLE'],
+  '🧪 Elements':     ['GOLD','IRON','ZINC','LEAD','NEON','CARBON','OXYGEN','COPPER','SILVER','HELIUM','CALCIUM','MERCURY','HYDROGEN','NITROGEN','PLATINUM'],
+  '🌐 Countries':    ['PERU','CUBA','IRAN','IRAQ','INDIA','CHINA','JAPAN','EGYPT','SPAIN','FRANCE','BRAZIL','CANADA','MEXICO','RUSSIA','AUSTRALIA'],
+  '🧁 Baking':       ['EGG','FLOUR','YEAST','SUGAR','BUTTER','CREAM','PASTRY','BISCUIT','SPONGE','VANILLA','FROSTING','MARZIPAN','CINNAMON','CHOCOLATE','SOURDOUGH'],
+  '🦕 Dinosaurs':    ['TREX','RAPTOR','FOSSIL','CLAW','JURASSIC','TRIASSIC','PTEROSAUR','SAUROPOD','TRICERATOPS','STEGOSAURUS','BRACHIOSAURUS','VELOCIRAPTOR'],
+  '💻 Technology':   ['APP','CODE','DATA','WIFI','PIXEL','ROBOT','EMAIL','TABLET','SCREEN','LAPTOP','CODING','NETWORK','DIGITAL','INTERNET','SOFTWARE'],
+  '🎃 Halloween':    ['BAT','CAT','WEB','WITCH','GHOST','SKULL','MAGIC','SPELL','CANDY','SPIDER','ZOMBIE','PUMPKIN','COSTUME','HAUNTED','SKELETON'],
+  '🐠 Sea Creatures':['COD','EEL','RAY','CRAB','SEAL','TUNA','PRAWN','SQUID','TROUT','WALRUS','LOBSTER','DOLPHIN','OCTOPUS','SEAHORSE','SWORDFISH'],
+  '🌸 Spring':       ['BUD','DEW','NEST','BLOOM','CHICK','DAISY','PETAL','ROBIN','TULIP','BREEZE','BLOSSOM','MEADOW','BUTTERFLY','DAFFODIL','RAINSHOWER'],
+  '❄️ Winter':       ['ICE','FOG','SNOW','FROST','SLEET','GLOVE','SCARF','ICICLE','FROZEN','BLIZZARD','SNOWBALL','SNOWFLAKE','FROSTBITE','SNOWSTORM','HIBERNATION'],
+  '🏋️ Fitness':     ['RUN','YOGA','SWIM','SQUAT','PRESS','CARDIO','WEIGHT','SPRINT','PILATES','STRETCH','WORKOUT','EXERCISE','TRAINING','MARATHON','ENDURANCE'],
+  '🎮 Gaming':       ['QUEST','LEVEL','SCORE','CHEAT','SPAWN','PIXEL','PAUSE','ARCADE','AVATAR','PLAYER','CONSOLE','MISSION','RESPAWN','JOYSTICK','CONTROLLER'],
+  '🌺 Garden':       ['SOIL','WEED','SEED','RAKE','HOSE','BULB','HEDGE','PLANT','PRUNE','SPADE','COMPOST','TROWEL','WATERING','SUNFLOWER','GREENHOUSE'],
+  '🍳 Cooking':      ['FRY','BAKE','BOIL','CHOP','STIR','STEAM','ROAST','SAUTE','SIMMER','SEASON','MARINADE','JULIENNE','CARAMELISE','BLANCHING','REDUCTION'],
+  '🦅 Birds':        ['OWL','JAY','EMU','WREN','CROW','ROBIN','FINCH','HERON','EAGLE','PARROT','PIGEON','TOUCAN','PEACOCK','PENGUIN','FLAMINGO'],
+  '🎠 Fairground':   ['RIDE','GAME','SPIN','LOOP','DART','WHEEL','SLIDE','STALL','CANDY','CLOWN','BUMPER','CAROUSEL','ROLLERCOASTER','FERRISWHEEL','CANDYFLOSS'],
+  '📚 Literature':   ['PLOT','HERO','POEM','TALE','QUEST','THEME','PROSE','VILLAIN','CHAPTER','FICTION','FANTASY','MYSTERY','ROMANCE','NARRATOR','CHARACTER'],
+  '🌙 Night Sky':    ['STAR','MOON','DUSK','COMET','MILKY','VENUS','ORBIT','ECLIPSE','METEOR','TWILIGHT','CRESCENT','STARGAZING','CONSTELLATION','BIOLUMINESCENCE'],
+  '🐝 Farm':         ['COW','PIG','HEN','GOAT','LAMB','CROP','BARN','FIELD','WHEAT','TRACTOR','HARVEST','CHICKEN','HAYSTACK','FARMHOUSE','IRRIGATION'],
+  '🏄 Beach':        ['SURF','SAND','WAVE','CRAB','SHELL','TOWEL','SUNTAN','BIKINI','ROCKPOOL','SEAGULL','SUNSCREEN','PARASOL','SANDCASTLE','LIFEGUARD','PROMENADE'],
+  '🎓 University':   ['ESSAY','GRADE','STUDY','THESIS','CAMPUS','DEGREE','MODULE','LECTURE','STUDENT','SEMINAR','RESEARCH','TUTORIAL','GRADUATE','PROFESSOR','DISSERTATION'],
+  '🏙️ City':         ['BUS','PARK','SHOP','ROAD','CAFE','HOTEL','TOWER','BRIDGE','SUBWAY','MUSEUM','TRAFFIC','SKYLINE','FOUNTAIN','SKYSCRAPER','POPULATION'],
+};
+
+// Render topic pills
+var pillContainer = document.getElementById('topicPills');
+Object.keys(TOPICS).forEach(function(topic) {
+  var btn = document.createElement('button');
+  btn.className = 'topic-pill';
+  btn.textContent = topic;
+  btn.onclick = function() {
+    document.querySelectorAll('.topic-pill').forEach(function(b){ b.className='topic-pill'; });
+    btn.className = 'topic-pill active';
+    words = TOPICS[topic].slice();
+    puzzleTitle = topic.replace(/[^\w\s]/gi,'').trim();
+    renderWordTags();
+  };
+  pillContainer.appendChild(btn);
+});
+
+function renderWordTags() {
+  var container = document.getElementById('wordTags');
+  container.innerHTML = '';
+  words.forEach(function(w, i) {
+    var tag = document.createElement('div');
+    tag.className = 'word-tag';
+    tag.innerHTML = w + '<span class="remove" onclick="removeWord('+i+')">×</span>';
+    container.appendChild(tag);
+  });
+  document.getElementById('wordCount').textContent = words.length + ' word' + (words.length===1?'':'s') + ' added · min 3, max 20';
+}
+
+function removeWord(i) {
+  words.splice(i, 1);
+  renderWordTags();
+}
+
+document.getElementById('wordInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    var val = this.value.trim().toUpperCase().replace(/[^A-Z]/g,'');
+    if (val.length >= 2 && val.length <= 18 && words.length < 20 && !words.includes(val)) {
+      words.push(val);
+      puzzleTitle = 'Custom Word Search';
+      document.querySelectorAll('.topic-pill').forEach(function(b){ b.className='topic-pill'; });
+      renderWordTags();
+    }
+    this.value = '';
+  }
+});
+
+function setSize(s) {
+  gridSize = s;
+  [10,15,20].forEach(function(v){ document.getElementById('size-'+v).className='opt-btn'+(v===s?' active':''); });
+}
+
+function setDir(d) {
+  dirMode = d;
+  ['normal','hard','expert'].forEach(function(v){ document.getElementById('dir-'+v).className='opt-btn'+(v===d?' active':''); });
+}
+
+// ─── PUZZLE GENERATION ────────────────────────────────────────────────────────
+function getDirections() {
+  var dirs = [
+    [0,1],[1,0]  // right, down — always
+  ];
+  if (dirMode === 'hard' || dirMode === 'expert') {
+    dirs.push([1,1],[1,-1],[-1,1],[-1,-1]); // diagonals
+  }
+  if (dirMode === 'expert') {
+    dirs.push([0,-1],[-1,0]); // left, up (backwards)
+  }
+  return dirs;
+}
+
+function shuffleArray(arr) {
+  var a = arr.slice();
+  for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; }
+  return a;
+}
+
+function generate() {
+  if (words.length < 3) {
+    alert('Please add at least 3 words to generate a word search!');
+    return;
+  }
+
+  var size = gridSize;
+  var dirs = getDirections();
+  var grid = [];
+  var placements = [];
+
+  // Init grid with nulls
+  for (var r=0;r<size;r++){ grid.push([]); for(var c=0;c<size;c++) grid[r].push(null); }
+
+  // Sort words longest first
+  var sorted = words.slice().sort(function(a,b){ return b.length-a.length; });
+  var placed = [];
+  var unplaced = [];
+
+  sorted.forEach(function(word) {
+    var shuffledDirs = shuffleArray(dirs);
+    var success = false;
+    var attempts = 0;
+    while (!success && attempts < 200) {
+      attempts++;
+      var dir = shuffledDirs[Math.floor(Math.random()*shuffledDirs.length)];
+      var dr = dir[0], dc = dir[1];
+      var maxR = dr > 0 ? size - word.length*dr : (dr < 0 ? word.length*Math.abs(dr)-1 : size-1);
+      var maxC = dc > 0 ? size - word.length*dc : (dc < 0 ? word.length*Math.abs(dc)-1 : size-1);
+      var minR = dr < 0 ? word.length*Math.abs(dr)-1 : 0;
+      var minC = dc < 0 ? word.length*Math.abs(dc)-1 : 0;
+      if (maxR < minR || maxC < minC) continue;
+      var row = minR + Math.floor(Math.random()*(maxR-minR+1));
+      var col = minC + Math.floor(Math.random()*(maxC-minC+1));
+
+      // Check fit
+      var fits = true;
+      var cells = [];
+      for (var i=0;i<word.length;i++) {
+        var r2=row+i*dr, c2=col+i*dc;
+        if (r2<0||r2>=size||c2<0||c2>=size){ fits=false; break; }
+        if (grid[r2][c2] !== null && grid[r2][c2] !== word[i]){ fits=false; break; }
+        cells.push([r2,c2]);
+      }
+      if (fits) {
+        cells.forEach(function(cell,i){ grid[cell[0]][cell[1]] = word[i]; });
+        placements.push({ word:word, cells:cells });
+        placed.push(word);
+        success = true;
+      }
+    }
+    if (!success) unplaced.push(word);
+  });
+
+  // Fill empty cells with random letters
+  var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (var r=0;r<size;r++) for (var c=0;c<size;c++) {
+    if (grid[r][c] === null) grid[r][c] = letters[Math.floor(Math.random()*26)];
+  }
+
+  currentGrid = grid;
+  currentPlacements = placements;
+  foundWords = [];
+
+  renderPuzzle(placed, unplaced);
+}
+
+function renderPuzzle(placed, unplaced) {
+  var area = document.getElementById('puzzleArea');
+  area.innerHTML = '';
+
+  var card = document.createElement('div');
+  card.className = 'puzzle-card fade-in';
+
+  // Header
+  var header = document.createElement('div');
+  header.className = 'puzzle-header';
+  header.innerHTML =
+    '<div class="puzzle-title-text">' + puzzleTitle + '</div>' +
+    '<div class="puzzle-meta">' + placed.length + ' words · ' + gridSize + '×' + gridSize + '</div>';
+  card.appendChild(header);
+
+  // Grid
+  var gridWrap = document.createElement('div');
+  gridWrap.className = 'grid-wrap';
+  var table = document.createElement('table');
+  table.className = 'grid-table';
+  table.id = 'gridTable';
+
+  for (var r=0;r<gridSize;r++) {
+    var tr = document.createElement('tr');
+    for (var c=0;c<gridSize;c++) {
+      var td = document.createElement('td');
+      td.className = 'grid-cell';
+      td.textContent = currentGrid[r][c];
+      td.dataset.row = r;
+      td.dataset.col = c;
+      td.addEventListener('mousedown', onMouseDown);
+      td.addEventListener('mouseover', onMouseOver);
+      td.addEventListener('touchstart', onTouchStart, {passive:true});
+      td.addEventListener('touchmove', onTouchMove, {passive:true});
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+
+  document.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('touchend', onTouchEnd);
+
+  gridWrap.appendChild(table);
+  card.appendChild(gridWrap);
+
+  // Progress bar
+  var pb = document.createElement('div');
+  pb.className = 'progress-bar';
+  pb.innerHTML = '<div class="progress-fill" id="progressFill" style="width:0%"></div>';
+  card.appendChild(pb);
+
+  // Word list
+  var wlWrap = document.createElement('div');
+  wlWrap.className = 'word-list-wrap';
+  wlWrap.innerHTML = '<div class="wl-label">Find these words</div>';
+  var wl = document.createElement('div');
+  wl.className = 'word-list';
+  wl.id = 'wordList';
+  placed.forEach(function(w) {
+    var span = document.createElement('span');
+    span.className = 'wl-word';
+    span.id = 'wlw-' + w;
+    span.textContent = w;
+    wl.appendChild(span);
+  });
+  wlWrap.appendChild(wl);
+  card.appendChild(wlWrap);
+
+  // Win banner
+  var wb = document.createElement('div');
+  wb.className = 'win-banner';
+  wb.id = 'winBanner';
+  wb.innerHTML = '<div class="win-emoji">🎉</div><div class="win-title">You found them all!</div><div class="win-sub">Amazing work! Every word found.</div>';
+  card.appendChild(wb);
+
+  // Action buttons
+  var actions = document.createElement('div');
+  actions.className = 'action-row';
+  actions.innerHTML =
+    '<button class="act-btn primary" onclick="generate()">🔀 New Puzzle</button>' +
+    '<button class="act-btn" onclick="revealAll()">👁 Reveal All</button>' +
+    '<button class="act-btn" onclick="window.print()">🖨️ Print</button>';
+  card.appendChild(actions);
+
+  if (unplaced.length > 0) {
+    var note = document.createElement('div');
+    note.style.cssText = 'margin-top:10px;font-size:11px;color:var(--muted);text-align:center;';
+    note.textContent = unplaced.length + ' word(s) could not fit — try a larger grid size.';
+    card.appendChild(note);
+  }
+
+  area.appendChild(card);
+}
+
+// ─── INTERACTION ──────────────────────────────────────────────────────────────
+function getCellCoords(el) {
+  return { r: parseInt(el.dataset.row), c: parseInt(el.dataset.col) };
+}
+
+function onMouseDown(e) {
+  if (e.button !== 0) return;
+  selecting = true;
+  selectStart = getCellCoords(e.target);
+  selectCells = [e.target];
+  e.target.classList.add('selecting');
+}
+
+function onMouseOver(e) {
+  if (!selecting) return;
+  clearSelecting();
+  var end = getCellCoords(e.target);
+  selectCells = getCellsInLine(selectStart, end);
+  selectCells.forEach(function(c){ c.classList.add('selecting'); });
+}
+
+function onMouseUp() {
+  if (!selecting) return;
+  selecting = false;
+  checkSelection();
+  clearSelecting();
+}
+
+// Touch support
+var touchCell = null;
+function onTouchStart(e) {
+  selecting = true;
+  touchCell = e.target;
+  selectStart = getCellCoords(e.target);
+  selectCells = [e.target];
+  e.target.classList.add('selecting');
+}
+function onTouchMove(e) {
+  var touch = e.touches[0];
+  var el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (el && el.classList.contains('grid-cell')) {
+    clearSelecting();
+    var end = getCellCoords(el);
+    selectCells = getCellsInLine(selectStart, end);
+    selectCells.forEach(function(c){ c.classList.add('selecting'); });
+  }
+}
+function onTouchEnd() {
+  if (!selecting) return;
+  selecting = false;
+  checkSelection();
+  clearSelecting();
+}
+
+function clearSelecting() {
+  document.querySelectorAll('.grid-cell.selecting').forEach(function(c){ c.classList.remove('selecting'); });
+}
+
+function getCellsInLine(start, end) {
+  var dr = end.r - start.r;
+  var dc = end.c - start.c;
+  var len = Math.max(Math.abs(dr), Math.abs(dc));
+  if (len === 0) {
+    var el = document.querySelector('[data-row="'+start.r+'"][data-col="'+start.c+'"]');
+    return el ? [el] : [];
+  }
+  // Only allow straight/diagonal lines
+  if (dr !== 0 && dc !== 0 && Math.abs(dr) !== Math.abs(dc)) {
+    // Not a valid line — snap to nearest valid direction
+    if (Math.abs(dr) >= Math.abs(dc)) { dc = 0; len = Math.abs(dr); }
+    else { dr = 0; len = Math.abs(dc); }
+  }
+  var stepR = dr === 0 ? 0 : dr/Math.abs(dr);
+  var stepC = dc === 0 ? 0 : dc/Math.abs(dc);
+  var cells = [];
+  for (var i=0;i<=len;i++) {
+    var el = document.querySelector('[data-row="'+(start.r+i*stepR)+'"][data-col="'+(start.c+i*stepC)+'"]');
+    if (el) cells.push(el);
+  }
+  return cells;
+}
+
+function checkSelection() {
+  if (selectCells.length < 2) return;
+  var selected = selectCells.map(function(c){ return c.textContent; }).join('');
+  var selectedRev = selected.split('').reverse().join('');
+
+  currentPlacements.forEach(function(p, wordIdx) {
+    if (foundWords.includes(p.word)) return;
+    if (p.word === selected || p.word === selectedRev) {
+      foundWords.push(p.word);
+      var colorIdx = foundWords.length - 1;
+      p.cells.forEach(function(cell) {
+        var el = document.querySelector('[data-row="'+cell[0]+'"][data-col="'+cell[1]+'"]');
+        if (el) { el.className = 'grid-cell found found-' + (colorIdx % 12); }
+      });
+      var wlEl = document.getElementById('wlw-' + p.word);
+      if (wlEl) wlEl.classList.add('found');
+      updateProgress();
+    }
+  });
+}
+
+function updateProgress() {
+  var total = currentPlacements.length;
+  var pct = (foundWords.length / total) * 100;
+  var fill = document.getElementById('progressFill');
+  if (fill) fill.style.width = pct + '%';
+  if (foundWords.length >= total) {
+    var banner = document.getElementById('winBanner');
+    if (banner) { banner.className = 'win-banner show'; banner.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  }
+}
+
+function revealAll() {
+  currentPlacements.forEach(function(p, wordIdx) {
+    if (foundWords.includes(p.word)) return;
+    foundWords.push(p.word);
+    var colorIdx = foundWords.length - 1;
+    p.cells.forEach(function(cell) {
+      var el = document.querySelector('[data-row="'+cell[0]+'"][data-col="'+cell[1]+'"]');
+      if (el) el.className = 'grid-cell found found-' + (colorIdx % 12);
+    });
+    var wlEl = document.getElementById('wlw-' + p.word);
+    if (wlEl) wlEl.classList.add('found');
+  });
+  updateProgress();
+}
+</script>
+</body>
+</html>
