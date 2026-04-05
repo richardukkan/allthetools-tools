@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Chore Chart Builder | That's The Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFF8F0;
+  --card: #FFFFFF;
+  --navy: #1A1A2E;
+  --pink: #FF6B9D;
+  --pink-light: #FFE4EF;
+  --yellow: #FFD93D;
+  --yellow-light: #FFF8D6;
+  --teal: #06D6A0;
+  --teal-light: #DCFFF5;
+  --orange: #FF9F1C;
+  --orange-light: #FFF0D6;
+  --blue: #4CC9F0;
+  --blue-light: #E0F7FF;
+  --purple: #9B5DE5;
+  --purple-light: #F0E6FF;
+  --red: #EF233C;
+  --red-light: #FFE4E8;
+  --green: #2DC653;
+  --green-light: #E4FFE9;
+  --border: #F0E8DF;
+  --text: #1A1A2E;
+  --muted: #8B8FA8;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── CONFETTI BG ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,107,157,0.06) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(76,201,240,0.07) 0%, transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(6,214,160,0.06) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255,217,61,0.07) 0%, transparent 30%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+  padding: 40px 24px 50px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '🌟✨⭐🌈🎉🎊';
+  position: absolute;
+  top: 10px; left: 0; right: 0;
+  font-size: 28px;
+  letter-spacing: 20px;
+  opacity: 0.15;
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.header-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,217,61,0.15);
+  border: 1.5px solid rgba(255,217,61,0.4);
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 99px;
+  margin-bottom: 16px;
+}
+.header h1 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(28px, 5vw, 50px);
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  font-weight: 800;
+}
+.header h1 span { color: var(--yellow); }
+.header p { color: #94A3B8; font-size: 15px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+/* ── TABS ── */
+.tab-nav {
+  display: flex;
+  justify-content: center;
+  background: var(--card);
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  gap: 0;
+}
+.tab-btn {
+  padding: 15px 24px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--muted);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.tab-btn:hover { color: var(--navy); }
+.tab-btn.active { color: var(--pink); border-bottom-color: var(--pink); }
+
+/* ── CONTAINER ── */
+.wrap { max-width: 920px; margin: 0 auto; padding: 32px 20px 80px; position: relative; z-index: 1; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  border: 2px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  border-radius: 24px 24px 0 0;
+}
+.card-pink::before { background: linear-gradient(90deg, var(--pink), #FF8DC7); }
+.card-yellow::before { background: linear-gradient(90deg, var(--yellow), #FFB703); }
+.card-teal::before { background: linear-gradient(90deg, var(--teal), #00B4D8); }
+.card-purple::before { background: linear-gradient(90deg, var(--purple), #C77DFF); }
+.card-orange::before { background: linear-gradient(90deg, var(--orange), #FFBE0B); }
+
+.card-hdr {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.card-icon {
+  width: 48px; height: 48px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.card-title { font-family: 'Baloo 2', sans-serif; font-size: 20px; font-weight: 800; color: var(--navy); }
+.card-sub { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+/* ── INPUTS ── */
+input[type="text"], input[type="number"], select, textarea {
+  width: 100%;
+  padding: 11px 16px;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 4px rgba(255,107,157,0.12);
+  background: #fff;
+}
+
+/* ── MEMBER CARDS ── */
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.member-card {
+  border-radius: 20px;
+  padding: 18px 14px;
+  text-align: center;
+  border: 2px solid;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.member-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.member-avatar {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 10px;
+  border: 3px solid;
+}
+.member-name-input {
+  background: none;
+  border: none;
+  border-bottom: 2px dashed;
+  border-radius: 0;
+  text-align: center;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 4px 8px;
+  width: 100%;
+  margin-bottom: 6px;
+}
+.member-name-input:focus { box-shadow: none; background: none; }
+.member-age {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+.member-del {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.08);
+  color: #666;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.member-del:hover { background: var(--red-light); color: var(--red); }
+.member-points {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.6);
+}
+
+/* MEMBER COLORS */
+.mc-0 { background: var(--pink-light); border-color: var(--pink); }
+.mc-0 .member-avatar { background: var(--pink); border-color: #FF8DC7; }
+.mc-0 .member-name-input { color: #C2185B; border-bottom-color: var(--pink); }
+.mc-0 .member-points { color: #C2185B; }
+
+.mc-1 { background: var(--blue-light); border-color: var(--blue); }
+.mc-1 .member-avatar { background: var(--blue); border-color: #90E0FF; }
+.mc-1 .member-name-input { color: #0077B6; border-bottom-color: var(--blue); }
+.mc-1 .member-points { color: #0077B6; }
+
+.mc-2 { background: var(--teal-light); border-color: var(--teal); }
+.mc-2 .member-avatar { background: var(--teal); border-color: #80FFDA; }
+.mc-2 .member-name-input { color: #087F5B; border-bottom-color: var(--teal); }
+.mc-2 .member-points { color: #087F5B; }
+
+.mc-3 { background: var(--orange-light); border-color: var(--orange); }
+.mc-3 .member-avatar { background: var(--orange); border-color: #FFD09B; }
+.mc-3 .member-name-input { color: #C06000; border-bottom-color: var(--orange); }
+.mc-3 .member-points { color: #C06000; }
+
+.mc-4 { background: var(--purple-light); border-color: var(--purple); }
+.mc-4 .member-avatar { background: var(--purple); border-color: #CDB4FF; }
+.mc-4 .member-name-input { color: #6A0DAD; border-bottom-color: var(--purple); }
+.mc-4 .member-points { color: #6A0DAD; }
+
+.mc-5 { background: var(--yellow-light); border-color: var(--yellow); }
+.mc-5 .member-avatar { background: var(--yellow); border-color: #FFE878; }
+.mc-5 .member-name-input { color: #8B6914; border-bottom-color: #E5A800; }
+.mc-5 .member-points { color: #8B6914; }
+
+/* ── CHORE LIST ── */
+.chore-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  transition: all 0.2s;
+  animation: slideIn 0.25s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.chore-row:hover { border-color: var(--pink); background: var(--pink-light); }
+.chore-emoji-btn {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.15s;
+}
+.chore-emoji-btn:hover { transform: scale(1.15); }
+.chore-name-in {
+  font-weight: 700;
+  font-size: 14px;
+}
+.chore-pts {
+  width: 70px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+.chore-assign {
+  width: 130px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.chore-del {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  border: none;
+  background: var(--red-light);
+  color: var(--red);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.chore-del:hover { background: #FECACA; }
+
+/* QUICK-ADD CHORE CHIPS */
+.chore-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.chore-chip {
+  padding: 7px 14px;
+  border-radius: 99px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: var(--muted);
+}
+.chore-chip:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); transform: translateY(-1px); }
+
+/* CATEGORY TABS */
+.cat-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.cat-tab {
+  padding: 7px 16px;
+  border-radius: 99px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: var(--muted);
+}
+.cat-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 10px 20px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.btn-add {
+  background: var(--teal-light);
+  color: #087F5B;
+  border: 2px solid var(--teal);
+}
+.btn-add:hover { background: var(--teal); color: #fff; transform: translateY(-1px); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--pink), #C2185B);
+  color: #fff;
+  padding: 15px 32px;
+  font-size: 16px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(255,107,157,0.4);
+  width: 100%;
+  justify-content: center;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,107,157,0.5); }
+.btn-ghost {
+  background: #F1F5F9;
+  color: var(--muted);
+  border: 2px solid var(--border);
+}
+.btn-ghost:hover { background: var(--border); color: var(--navy); }
+.btn-export {
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+}
+.btn-print { background: linear-gradient(135deg, var(--purple), #6D28D9); box-shadow: 0 4px 14px rgba(155,93,229,0.35); }
+.btn-print:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+/* ── CHART VIEW ── */
+.chart-header {
+  background: linear-gradient(135deg, #1A1A2E, #16213E);
+  border-radius: 20px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.chart-title-wrap .chart-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+}
+.chart-title-wrap .chart-week {
+  font-size: 13px;
+  color: #94A3B8;
+  font-weight: 600;
+}
+.chart-title-input {
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 12px;
+  width: 220px;
+}
+.chart-title-input::placeholder { color: rgba(255,255,255,0.4); }
+.chart-title-input:focus { border-color: var(--yellow); box-shadow: none; background: rgba(255,255,255,0.15); }
+
+/* CHART TABLE */
+.chart-table-wrap { overflow-x: auto; }
+.chart-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 600px;
+}
+.chart-table th {
+  padding: 12px 10px;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--muted);
+  background: var(--bg);
+  border-bottom: 2px solid var(--border);
+}
+.chart-table th:first-child { text-align: left; padding-left: 16px; border-radius: 14px 0 0 0; }
+.chart-table th:last-child { border-radius: 0 14px 0 0; }
+.chart-table td {
+  padding: 10px 8px;
+  text-align: center;
+  border-bottom: 1px solid #F8F0E8;
+  vertical-align: middle;
+}
+.chart-table td:first-child { text-align: left; padding-left: 16px; }
+.chart-table tr:last-child td { border-bottom: none; }
+.chart-table tr:hover td { background: var(--bg); }
+
+.chore-cell-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.chore-cell-emoji {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.chore-pts-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--yellow-light);
+  color: #8B6914;
+  margin-top: 2px;
+}
+
+/* CHECKBOXES in chart */
+.chore-check {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  border: 2.5px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  margin: 0 auto;
+  transition: all 0.2s;
+  user-select: none;
+}
+.chore-check:hover { border-color: var(--teal); background: var(--teal-light); }
+.chore-check.done { border-color: var(--teal); background: var(--teal); color: #fff; }
+
+/* ASSIGNEE BADGE in chart */
+.assignee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+/* MEMBER SCORE CARDS */
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.score-card {
+  border-radius: 20px;
+  padding: 20px 16px;
+  text-align: center;
+  border: 2px solid;
+  position: relative;
+}
+.score-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin: 0 auto 10px;
+  border: 3px solid rgba(255,255,255,0.5);
+}
+.score-name {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.score-pts {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.score-label { font-size: 12px; font-weight: 700; opacity: 0.7; }
+.score-bar-wrap { margin-top: 10px; height: 8px; background: rgba(255,255,255,0.4); border-radius: 99px; overflow: hidden; }
+.score-bar { height: 100%; border-radius: 99px; background: rgba(255,255,255,0.8); transition: width 0.6s ease; }
+
+/* WEEK SELECTOR */
+.week-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.week-inp {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--card);
+  color: var(--navy);
+  outline: none;
+}
+.day-badge {
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* EMOJI PICKER */
+.emoji-picker {
+  display: none;
+  position: absolute;
+  z-index: 200;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  width: 240px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.emoji-picker.open { display: flex; }
+.ep-emoji {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: var(--bg);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s;
+}
+.ep-emoji:hover { transform: scale(1.2); background: var(--yellow-light); }
+
+/* TIP */
+.tip {
+  display: flex;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: 2px solid;
+}
+.tip-fun { background: var(--yellow-light); border-color: var(--yellow); color: #78350F; }
+.tip-info { background: var(--blue-light); border-color: var(--blue); color: #075985; }
+.tip-icon { font-size: 20px; flex-shrink: 0; }
+.tip-text { font-size: 13px; font-weight: 600; line-height: 1.6; }
+
+/* TABS CONTENT */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* PRINT STYLES */
+@media print {
+  body { background: #fff; }
+  .tab-nav, .btn, .header, .tip, .chore-chips, .cat-tabs, .emoji-picker { display: none !important; }
+  .tab-content { display: block !important; }
+  .card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+  .chore-check { border: 1.5px solid #ccc !important; background: #fff !important; }
+  .chore-check.done::after { content: '✓'; color: green; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .tab-btn { padding: 12px 14px; font-size: 12px; gap: 4px; }
+  .members-grid { grid-template-columns: repeat(2, 1fr); }
+  .chore-row { grid-template-columns: auto 1fr auto auto; }
+  .chore-assign { display: none; }
+  .score-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ROTATION TOGGLE */
+.toggle-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+.toggle-label { font-weight: 700; font-size: 14px; color: var(--navy); cursor: pointer; }
+.sw { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+.sw input { opacity: 0; width: 0; height: 0; }
+.sw-s {
+  position: absolute; inset: 0;
+  background: var(--border);
+  border-radius: 99px;
+  transition: 0.3s;
+}
+.sw-s:before {
+  content: ''; position: absolute;
+  width: 16px; height: 16px;
+  left: 4px; top: 4px;
+  background: #fff; border-radius: 50%;
+  transition: 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+input:checked + .sw-s { background: var(--teal); }
+input:checked + .sw-s:before { transform: translateX(20px); }
+
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* AWARD SECTION */
+.award-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  margin-bottom: 10px;
+  animation: slideIn 0.25s ease;
+}
+.award-emoji { font-size: 28px; }
+.award-name { font-weight: 700; font-size: 14px; flex: 1; }
+.award-pts-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: var(--yellow-light);
+  border: 1.5px solid var(--yellow);
+  font-size: 13px;
+  font-weight: 700;
+  color: #8B6914;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-chip">🏠 Free Family Tool</div>
+    <h1>Family <span>Chore Chart</span> Builder</h1>
+    <p>Create a fun, personalized chore chart for your whole family. Assign tasks, earn points, and make housework something everyone looks forward to!</p>
+  </div>
+</div>
+
+<!-- TABS -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('setup')">👨‍👩‍👧 Setup</button>
+  <button class="tab-btn" onclick="switchTab('chores')">📋 Chores</button>
+  <button class="tab-btn" onclick="switchTab('chart')">📅 Weekly Chart</button>
+  <button class="tab-btn" onclick="switchTab('rewards')">🏆 Rewards</button>
+</nav>
+
+<div class="wrap">
+
+  <!-- ══════════════════════════════
+       TAB 1 — SETUP
+  ══════════════════════════════ -->
+  <div id="tab-setup" class="tab-content active">
+
+    <div class="tip tip-fun">
+      <span class="tip-icon">👋</span>
+      <span class="tip-text">Start by adding your family members. Click their avatar to pick a new emoji! Then head to the <strong>Chores</strong> tab to add tasks.</span>
+    </div>
+
+    <!-- FAMILY NAME -->
+    <div class="card card-pink">
+      <div class="card-hdr">
+        <div class="card-icon" style="background:var(--pink-light);">🏠</div>
+        <div>
+          <div class="card-title">Your Family</div>
+          <div class="card-sub">Give your chore chart a name</div>
+        </div>
+      </div>
+      <input type="text" id="family-name" placeholder="e.g. The Johnson Family Chore Chart" style="font-family:'Baloo 2',sans-serif; font-size:16px; font-weight:700;">
+    </div>
+
+    <!-- MEMBERS -->
+    <div class="card card-yellow">
+      <div class="card-hdr">
+        <div class="card-icon" style="background:var(--yellow-light);">👨‍👩‍👧‍👦</div>
+        <div>
+          <div class="card-title">Family Members</div>
+          <div class="card-sub">Add everyone who'll have chores</div>
+        </div>
+      </div>
+      <div class="members-grid" id="members-grid"></div>
+      <button class="btn btn-add" onclick="addMember()">+ Add Family Member</button>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="card card-teal">
+      <div class="card-hdr">
+        <div class="card-icon" style="background:var(--teal-light);">⚙️</div>
+        <div>
+          <div class="card-title">Chart Settings</div>
+          <div class="card-sub">Customise how the chart works</div>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="sw"><input type="checkbox" id="use-points" checked><span class="sw-s"></span></label>
+        <label class="toggle-label" for="use-points">🌟 Use points / reward system</label>
+      </div>
+      <div class="toggle-row">
+        <label class="sw"><input type="checkbox" id="auto-rotate"><span class="sw-s"></span></label>
+        <label class="toggle-label" for="auto-rotate">🔄 Auto-rotate chores weekly (coming soon)</label>
+      </div>
+      <div class="toggle-row">
+        <label class="sw"><input type="checkbox" id="show-emoji" checked><span class="sw-s"></span></label>
+        <label class="toggle-label" for="show-emoji">😄 Show emoji in chart</label>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="switchTab('chores')">Next: Add Chores →</button>
+  </div>
+
+  <!-- ══════════════════════════════
+       TAB 2 — CHORES
+  ══════════════════════════════ -->
+  <div id="tab-chores" class="tab-content">
+
+    <div class="tip tip-info">
+      <span class="tip-icon">💡</span>
+      <span class="tip-text">Quick-add from the suggestions below, or type your own. Assign a family member and set point values — higher points for tougher chores!</span>
+    </div>
+
+    <!-- CATEGORY FILTER -->
+    <div class="cat-tabs" id="cat-tabs">
+      <button class="cat-tab active" onclick="filterCat('all',this)">All</button>
+      <button class="cat-tab" onclick="filterCat('kitchen',this)">🍽️ Kitchen</button>
+      <button class="cat-tab" onclick="filterCat('cleaning',this)">🧹 Cleaning</button>
+      <button class="cat-tab" onclick="filterCat('laundry',this)">👕 Laundry</button>
+      <button class="cat-tab" onclick="filterCat('outdoor',this)">🌿 Outdoor</button>
+      <button class="cat-tab" onclick="filterCat('bedroom',this)">🛏️ Bedroom</button>
+      <button class="cat-tab" onclick="filterCat('pet',this)">🐾 Pet Care</button>
+      <button class="cat-tab" onclick="filterCat('errands',this)">🛒 Errands</button>
+    </div>
+
+    <!-- QUICK ADD SUGGESTIONS -->
+    <div class="card card-teal">
+      <div class="card-hdr">
+        <div class="card-icon" style="background:var(--teal-light);">⚡</div>
+        <div>
+          <div class="card-title">Quick Add</div>
+          <div class="card-sub">Tap to instantly add a chore</div>
+        </div>
+      </div>
+      <div class="chore-chips" id="chore-chips"></div>
+    </div>
+
+    <!-- CHORE LIST -->
+    <div class="card card-pink">
+      <div class="card-hdr">
+        <div class="card-icon" style="background:var(--pink-light);">📋</div>
+        <div>
+          <div class="card-title">Your Chore List</div>
+          <div class="card-sub" id="chore-count-sub">0 chores added</div>
+        </div>
+      </div>
+
+      <!-- TABLE HEADER -->
+      <div style="display:grid; grid-template-columns: auto 1fr auto auto auto; gap:10px; padding: 8px 14px; margin-bottom:4px;">
+        <div style="width:40px;"></div>
+        <div style="font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Chore Name</div>
+        <div style="width:70px; font-size:12px; font-weight:800; color:var(--muted); text-align:center; text-transform:uppercase; letter-spacing:0.5px;">Points</div>
+        <div style="width:130px; font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Assign To</div>
+        <div style="width:32px;"></div>
+      </div>
+
+      <div id="chore-list"></div>
+
+      <div style="display:flex; gap:10px; margin-top:14px; align-items:center; flex-wrap:wrap;">
+        <input type="text" id="new-chore-name" placeholder="Type a custom chore..." style="flex:1; min-width:160px;">
+        <button class="btn btn-add" onclick="addChoreFromInput()">+ Add Chore</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="buildChart()">🎉 Build My Chore Chart →</button>
+  </div>
+
+  <!-- ══════════════════════════════
+       TAB 3 — WEEKLY CHART
+  ══════════════════════════════ -->
+  <div id="tab-chart" class="tab-content">
+
+    <div id="chart-empty" style="text-align:center; padding:60px 20px; color:var(--muted);">
+      <div style="font-size:64px; margin-bottom:16px;">📋</div>
+      <div style="font-size:18px; font-weight:800; color:var(--navy); margin-bottom:8px;">No Chart Yet</div>
+      <div style="font-size:14px;">Go to the Chores tab and click <strong>Build My Chore Chart</strong> to generate your weekly chart.</div>
+    </div>
+
+    <div id="chart-body" style="display:none;">
+
+      <!-- CHART HEADER -->
+      <div class="chart-header">
+        <div class="chart-title-wrap">
+          <div class="chart-title" id="chart-title-display">The Johnson Family</div>
+          <div class="chart-week" id="chart-week-display">Week of —</div>
+        </div>
+        <input type="week" id="week-picker" class="week-inp" oninput="updateWeekDisplay()">
+      </div>
+
+      <!-- SCORE CARDS -->
+      <div class="score-grid" id="score-grid"></div>
+
+      <!-- CHART TABLE -->
+      <div class="card card-purple" style="padding:16px;">
+        <div class="chart-table-wrap">
+          <table class="chart-table" id="chart-table"></table>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="actions" style="margin-top:20px;">
+        <button class="btn btn-export btn-print" onclick="window.print()">🖨️ Print Chart</button>
+        <button class="btn btn-ghost" onclick="resetWeek()">↺ Reset This Week</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       TAB 4 — REWARDS
+  ══════════════════════════════ -->
+  <div id="tab-rewards" class="tab-content">
+
+    <div class="tip tip-fun">
+      <span class="tip-icon">🏆</span>
+      <span class="tip-text">Set up reward milestones so kids know exactly what they're working toward. Points update automatically as chores are checked off!</span>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="card card-yellow">
+      <div class="card-hdr">
+        <div class="card-icon" style="background:var(--yellow-light);">🏆</div>
+        <div>
+          <div class="card-title">This Week's Leaderboard</div>
+          <div class="card-sub">Points earned from completed chores</div>
+        </div>
+      </div>
+      <div id="leaderboard"></div>
+    </div>
+
+    <!-- REWARD MILESTONES -->
+    <div class="card card-orange">
+      <div class="card-hdr">
+        <div class="card-icon" style="background:var(--orange-light);">🎁</div>
+        <div>
+          <div class="card-title">Reward Milestones</div>
+          <div class="card-sub">What do the kids earn for their points?</div>
+        </div>
+      </div>
+
+      <div id="rewards-list">
+        <div class="award-row">
+          <span class="award-emoji">🍦</span>
+          <input type="text" class="award-name" value="Ice cream treat" style="border:none; background:none; font-weight:700; font-size:14px; color:var(--navy); padding:0; width:auto; flex:1;">
+          <div class="award-pts-badge">⭐ 10 pts</div>
+          <button class="btn chore-del" onclick="this.closest('.award-row').remove()" style="margin-left:4px;">✕</button>
+        </div>
+        <div class="award-row">
+          <span class="award-emoji">🎮</span>
+          <input type="text" class="award-name" value="30 mins extra screen time" style="border:none; background:none; font-weight:700; font-size:14px; color:var(--navy); padding:0; width:auto; flex:1;">
+          <div class="award-pts-badge">⭐ 20 pts</div>
+          <button class="btn chore-del" onclick="this.closest('.award-row').remove()" style="margin-left:4px;">✕</button>
+        </div>
+        <div class="award-row">
+          <span class="award-emoji">🎬</span>
+          <input type="text" class="award-name" value="Movie night pick" style="border:none; background:none; font-weight:700; font-size:14px; color:var(--navy); padding:0; width:auto; flex:1;">
+          <div class="award-pts-badge">⭐ 35 pts</div>
+          <button class="btn chore-del" onclick="this.closest('.award-row').remove()" style="margin-left:4px;">✕</button>
+        </div>
+        <div class="award-row">
+          <span class="award-emoji">💰</span>
+          <input type="text" class="award-name" value="$5 allowance bonus" style="border:none; background:none; font-weight:700; font-size:14px; color:var(--navy); padding:0; width:auto; flex:1;">
+          <div class="award-pts-badge">⭐ 50 pts</div>
+          <button class="btn chore-del" onclick="this.closest('.award-row').remove()" style="margin-left:4px;">✕</button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+        <input type="text" id="new-reward-name" placeholder="e.g. Trip to the park..." style="flex:1; min-width:140px;">
+        <input type="number" id="new-reward-pts" placeholder="Points" style="width:90px;" min="1">
+        <input type="text" id="new-reward-emoji" placeholder="🎁" style="width:60px;">
+        <button class="btn btn-add" onclick="addReward()">+ Add Reward</button>
+      </div>
+    </div>
+
+    <!-- AGE GUIDE -->
+    <div class="card card-purple">
+      <div class="card-hdr">
+        <div class="card-icon" style="background:var(--purple-light);">📚</div>
+        <div>
+          <div class="card-title">Age-Appropriate Chore Guide</div>
+          <div class="card-sub">What chores are right for which age?</div>
+        </div>
+      </div>
+      <div id="age-guide"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- EMOJI PICKER POPUP -->
+<div class="emoji-picker" id="emoji-picker">
+  🧹🍽️🛏️👕🐾🌿🛒🧺🚽🪟🐶🐱🦴🌱🌊💧🔧🪴🧽🥗🍳🥛🥡🧁🍕🧀🥩🥦🥕🌽🍎🍌🍓🍇🥤🧃
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const MEMBER_DATA = [
+  { name:'Mom', emoji:'👩', colorIdx:0 },
+  { name:'Dad', emoji:'👨', colorIdx:1 },
+  { name:'Emma', emoji:'👧', colorIdx:2 },
+  { name:'Jake', emoji:'👦', colorIdx:3 },
+];
+
+const CHORE_SUGGESTIONS = {
+  kitchen: [
+    { name:'Wash dishes', emoji:'🍽️', pts:5 },
+    { name:'Dry & put away dishes', emoji:'🥣', pts:4 },
+    { name:'Wipe countertops', emoji:'🧽', pts:3 },
+    { name:'Empty dishwasher', emoji:'✨', pts:4 },
+    { name:'Take out trash', emoji:'🗑️', pts:4 },
+    { name:'Sweep kitchen floor', emoji:'🧹', pts:4 },
+    { name:'Mop kitchen floor', emoji:'🪣', pts:6 },
+    { name:'Clean microwave', emoji:'📦', pts:5 },
+    { name:'Wipe stovetop', emoji:'🔥', pts:5 },
+    { name:'Make dinner', emoji:'🍳', pts:10 },
+  ],
+  cleaning: [
+    { name:'Vacuum living room', emoji:'💨', pts:6 },
+    { name:'Dust furniture', emoji:'🌫️', pts:5 },
+    { name:'Clean bathroom sink', emoji:'🚿', pts:5 },
+    { name:'Scrub toilet', emoji:'🚽', pts:7 },
+    { name:'Clean mirrors', emoji:'🪟', pts:4 },
+    { name:'Mop floors', emoji:'🪣', pts:8 },
+    { name:'Vacuum stairs', emoji:'🏠', pts:6 },
+    { name:'Empty all trash cans', emoji:'🗑️', pts:5 },
+    { name:'Clean windows', emoji:'🌤️', pts:7 },
+    { name:'Tidy living room', emoji:'🛋️', pts:4 },
+  ],
+  laundry: [
+    { name:'Do a load of laundry', emoji:'👕', pts:6 },
+    { name:'Fold & put away laundry', emoji:'👗', pts:5 },
+    { name:'Sort dirty laundry', emoji:'🧺', pts:3 },
+    { name:'Match socks', emoji:'🧦', pts:3 },
+    { name:'Iron clothes', emoji:'👔', pts:7 },
+    { name:'Change bed sheets', emoji:'🛏️', pts:7 },
+  ],
+  outdoor: [
+    { name:'Mow the lawn', emoji:'🌿', pts:10 },
+    { name:'Water plants', emoji:'🌱', pts:4 },
+    { name:'Pull weeds', emoji:'🌾', pts:7 },
+    { name:'Rake leaves', emoji:'🍂', pts:8 },
+    { name:'Shovel snow', emoji:'❄️', pts:10 },
+    { name:'Wash the car', emoji:'🚗', pts:10 },
+    { name:'Sweep porch/patio', emoji:'🧹', pts:5 },
+    { name:'Take in mail', emoji:'📬', pts:3 },
+  ],
+  bedroom: [
+    { name:'Make bed', emoji:'🛏️', pts:3 },
+    { name:'Tidy bedroom', emoji:'🧸', pts:4 },
+    { name:'Put away toys', emoji:'🎮', pts:3 },
+    { name:'Organize closet', emoji:'👘', pts:6 },
+    { name:'Dust bedroom surfaces', emoji:'🌫️', pts:4 },
+  ],
+  pet: [
+    { name:'Feed the dog/cat', emoji:'🐾', pts:4 },
+    { name:'Walk the dog', emoji:'🦮', pts:6 },
+    { name:'Clean the litter box', emoji:'🐱', pts:7 },
+    { name:'Groom the pet', emoji:'🐶', pts:5 },
+    { name:'Wash pet bowls', emoji:'🦴', pts:4 },
+    { name:'Clean pet area', emoji:'🏠', pts:6 },
+  ],
+  errands: [
+    { name:'Get groceries', emoji:'🛒', pts:8 },
+    { name:'Unpack groceries', emoji:'🥗', pts:4 },
+    { name:'Bring in packages', emoji:'📦', pts:3 },
+    { name:'Set the table', emoji:'🍴', pts:3 },
+    { name:'Clear the table', emoji:'🥄', pts:3 },
+    { name:'Help with cooking', emoji:'🍳', pts:5 },
+    { name:'Feed family members lunch', emoji:'🥪', pts:5 },
+  ],
+};
+
+const AGE_GUIDE = [
+  { range:'Ages 2–3', chores:['Put toys away','Throw trash in bin','Help make bed','Wipe up spills'], emoji:'👶' },
+  { range:'Ages 4–5', chores:['Set the table','Feed pets','Help with laundry','Dust low surfaces','Water plants'], emoji:'🧒' },
+  { range:'Ages 6–8', chores:['Vacuum with help','Wash dishes','Empty dishwasher','Take out trash','Rake leaves'], emoji:'👦' },
+  { range:'Ages 9–11', chores:['Do laundry','Mow lawn with supervision','Clean bathroom','Cook simple meals','Run errands nearby'], emoji:'🧑' },
+  { range:'Ages 12+', chores:['Deep clean rooms','Grocery shopping','Cook full meals','Babysit younger siblings','Wash the car'], emoji:'👱' },
+];
+
+let members = JSON.parse(JSON.stringify(MEMBER_DATA));
+let chores = [];
+let checkState = {}; // { choreId_day: bool }
+let currentCatFilter = 'all';
+let activePicker = null;
+
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderMembers();
+  renderChoreChips('all');
+  renderChoreList();
+  buildAgeGuide();
+  setDefaultWeek();
+  buildLeaderboard();
+  document.addEventListener('click', closeEmojiPicker);
+});
+
+// ══════════════════════════════════════════
+// MEMBERS
+// ══════════════════════════════════════════
+function renderMembers() {
+  const grid = document.getElementById('members-grid');
+  grid.innerHTML = '';
+  members.forEach((m, i) => {
+    const colorClass = `mc-${i % 6}`;
+    const points = getMemberPoints(m.name);
+    grid.innerHTML += `
+    <div class="member-card ${colorClass}" id="mcard-${i}">
+      <button class="member-del" onclick="deleteMember(${i})" title="Remove">✕</button>
+      <div class="member-avatar" onclick="openEmojiPicker(event, ${i})" title="Change emoji" style="cursor:pointer;">
+        ${m.emoji}
+      </div>
+      <input class="member-name-input" type="text" value="${m.name}" oninput="members[${i}].name = this.value; syncMemberNames();" placeholder="Name">
+      <div class="member-age">
+        <select onchange="members[${i}].age = this.value" style="background:none; border:none; font-family:'Quicksand',sans-serif; font-weight:700; font-size:12px; color:inherit; cursor:pointer; outline:none;">
+          <option value="">Select age range</option>
+          <option value="2-3" ${m.age==='2-3'?'selected':''}>Ages 2–3</option>
+          <option value="4-5" ${m.age==='4-5'?'selected':''}>Ages 4–5</option>
+          <option value="6-8" ${m.age==='6-8'?'selected':''}>Ages 6–8</option>
+          <option value="9-11" ${m.age==='9-11'?'selected':''}>Ages 9–11</option>
+          <option value="12+" ${m.age==='12+'?'selected':''}>Ages 12+</option>
+          <option value="adult" ${m.age==='adult'?'selected':''}>Adult</option>
+        </select>
+      </div>
+      <div class="member-points">⭐ ${points} pts</div>
+    </div>`;
+  });
+}
+
+function addMember() {
+  const emojis = ['👩','👨','👧','👦','🧑','👴','👵','🧒'];
+  members.push({ name: `Member ${members.length+1}`, emoji: emojis[members.length % emojis.length], colorIdx: members.length % 6 });
+  renderMembers();
+  updateChoreAssignSelects();
+}
+
+function deleteMember(i) {
+  members.splice(i, 1);
+  renderMembers();
+  updateChoreAssignSelects();
+}
+
+function syncMemberNames() {
+  updateChoreAssignSelects();
+  renderMembers();
+}
+
+function getMemberPoints(name) {
+  let pts = 0;
+  chores.forEach(c => {
+    if (c.assignedTo === name) {
+      DAYS.forEach((d, di) => {
+        const key = `${c.id}_${di}`;
+        if (checkState[key]) pts += parseInt(c.pts) || 0;
+      });
+    }
+  });
+  return pts;
+}
+
+// EMOJI PICKER
+function openEmojiPicker(e, memberIdx) {
+  e.stopPropagation();
+  activePicker = memberIdx;
+  const picker = document.getElementById('emoji-picker');
+  const rect = e.target.getBoundingClientRect();
+  picker.style.top = (window.scrollY + rect.bottom + 8) + 'px';
+  picker.style.left = Math.min(rect.left, window.innerWidth - 260) + 'px';
+  picker.style.position = 'absolute';
+  picker.classList.add('open');
+
+  picker.innerHTML = '';
+  const emojis = ['👩','👨','👧','👦','🧑','👴','👵','🧒','👱','🧔','👩‍🦰','👩‍🦱','🧕','🤶','🎅','🦸','🧙','🧝','🦊','🐻','🐼','🦁','🐸','🐨','🦋','🌟','⭐','🎈','🎉','❤️','💜','💙','💛','🌈'];
+  emojis.forEach(em => {
+    const btn = document.createElement('button');
+    btn.className = 'ep-emoji';
+    btn.textContent = em;
+    btn.onclick = (ev) => { ev.stopPropagation(); members[activePicker].emoji = em; renderMembers(); picker.classList.remove('open'); };
+    picker.appendChild(btn);
+  });
+}
+
+function closeEmojiPicker(e) {
+  if (!e.target.closest('#emoji-picker') && !e.target.closest('.member-avatar')) {
+    document.getElementById('emoji-picker').classList.remove('open');
+  }
+}
+
+// ══════════════════════════════════════════
+// CHORES
+// ══════════════════════════════════════════
+function renderChoreChips(cat) {
+  const wrap = document.getElementById('chore-chips');
+  wrap.innerHTML = '';
+  const list = cat === 'all' ? Object.values(CHORE_SUGGESTIONS).flat() : (CHORE_SUGGESTIONS[cat] || []);
+  list.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'chore-chip';
+    btn.textContent = `${c.emoji} ${c.name}`;
+    btn.onclick = () => addChore(c.name, c.emoji, c.pts);
+    wrap.appendChild(btn);
+  });
+}
+
+function filterCat(cat, btn) {
+  currentCatFilter = cat;
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderChoreChips(cat);
+}
+
+function addChore(name, emoji, pts, assignedTo = '') {
+  if (!name.trim()) return;
+  const id = Date.now() + Math.random();
+  chores.push({ id, name, emoji: emoji || '📌', pts: pts || 3, assignedTo: assignedTo || (members[0]?.name || '') });
+  renderChoreList();
+  updateChorCount();
+}
+
+function addChoreFromInput() {
+  const val = document.getElementById('new-chore-name').value.trim();
+  if (!val) return;
+  addChore(val, '📌', 3);
+  document.getElementById('new-chore-name').value = '';
+}
+
+function renderChoreList() {
+  const list = document.getElementById('chore-list');
+  list.innerHTML = '';
+  if (chores.length === 0) {
+    list.innerHTML = `<div style="text-align:center; padding:24px; color:var(--muted); font-weight:600;">No chores yet — add from Quick Add above or type one in!</div>`;
+    return;
+  }
+  chores.forEach((c, i) => {
+    const memberOptions = members.map(m => `<option value="${m.name}" ${m.name===c.assignedTo?'selected':''}>${m.emoji} ${m.name}</option>`).join('');
+    list.innerHTML += `
+    <div class="chore-row" id="crow-${c.id}">
+      <button class="chore-emoji-btn" onclick="cycleEmoji(${i})" title="Change emoji">${c.emoji}</button>
+      <input type="text" class="chore-name-in" value="${c.name}" oninput="chores[${i}].name = this.value">
+      <input type="number" class="chore-pts" value="${c.pts}" min="1" max="50" oninput="chores[${i}].pts = parseInt(this.value)||1" title="Points" placeholder="pts">
+      <select class="chore-assign" onchange="chores[${i}].assignedTo = this.value">
+        <option value="">Anyone</option>
+        ${memberOptions}
+      </select>
+      <button class="chore-del" onclick="deleteChore(${i})">✕</button>
+    </div>`;
+  });
+  updateChorCount();
+}
+
+function cycleEmoji(idx) {
+  const emojis = ['📌','🧹','🍽️','👕','🌿','🐾','🛒','🧺','🛏️','💨','🚽','🪟','🗑️','🔧','📬','💡','🍳','🥗','🧽','🪣'];
+  const cur = emojis.indexOf(chores[idx].emoji);
+  chores[idx].emoji = emojis[(cur + 1) % emojis.length];
+  renderChoreList();
+}
+
+function deleteChore(i) {
+  chores.splice(i, 1);
+  renderChoreList();
+}
+
+function updateChorCount() {
+  const el = document.getElementById('chore-count-sub');
+  if (el) el.textContent = `${chores.length} chore${chores.length !== 1 ? 's' : ''} added`;
+}
+
+function updateChoreAssignSelects() {
+  renderChoreList();
+}
+
+// ══════════════════════════════════════════
+// BUILD CHART
+// ══════════════════════════════════════════
+function buildChart() {
+  switchTab('chart');
+  if (chores.length === 0) return;
+  document.getElementById('chart-empty').style.display = 'none';
+  document.getElementById('chart-body').style.display = 'block';
+
+  // Update title
+  const familyName = document.getElementById('family-name').value || 'Our Family';
+  document.getElementById('chart-title-display').textContent = `${familyName} Chore Chart`;
+
+  updateWeekDisplay();
+  renderScoreCards();
+  renderChartTable();
+  buildLeaderboard();
+}
+
+function renderScoreCards() {
+  const grid = document.getElementById('score-grid');
+  grid.innerHTML = '';
+  const maxPts = Math.max(...members.map(m => getMemberPoints(m.name)), 1);
+  members.forEach((m, i) => {
+    const pts = getMemberPoints(m.name);
+    const pct = (pts / maxPts) * 100;
+    const colorClass = `mc-${i % 6}`;
+    grid.innerHTML += `
+    <div class="score-card ${colorClass}" id="scard-${i}">
+      <div class="score-avatar" style="background:${getMemberColor(i)}">${m.emoji}</div>
+      <div class="score-name">${m.name}</div>
+      <div class="score-pts" id="score-pts-${i}">⭐ ${pts}</div>
+      <div class="score-label">points this week</div>
+      <div class="score-bar-wrap"><div class="score-bar" id="score-bar-${i}" style="width:${pct}%"></div></div>
+    </div>`;
+  });
+}
+
+function renderChartTable() {
+  const table = document.getElementById('chart-table');
+  const showEmoji = document.getElementById('show-emoji').checked;
+
+  // Header
+  let html = '<thead><tr><th>Chore</th>';
+  DAYS.forEach(d => html += `<th>${d}</th>`);
+  html += '</tr></thead><tbody>';
+
+  chores.forEach(c => {
+    const assignee = members.find(m => m.name === c.assignedTo);
+    const aColor = assignee ? getMemberColorHex(members.indexOf(assignee)) : '#94A3B8';
+    html += `<tr>
+      <td>
+        <div class="chore-cell-name">
+          ${showEmoji ? `<div class="chore-cell-emoji">${c.emoji}</div>` : ''}
+          <div>
+            <div>${c.name}</div>
+            ${assignee ? `<div style="font-size:11px; color:${aColor}; font-weight:700; margin-top:2px;">${assignee.emoji} ${assignee.name}</div>` : ''}
+            <div class="chore-pts-badge">⭐ ${c.pts} pts</div>
+          </div>
+        </div>
+      </td>`;
+    DAYS.forEach((d, di) => {
+      const key = `${c.id}_${di}`;
+      const done = checkState[key] || false;
+      html += `<td><div class="chore-check ${done ? 'done' : ''}" onclick="toggleCheck('${c.id}',${di})" title="Mark done">${done ? '✓' : ''}</div></td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+function toggleCheck(choreId, dayIdx) {
+  const key = `${choreId}_${dayIdx}`;
+  checkState[key] = !checkState[key];
+  renderChartTable();
+  renderScoreCards();
+  buildLeaderboard();
+  updateMemberPointsOnCards();
+}
+
+function resetWeek() {
+  if (!confirm('Reset all checkmarks for this week?')) return;
+  checkState = {};
+  renderChartTable();
+  renderScoreCards();
+  buildLeaderboard();
+  updateMemberPointsOnCards();
+}
+
+function updateMemberPointsOnCards() {
+  members.forEach((m, i) => {
+    const pts = getMemberPoints(m.name);
+    const el = document.getElementById(`score-pts-${i}`);
+    if (el) el.textContent = `⭐ ${pts}`;
+  });
+  renderMembers();
+}
+
+// WEEK DISPLAY
+function setDefaultWeek() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const week = getWeekNumber(today);
+  const picker = document.getElementById('week-picker');
+  if (picker) picker.value = `${year}-W${String(week).padStart(2,'0')}`;
+  updateWeekDisplay();
+}
+
+function updateWeekDisplay() {
+  const picker = document.getElementById('week-picker');
+  const display = document.getElementById('chart-week-display');
+  if (!picker || !picker.value) return;
+  const [year, weekStr] = picker.value.split('-W');
+  const weekNum = parseInt(weekStr);
+  const jan1 = new Date(parseInt(year), 0, 1);
+  const days = (weekNum - 1) * 7;
+  const monday = new Date(jan1.getTime() + days * 86400000);
+  const adjustDays = (jan1.getDay() || 7) - 1;
+  monday.setDate(monday.getDate() - adjustDays);
+  const sunday = new Date(monday);
+  sunday.setDate(sunday.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  if (display) display.textContent = `Week of ${fmt(monday)} – ${fmt(sunday)}, ${year}`;
+}
+
+function getWeekNumber(d) {
+  const onejan = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+}
+
+// ══════════════════════════════════════════
+// REWARDS & LEADERBOARD
+// ══════════════════════════════════════════
+function buildLeaderboard() {
+  const lb = document.getElementById('leaderboard');
+  if (!lb) return;
+  const ranked = [...members].map((m,i) => ({ ...m, pts: getMemberPoints(m.name), colorIdx: i }))
+    .sort((a,b) => b.pts - a.pts);
+  const medals = ['🥇','🥈','🥉','🎖️','🎖️','🎖️'];
+  lb.innerHTML = ranked.map((m, i) => {
+    const bar = ranked[0].pts > 0 ? (m.pts / ranked[0].pts * 100) : 0;
+    return `<div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--border);">
+      <div style="font-size:24px; width:32px; text-align:center;">${medals[i] || '🎖️'}</div>
+      <div style="font-size:24px;">${m.emoji}</div>
+      <div style="flex:1;">
+        <div style="font-family:'Baloo 2',sans-serif; font-weight:800; font-size:16px;">${m.name}</div>
+        <div style="height:8px; background:#F1F5F9; border-radius:99px; margin-top:4px; overflow:hidden;">
+          <div style="height:100%; border-radius:99px; background:${getMemberColorHex(m.colorIdx)}; width:${bar}%; transition:width 0.5s ease;"></div>
+        </div>
+      </div>
+      <div style="font-family:'Baloo 2',sans-serif; font-size:20px; font-weight:800; color:${getMemberColorHex(m.colorIdx)};">⭐ ${m.pts}</div>
+    </div>`;
+  }).join('');
+}
+
+function addReward() {
+  const name = document.getElementById('new-reward-name').value.trim();
+  const pts = document.getElementById('new-reward-pts').value;
+  const emoji = document.getElementById('new-reward-emoji').value.trim() || '🎁';
+  if (!name || !pts) return;
+  const wrap = document.getElementById('rewards-list');
+  const div = document.createElement('div');
+  div.className = 'award-row';
+  div.innerHTML = `
+    <span class="award-emoji">${emoji}</span>
+    <input type="text" class="award-name" value="${name}" style="border:none; background:none; font-weight:700; font-size:14px; color:var(--navy); padding:0; width:auto; flex:1;">
+    <div class="award-pts-badge">⭐ ${pts} pts</div>
+    <button class="btn chore-del" onclick="this.closest('.award-row').remove()" style="margin-left:4px;">✕</button>`;
+  wrap.appendChild(div);
+  document.getElementById('new-reward-name').value = '';
+  document.getElementById('new-reward-pts').value = '';
+  document.getElementById('new-reward-emoji').value = '';
+}
+
+// ══════════════════════════════════════════
+// AGE GUIDE
+// ══════════════════════════════════════════
+function buildAgeGuide() {
+  const el = document.getElementById('age-guide');
+  if (!el) return;
+  el.innerHTML = AGE_GUIDE.map(g => `
+    <div style="padding:14px 0; border-bottom:1px solid var(--border);">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+        <span style="font-size:24px;">${g.emoji}</span>
+        <span style="font-family:'Baloo 2',sans-serif; font-size:16px; font-weight:800; color:var(--navy);">${g.range}</span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px;">
+        ${g.chores.map(c => `<span style="padding:4px 12px; border-radius:99px; background:var(--purple-light); border:1.5px solid var(--purple); color:#6A0DAD; font-size:12px; font-weight:700;">${c}</span>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// COLOR HELPERS
+// ══════════════════════════════════════════
+const MEMBER_COLORS_HEX = ['#FF6B9D','#4CC9F0','#06D6A0','#FF9F1C','#9B5DE5','#FFD93D'];
+function getMemberColorHex(idx) { return MEMBER_COLORS_HEX[idx % MEMBER_COLORS_HEX.length]; }
+function getMemberColor(idx) { return MEMBER_COLORS_HEX[idx % MEMBER_COLORS_HEX.length]; }
+
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function switchTab(t) {
+  const tabs = ['setup','chores','chart','rewards'];
+  tabs.forEach((id, i) => {
+    document.querySelectorAll('.tab-btn')[i].classList.toggle('active', id===t);
+    document.getElementById('tab-'+id).classList.toggle('active', id===t);
+  });
+  if (t === 'rewards') buildLeaderboard();
+  if (t === 'chart' && chores.length > 0) { renderChartTable(); renderScoreCards(); }
+}
+</script>
+</body>
+</html>
