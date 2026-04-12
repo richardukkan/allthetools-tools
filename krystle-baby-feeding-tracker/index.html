@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby Feeding Tracker – Krystle Art Publications</title>
+<meta name="description" content="A simple, free baby feeding tracker. Log breast and bottle feeds, track time since last feed, and see your daily summary.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#f8f3ee;
+  --surface:#ffffff;
+  --surface2:#f2ebe3;
+  --peach:#d4795a;
+  --peach-lt:#fdf0eb;
+  --peach-mid:#e8907a;
+  --sage:#6b9470;
+  --sage-lt:#eef4ef;
+  --blue:#5a84aa;
+  --blue-lt:#edf3f8;
+  --ink:#2a1f16;
+  --muted:#8a7060;
+  --border:rgba(120,90,60,0.13);
+  --shadow:0 2px 14px rgba(42,31,22,0.07);
+  --r:14px;
+}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  padding-bottom:60px;
+}
+
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 35% at 10% 15%,rgba(212,121,90,0.07),transparent 65%),
+    radial-gradient(ellipse 45% 35% at 88% 80%,rgba(107,148,112,0.07),transparent 65%);
+}
+
+.wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:10px 16px 40px;}
+
+/* HEADER */
+header{text-align:center;padding:26px 0 22px;border-bottom:1px solid var(--border);margin-bottom:22px;}
+.hdr-icon{font-size:38px;display:block;margin-bottom:10px;}
+.site-tag{font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(24px,6vw,34px);font-weight:600;line-height:1.15;color:var(--ink);margin-bottom:8px;}
+h1 em{font-style:italic;color:var(--peach);}
+.hdr-sub{font-size:14px;color:var(--muted);line-height:1.65;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-bottom:18px;}
+.card-title{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+
+/* BABY NAME */
+.name-setup{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.name-setup label{font-size:14px;font-weight:700;white-space:nowrap;}
+.name-input{flex:1;min-width:110px;padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;color:var(--ink);background:var(--bg);outline:none;transition:border-color 0.2s;}
+.name-input:focus{border-color:var(--peach);}
+.name-banner{background:var(--peach-lt);border:1px solid rgba(212,121,90,0.2);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.nb-name{font-size:16px;font-weight:800;color:var(--peach);}
+.nb-edit{font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;text-decoration:underline;}
+
+/* SINCE LAST */
+.since-box{text-align:center;}
+.since-lbl{font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.since-num{font-family:'Playfair Display',serif;font-size:46px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:5px;transition:color 0.3s;}
+.since-num.warn{color:var(--peach);}
+.since-hint{font-size:13px;color:var(--muted);}
+
+/* LIVE TIMER */
+.timer-box{display:none;background:var(--sage-lt);border:2px solid rgba(107,148,112,0.28);border-radius:var(--r);padding:18px;margin-bottom:18px;text-align:center;animation:fadeUp 0.3s ease both;}
+.timer-box.show{display:block;}
+.timer-type{font-size:13px;font-weight:700;color:var(--sage);margin-bottom:5px;}
+.timer-lbl{font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.timer-num{font-family:'Playfair Display',serif;font-size:50px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:12px;}
+.timer-stop{padding:11px 26px;background:var(--sage);color:white;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;}
+
+/* TYPE BUTTONS */
+.type-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.tbtn{flex:1;min-width:80px;padding:11px 6px;border:2px solid var(--border);border-radius:11px;background:var(--bg);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;text-align:center;transition:all 0.18s;}
+.tbtn .ti{font-size:20px;display:block;margin-bottom:3px;}
+.tbtn:hover{border-color:var(--peach);color:var(--peach);background:var(--peach-lt);}
+.tbtn.active{border-color:var(--peach);color:var(--peach);background:var(--peach-lt);}
+
+/* TIME ROW */
+.field-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.field-row label{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;}
+.field-row input[type=time]{flex:1;padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;color:var(--ink);background:var(--bg);outline:none;transition:border-color 0.2s;}
+.field-row input[type=time]:focus{border-color:var(--peach);}
+
+/* DURATION SLIDER */
+.dur-section{margin-bottom:14px;}
+.dur-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.dur-lbl{font-size:13px;font-weight:700;color:var(--muted);}
+.dur-val{font-size:18px;font-weight:800;color:var(--peach);}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;background:var(--surface2);border-radius:3px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--peach);cursor:pointer;box-shadow:0 2px 8px rgba(212,121,90,0.3);}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--peach);cursor:pointer;border:none;}
+
+/* NOTE */
+.note-area{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--ink);background:var(--bg);outline:none;resize:none;height:58px;margin-bottom:14px;transition:border-color 0.2s;}
+.note-area:focus{border-color:var(--peach);}
+.note-area::placeholder{color:rgba(138,112,96,0.45);}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;}
+.btn-primary{flex:1;padding:15px;background:var(--peach);color:white;border:none;border-radius:11px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(212,121,90,0.3);transition:transform 0.15s,box-shadow 0.15s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(212,121,90,0.38);}
+.btn-secondary{flex:1;padding:15px;background:var(--sage);color:white;border:none;border-radius:11px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(107,148,112,0.28);transition:transform 0.15s;}
+.btn-secondary:hover{transform:translateY(-2px);}
+
+/* SECTION DIVIDER */
+.divider{font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;margin:4px 0 18px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* SUMMARY STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.stat{background:var(--bg);border-radius:11px;padding:13px 8px;text-align:center;}
+.stat-n{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:var(--peach);line-height:1;}
+.stat-l{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;margin-top:4px;}
+
+/* DAY TABS */
+.day-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.dtab{flex:1;padding:9px;border:1.5px solid var(--border);border-radius:9px;background:var(--bg);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;text-align:center;transition:all 0.18s;}
+.dtab.active{background:var(--peach);border-color:var(--peach);color:white;}
+
+/* TIMELINE */
+.tl-head{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:10px;}
+.tl{display:flex;flex-direction:column;gap:7px;}
+.tl-item{display:flex;align-items:center;gap:11px;background:var(--bg);border-radius:10px;padding:10px 13px;font-size:14px;}
+.tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.dot-breast{background:var(--peach);}
+.dot-bottle{background:var(--blue);}
+.tl-time{font-weight:800;color:var(--ink);min-width:48px;}
+.tl-type{flex:1;color:var(--muted);}
+.tl-note{font-size:12px;font-style:italic;color:var(--muted);}
+.tl-dur{font-weight:700;color:var(--ink);white-space:nowrap;}
+.tl-del{font-size:16px;cursor:pointer;color:var(--muted);padding:0 3px;margin-left:4px;}
+.tl-del:hover{color:#bb3333;}
+.empty-msg{text-align:center;padding:20px;color:var(--muted);font-size:14px;}
+
+/* ACTION BUTTONS */
+.act-row{display:flex;gap:8px;flex-wrap:wrap;}
+.act-btn{flex:1;min-width:110px;padding:12px 8px;border:1.5px solid var(--border);border-radius:11px;background:var(--surface);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;text-align:center;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.act-btn:hover{border-color:var(--peach);color:var(--peach);background:var(--peach-lt);}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(42,31,22,0.42);z-index:100;align-items:center;justify-content:center;padding:20px;}
+.overlay.show{display:flex;}
+.modal{background:var(--surface);border-radius:18px;padding:26px;max-width:420px;width:100%;box-shadow:0 12px 48px rgba(42,31,22,0.18);}
+.modal h2{font-family:'Playfair Display',serif;font-size:20px;color:var(--ink);margin-bottom:12px;}
+.modal p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+.modal-code{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:11px;font-family:monospace;font-size:12px;word-break:break-all;color:var(--ink);margin-bottom:14px;max-height:100px;overflow-y:auto;}
+.modal-btns{display:flex;gap:8px;}
+.modal-copy{flex:1;padding:12px;background:var(--peach);color:white;border:none;border-radius:9px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;}
+.modal-close{padding:12px 18px;background:transparent;border:1.5px solid var(--border);border-radius:9px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--ink);color:white;padding:12px 22px;border-radius:999px;font-size:14px;font-weight:700;box-shadow:0 4px 20px rgba(42,31,22,0.22);transition:transform 0.32s cubic-bezier(0.34,1.56,0.64,1);z-index:200;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* FOOTER */
+footer{text-align:center;font-size:13px;color:var(--muted);padding-top:22px;border-top:1px solid var(--border);margin-top:6px;}
+footer a{color:var(--peach);font-weight:700;text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+@media print{.log-section,.timer-box,.act-row,footer,header .hdr-sub{display:none!important;}body{background:white;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<header>
+  <span class="hdr-icon">🍼</span>
+  <div class="site-tag">Krystle Art Publications</div>
+  <h1>Baby Feeding <em>Tracker</em></h1>
+  <p class="hdr-sub">Log every feed simply. Your data saves automatically — come back anytime on this browser.</p>
+</header>
+
+<!-- BABY NAME SETUP -->
+<div class="card" id="nameCard">
+  <div class="name-setup">
+    <label for="nameIn">Your baby's name:</label>
+    <input type="text" id="nameIn" class="name-input" placeholder="e.g. Lily" maxlength="20">
+    <button class="btn-primary" style="flex:0;padding:10px 18px;font-size:14px;" onclick="saveName()">Save</button>
+  </div>
+</div>
+<div class="name-banner" id="nameBanner" style="display:none;">
+  <span class="nb-name" id="nameLabel">Baby</span>
+  <span class="nb-edit" onclick="editName()">Change name</span>
+</div>
+
+<!-- SINCE LAST FEED -->
+<div class="card">
+  <div class="since-box">
+    <div class="since-lbl">Time since last feed</div>
+    <div class="since-num" id="sinceNum">—</div>
+    <div class="since-hint" id="sinceHint">No feeds logged yet today</div>
+  </div>
+</div>
+
+<!-- LIVE TIMER -->
+<div class="timer-box" id="timerBox">
+  <div class="timer-type" id="timerTypeLabel">—</div>
+  <div class="timer-lbl">Feed in progress</div>
+  <div class="timer-num" id="timerNum">0:00</div>
+  <button class="timer-stop" onclick="stopTimer()">✓ Done — Save This Feed</button>
+</div>
+
+<!-- LOG A FEED -->
+<div class="card log-section">
+  <div class="card-title">🍼 Log a Feed</div>
+
+  <div class="type-row">
+    <button class="tbtn active" id="tbl" onclick="setType('breast-left')"><span class="ti">🤱</span>Breast<br>Left</button>
+    <button class="tbtn" id="tbr" onclick="setType('breast-right')"><span class="ti">🤱</span>Breast<br>Right</button>
+    <button class="tbtn" id="tbb" onclick="setType('bottle')"><span class="ti">🍼</span>Bottle</button>
+  </div>
+
+  <div class="field-row">
+    <label>Started at</label>
+    <input type="time" id="feedTime">
+  </div>
+
+  <div class="dur-section">
+    <div class="dur-header">
+      <span class="dur-lbl">Duration</span>
+      <span class="dur-val" id="durVal">15 min</span>
+    </div>
+    <input type="range" id="durSlider" min="1" max="60" value="15" oninput="updDur()">
+  </div>
+
+  <textarea class="note-area" id="noteArea" placeholder="Optional note — e.g. settled well, was fussy..."></textarea>
+
+  <div class="btn-row">
+    <button class="btn-primary" onclick="logFeed()">✓ Log Feed</button>
+    <button class="btn-secondary" onclick="startTimer()">⏱ Use Timer</button>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div class="divider">Today's Summary</div>
+<div class="card">
+  <div class="day-tabs">
+    <button class="dtab active" onclick="switchDay(0,this)">Today</button>
+    <button class="dtab" onclick="switchDay(1,this)">Yesterday</button>
+    <button class="dtab" onclick="switchDay(2,this)">2 Days Ago</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="sFeeds">0</div><div class="stat-l">Feeds</div></div>
+    <div class="stat"><div class="stat-n" id="sMins">0</div><div class="stat-l">Minutes</div></div>
+    <div class="stat"><div class="stat-n" id="sAvg">—</div><div class="stat-l">Avg Gap</div></div>
+  </div>
+
+  <div class="tl-head">Feed Log</div>
+  <div class="tl" id="timeline">
+    <div class="empty-msg">No feeds logged yet. Add your first one above! 🌸</div>
+  </div>
+</div>
+
+<!-- ACTIONS -->
+<div class="act-row">
+  <button class="act-btn" onclick="openShare()"><span>🔗</span> Share / Export</button>
+  <button class="act-btn" onclick="window.print()"><span>🖨️</span> Print</button>
+  <button class="act-btn" onclick="copyDoc()"><span>👩‍⚕️</span> Copy for Doctor</button>
+</div>
+
+<footer>
+  <p>💾 Data saves automatically in this browser.<br>
+  Made with love by <a href="https://krystleartpublications.com" target="_blank">Krystle Art Publications</a></p>
+</footer>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="overlay" id="overlay" onclick="bgClose(event)">
+  <div class="modal">
+    <h2>Share Your Data</h2>
+    <p>Copy this code and paste it on another device or send it to your partner to restore all your feeding logs.</p>
+    <div class="modal-code" id="shareCode"></div>
+    <div class="modal-btns">
+      <button class="modal-copy" onclick="copyCode()">📋 Copy Code</button>
+      <button class="modal-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* STATE */
+var curType = 'breast-left';
+var curDay  = 0;
+var tmrStart = null;
+var tmrType  = '';
+var tmrTick  = null;
+
+var K_NAME  = 'kap_baby';
+var K_FEEDS = 'kap_feeds';
+
+/* INIT */
+(function(){
+  var now = new Date();
+  document.getElementById('feedTime').value = pad(now.getHours())+':'+pad(now.getMinutes());
+  var n = lsGet(K_NAME);
+  if(n) showBanner(n);
+  renderAll();
+  setInterval(tickSince, 1000);
+  setInterval(tickTimer, 1000);
+  tickSince();
+})();
+
+/* NAME */
+function saveName(){
+  var v = document.getElementById('nameIn').value.trim();
+  if(!v){ toast('Please enter a name'); return; }
+  localStorage.setItem(K_NAME, v);
+  showBanner(v);
+  toast('Saved! Hi '+v+' 🌸');
+}
+function showBanner(n){
+  document.getElementById('nameCard').style.display = 'none';
+  document.getElementById('nameBanner').style.display = 'flex';
+  document.getElementById('nameLabel').textContent = n + "'s Tracker";
+}
+function editName(){
+  document.getElementById('nameCard').style.display = 'block';
+  document.getElementById('nameBanner').style.display = 'none';
+  document.getElementById('nameIn').value = lsGet(K_NAME)||'';
+}
+
+/* TYPE */
+function setType(t){
+  curType = t;
+  ['tbl','tbr','tbb'].forEach(function(id){ document.getElementById(id).classList.remove('active'); });
+  var map = {'breast-left':'tbl','breast-right':'tbr','bottle':'tbb'};
+  document.getElementById(map[t]).classList.add('active');
+}
+
+/* DURATION */
+function updDur(){
+  document.getElementById('durVal').textContent = document.getElementById('durSlider').value + ' min';
+}
+
+/* LOG FEED */
+function logFeed(){
+  var t = document.getElementById('feedTime').value;
+  var d = parseInt(document.getElementById('durSlider').value);
+  var n = document.getElementById('noteArea').value.trim();
+  if(!t){ toast('Please set the start time'); return; }
+
+  var feeds = getFeeds();
+  var dk = dayKey(0);
+  if(!feeds[dk]) feeds[dk] = [];
+  feeds[dk].push({type:curType, time:t, dur:d, note:n, id:Date.now()});
+  feeds[dk].sort(function(a,b){ return a.time < b.time ? -1 : 1; });
+  saveFeeds(feeds);
+
+  renderAll();
+  toast('Feed logged! 🍼');
+
+  var now = new Date();
+  document.getElementById('feedTime').value = pad(now.getHours())+':'+pad(now.getMinutes());
+  document.getElementById('durSlider').value = 15;
+  updDur();
+  document.getElementById('noteArea').value = '';
+}
+
+/* TIMER */
+function startTimer(){
+  tmrStart = Date.now();
+  tmrType  = curType;
+  document.getElementById('timerTypeLabel').textContent = tName(curType);
+  document.getElementById('timerNum').textContent = '0:00';
+  document.getElementById('timerBox').classList.add('show');
+}
+
+function stopTimer(){
+  if(!tmrStart) return;
+  var secs = Math.floor((Date.now()-tmrStart)/1000);
+  var mins = Math.max(1, Math.round(secs/60));
+  var tStart = new Date(tmrStart);
+  var t2 = pad(tStart.getHours())+':'+pad(tStart.getMinutes());
+  var n  = document.getElementById('noteArea').value.trim();
+
+  var feeds = getFeeds();
+  var dk = dayKey(0);
+  if(!feeds[dk]) feeds[dk] = [];
+  feeds[dk].push({type:tmrType, time:t2, dur:mins, note:n, id:Date.now()});
+  feeds[dk].sort(function(a,b){ return a.time < b.time ? -1 : 1; });
+  saveFeeds(feeds);
+
+  tmrStart = null;
+  document.getElementById('timerBox').classList.remove('show');
+  document.getElementById('noteArea').value = '';
+  renderAll();
+  toast('Saved! '+mins+' min feed 🎉');
+}
+
+function tickTimer(){
+  if(!tmrStart) return;
+  var s = Math.floor((Date.now()-tmrStart)/1000);
+  document.getElementById('timerNum').textContent = fmt(s);
+}
+
+/* DELETE */
+function delFeed(dk, id){
+  if(!confirm('Remove this feed?')) return;
+  var feeds = getFeeds();
+  if(!feeds[dk]) return;
+  feeds[dk] = feeds[dk].filter(function(f){ return f.id !== id; });
+  saveFeeds(feeds);
+  renderAll();
+  toast('Removed');
+}
+
+/* RENDER */
+function renderAll(){ renderDay(curDay); tickSince(); }
+
+function switchDay(d, btn){
+  curDay = d;
+  document.querySelectorAll('.dtab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderDay(d);
+}
+
+function renderDay(d){
+  var feeds = getFeeds();
+  var dk    = dayKey(d);
+  var list  = feeds[dk] || [];
+  var total = list.reduce(function(a,f){ return a+f.dur; }, 0);
+
+  /* avg gap */
+  var avgStr = '—';
+  if(list.length >= 2){
+    var gaps = [];
+    for(var i=1;i<list.length;i++){
+      var diff = toMins(list[i].time) - toMins(list[i-1].time) - list[i-1].dur;
+      if(diff > 0) gaps.push(diff);
+    }
+    if(gaps.length){
+      var avg = Math.round(gaps.reduce(function(a,b){return a+b;},0)/gaps.length);
+      avgStr = avg >= 60 ? Math.floor(avg/60)+'h '+( avg%60)+'m' : avg+'m';
+    }
+  }
+
+  document.getElementById('sFeeds').textContent = list.length;
+  document.getElementById('sMins').textContent  = total;
+  document.getElementById('sAvg').textContent   = avgStr;
+
+  var tl = document.getElementById('timeline');
+  if(!list.length){
+    var labels = ['today','yesterday','2 days ago'];
+    tl.innerHTML = '<div class="empty-msg">No feeds logged '+labels[d]+' yet.</div>';
+    return;
+  }
+
+  tl.innerHTML = list.map(function(f){
+    var dot = f.type === 'bottle' ? 'dot-bottle' : 'dot-breast';
+    return '<div class="tl-item">' +
+      '<div class="tl-dot '+dot+'"></div>' +
+      '<div class="tl-time">'+f.time+'</div>' +
+      '<div class="tl-type">'+shortName(f.type)+(f.note ? ' <span class="tl-note">· '+f.note+'</span>' : '')+'</div>' +
+      '<div class="tl-dur">'+f.dur+'m</div>' +
+      '<div class="tl-del" onclick="delFeed(\''+dk+'\','+f.id+')" title="Remove">×</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* SINCE LAST */
+function tickSince(){
+  var feeds = getFeeds();
+  var today = feeds[dayKey(0)] || [];
+  var baby  = lsGet(K_NAME) || 'Baby';
+
+  if(!today.length){
+    document.getElementById('sinceNum').textContent = '—';
+    document.getElementById('sinceNum').className   = 'since-num';
+    document.getElementById('sinceHint').textContent = 'No feeds logged yet today';
+    return;
+  }
+
+  var last = today[today.length-1];
+  var endMins = toMins(last.time) + last.dur;
+  var nowMins = new Date().getHours()*60 + new Date().getMinutes();
+  var diff = Math.max(0, nowMins - endMins);
+
+  var h = Math.floor(diff/60), m = diff%60;
+  var str = h>0 ? h+'h '+m+'m' : m+' min';
+  document.getElementById('sinceNum').textContent = str;
+  document.getElementById('sinceNum').className = diff > 165 ? 'since-num warn' : 'since-num';
+
+  var nextIn = 120 - diff;
+  document.getElementById('sinceHint').textContent = nextIn <= 0
+    ? baby+' may be ready for a feed soon 🍼'
+    : 'Next feed in about ' + nextIn + ' min';
+}
+
+/* SHARE */
+function openShare(){
+  var p = JSON.stringify({ name: lsGet(K_NAME), feeds: lsGet(K_FEEDS) });
+  document.getElementById('shareCode').textContent = btoa(unescape(encodeURIComponent(p)));
+  document.getElementById('overlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); }
+function bgClose(e){ if(e.target.id==='overlay') closeModal(); }
+function copyCode(){ cp(document.getElementById('shareCode').textContent); toast('Code copied! 📋'); }
+
+function copyDoc(){
+  var feeds = getFeeds();
+  var name  = lsGet(K_NAME) || 'Baby';
+  var lines = [name+' — Feeding Summary', 'Generated: '+new Date().toLocaleDateString(), ''];
+  for(var d=2;d>=0;d--){
+    var dk   = dayKey(d);
+    var list = feeds[dk] || [];
+    var lbl  = d===0?'Today':d===1?'Yesterday':'2 days ago';
+    lines.push(lbl+' ('+dk+') — '+list.length+' feed(s)');
+    list.forEach(function(f){
+      lines.push('  '+f.time+'  '+tName(f.type)+'  '+f.dur+' min'+(f.note ? '  Note: '+f.note : ''));
+    });
+    lines.push('');
+  }
+  cp(lines.join('\n'));
+  toast('Copied for doctor! 👩‍⚕️');
+}
+
+/* UTILS */
+function getFeeds(){ try{ return JSON.parse(localStorage.getItem(K_FEEDS)||'{}'); }catch(e){ return {}; } }
+function saveFeeds(f){ localStorage.setItem(K_FEEDS, JSON.stringify(f)); }
+function lsGet(k){ return localStorage.getItem(k)||''; }
+function dayKey(ago){
+  var d = new Date(); d.setDate(d.getDate()-ago);
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+function pad(n){ return n<10?'0'+n:''+n; }
+function toMins(t){ var p=(t||'00:00').split(':'); return parseInt(p[0])*60+parseInt(p[1]||0); }
+function fmt(s){ var m=Math.floor(s/60),sec=s%60; return m+':'+pad(sec); }
+function tName(t){
+  if(t==='breast-left')  return 'Breast — Left 🤱';
+  if(t==='breast-right') return 'Breast — Right 🤱';
+  if(t==='bottle')       return 'Bottle 🍼';
+  return t;
+}
+function shortName(t){
+  if(t==='breast-left')  return 'Breast L';
+  if(t==='breast-right') return 'Breast R';
+  if(t==='bottle')       return 'Bottle';
+  return t;
+}
+function cp(text){
+  var ta=document.createElement('textarea');
+  ta.value=text; ta.readOnly=true; ta.style.cssText='position:fixed;left:-9999px;';
+  document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0,99999);
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(text).catch(function(){});
+}
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+</script>
+</body>
+</html>
